@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +16,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: '*', credentials: true }));
+const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || '*').split(',');
+app.use(cors({ origin: (origin, cb)=> cb(null, ALLOW_ORIGINS.includes('*') || !origin || ALLOW_ORIGINS.includes(origin)), credentials: true }));
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -29,6 +34,15 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/seminars', seminarRoutes);
+
+// 404
+app.use((req, res) => res.status(404).json({ message: 'Not Found' }));
+// 500
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Server error' });
+});
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/growix';
 const PORT = process.env.PORT || 4000;

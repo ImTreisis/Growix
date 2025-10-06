@@ -13,7 +13,10 @@ export default function Navbar() {
           <NavLink to="/organize" className={({isActive})=>isActive? 'underline' : ''}>Organize</NavLink>
           <NavLink to="/saved" className={({isActive})=>isActive? 'underline' : ''}>Saved</NavLink>
           {user ? (
-            <NavLink to="/profile" className={({isActive})=>isActive? 'underline' : ''}>Profile</NavLink>
+            <div className="flex items-center gap-4">
+              <NavLink to="/profile" className={({isActive})=>isActive? 'underline' : ''}>Profile</NavLink>
+              <button onClick={()=>window.dispatchEvent(new CustomEvent('growix:logout'))} className="px-3 py-1 rounded-xl bg-warm3">Logout</button>
+            </div>
           ) : (
             <NavLink to="/auth" className={({isActive})=>isActive? 'underline' : ''}>Sign in</NavLink>
           )}

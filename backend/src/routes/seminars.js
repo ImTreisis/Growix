@@ -2,15 +2,51 @@ import express from 'express';
 import Seminar from '../models/Seminar.js';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { uploadImage } from '../lib/cloudinary.js';
 
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, style, level } = req.body;
+    const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
     if (!title || !date || !style || !level) return res.status(400).json({ message: 'Missing fields' });
-    const seminar = await Seminar.create({ title, description, date, style, level, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    res.status(201).json({ seminar });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Upload image for seminar and create
+router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
+  try {
+    const { title, description = '', date, style, level, venue = '' } = req.body;
+    if (!title || !date || !style || !level) return res.status(400).json({ message: 'Missing fields' });
+    let imageUrl = '';
+    if (req.file) {
+      if (!process.env.CLOUDINARY_CLOUD_NAME) {
+        const filename = `${req.userId}-${Date.now()}${path.extname(req.file.originalname)}`;
+        fs.writeFileSync(path.join(uploadsDir, filename), req.file.buffer);
+        imageUrl = `/uploads/${filename}`;
+      } else {
+        const result = await uploadImage(req.file.buffer, 'growix/seminars');
+        imageUrl = result.secure_url;
+      }
+    }
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
     res.status(201).json({ seminar });
   } catch (err) {
     console.error(err);
@@ -49,12 +85,14 @@ router.put('/:id', requireAuth, async (req, res) => {
   const seminar = await Seminar.findById(req.params.id);
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
-  const { title, description, date, style, level } = req.body;
+  const { title, description, date, style, level, venue, imageUrl } = req.body;
   if (title !== undefined) seminar.title = title;
   if (description !== undefined) seminar.description = description;
   if (date !== undefined) seminar.date = date;
   if (style !== undefined) seminar.style = style;
   if (level !== undefined) seminar.level = level;
+  if (venue !== undefined) seminar.venue = venue;
+  if (imageUrl !== undefined) seminar.imageUrl = imageUrl;
   await seminar.save();
   res.json({ seminar });
 });
