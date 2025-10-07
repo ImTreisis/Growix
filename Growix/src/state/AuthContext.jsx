@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
     if (token) {
       localStorage.setItem('token', token)
       api.defaults.headers.common.Authorization = `Bearer ${token}`
-      api.get('/auth/me').then((r) => setUser(r.data.user)).catch(() => {})
+      api.get('/users/me').then((r) => setUser(r.data.user)).catch(() => {})
     } else {
       localStorage.removeItem('token')
       delete api.defaults.headers.common.Authorization

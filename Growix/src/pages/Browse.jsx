@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import SeminarCard from '../components/SeminarCard.jsx'
 
@@ -7,6 +7,7 @@ export default function Browse() {
   const { api, user } = useAuth()
   const [params, setParams] = useSearchParams()
   const [items, setItems] = useState([])
+  const navigate = useNavigate()
 
   const query = useMemo(() => ({
     q: params.get('q') || undefined,
@@ -15,9 +16,31 @@ export default function Browse() {
     date: params.get('date') || undefined,
   }), [params])
 
+  const tab = useMemo(() => params.get('tab') || '', [params])
+  const userId = user?._id ? String(user._id) : ''
+
   useEffect(() => {
-    api.get('/seminars', { params: query }).then((r)=> setItems(r.data.seminars))
-  }, [JSON.stringify(query)])
+    if ((tab === 'liked' || tab === 'organized') && !user) {
+      navigate('/auth', { replace: true })
+      return
+    }
+    if (tab === 'liked' && user) {
+      api.get('/seminars').then((r)=>{
+        // show saved seminars as "Liked"
+        const savedIds = new Set((user.savedSeminars||[]).map(s=> String(s?._id||s)))
+        const likedList = r.data.seminars.filter(s=> savedIds.has(String(s._id)))
+        setItems(likedList)
+      })
+    } else if (tab === 'organized' && user) {
+      api.get('/seminars').then((r)=>{
+        const all = r.data.seminars
+        const mine = all.filter(s=> String(s.createdBy?._id ?? s.createdBy) === String(user._id))
+        setItems(mine)
+      })
+    } else {
+      api.get('/seminars', { params: query }).then((r)=> setItems(r.data.seminars))
+    }
+  }, [api, query, tab, userId, user, navigate])
 
   return (
     <div>

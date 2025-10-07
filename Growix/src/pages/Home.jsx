@@ -16,10 +16,34 @@ export default function Home() {
         </motion.h1>
         <p className="text-cocoa/80 max-w-2xl mb-6">Warm lights, soft grooves, and welcoming vibes. Browse by style, level, and date.</p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <input onKeyDown={(e)=>{if(e.key==='Enter') navigate(`/browse?q=${encodeURIComponent(e.currentTarget.value)}`)}} placeholder="Search seminars..." className="flex-1 px-4 py-3 rounded-xl" />
-          <button onClick={()=>navigate('/browse')} className="px-6 py-3 rounded-xl bg-dusk text-white shadow-cozy">Browse</button>
+          <input onKeyDown={(e)=>{if(e.key==='Enter') navigate(`/workshops?q=${encodeURIComponent(e.currentTarget.value)}`)}} placeholder="Search seminars..." className="flex-1 px-4 py-3 rounded-xl" />
+          <button onClick={()=>navigate('/workshops')} className="px-6 py-3 rounded-xl bg-dusk text-white shadow-cozy">Browse</button>
         </div>
       </section>
+      <section className="mt-8">
+        {/* Show latest seminars on the homepage */}
+        <BrowseInline />
+      </section>
+    </div>
+  )
+}
+
+import { useEffect, useState } from 'react'
+import { useAuth } from '../state/AuthContext.jsx'
+function BrowseInline(){
+  const { api } = useAuth()
+  const [items, setItems] = useState([])
+  useEffect(()=>{ api.get('/seminars').then(r=> setItems(r.data.seminars)) }, [])
+  if(!items.length) return null
+  return (
+    <div className="grid gap-6 md:grid-cols-3">
+      {items.map((s)=> (
+        <a key={s._id} href={`/detail/${s._id}`} className="block">
+          <img src={s.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'} alt={s.title} className="w-full h-40 object-cover rounded-xl" />
+          <div className="mt-2 text-dusk font-medium">{s.title}</div>
+          <div className="text-sm text-cocoa/80">{new Date(s.date).toLocaleString()} • {s.style} • {s.level}</div>
+        </a>
+      ))}
     </div>
   )
 }

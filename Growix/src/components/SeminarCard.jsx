@@ -17,28 +17,45 @@ function IconUser(props){return (
   </svg>
 )}
 
+function IconHeart(props){return (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M12 21s-6.716-4.716-9.172-7.172A5.657 5.657 0 1 1 11.314 5.34L12 6.025l.686-.686a5.657 5.657 0 1 1 8 8C18.716 16.284 12 21 12 21Z"/>
+  </svg>
+)}
+
 export default function SeminarCard({ item }){
-  const { api, user } = useAuth()
-  const [saved, setSaved] = useState(false)
+  const { api, user, setUser } = useAuth()
+  const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
 
   const dateStr = new Date(item.date).toLocaleString()
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
   const saveToggle = async ()=>{
-    if(!user) return
+    if(!user){ window.location.href = '/auth'; return }
     const r = await api.post(`/seminars/${item._id}/save`)
     setSaved(r.data.saved)
+    // sync saved list in user context for consistency across views
+    try {
+      const me = await api.get('/users/me')
+      setUser(me.data.user)
+    } catch (_) {}
   }
 
   return (
     <article className="cozy-card overflow-hidden">
-      <div className="aspect-[16/9] bg-black/5">
+      <div className="relative aspect-[16/9] bg-black/5">
+        <a href={`/detail/${item._id}`} className="absolute inset-0 z-[1]" aria-label={`Open ${item.title}`}></a>
         <img
           src={item.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'}
           alt={item.title}
           className="w-full h-full object-cover opacity-90"
         />
+        {user && (
+          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'bg-red-600 text-white' : 'bg-white text-cocoa'} shadow-cozy`} aria-label="Save">
+            <IconHeart />
+          </button>
+        )}
       </div>
       <div className="p-5">
         <div className="flex items-center gap-2 text-cocoa/80 text-sm">
@@ -55,8 +72,7 @@ export default function SeminarCard({ item }){
           <div className="flex items-center gap-2"><IconUser className="opacity-70" /><span>{item.createdBy?.username || 'Organizer'}</span></div>
         </div>
         <div className="mt-5 flex items-center gap-3">
-          <button onClick={saveToggle} className={`px-4 py-2 rounded-xl ${saved? 'bg-warm2' : 'bg-warm3'} text-dusk`}>{saved? 'Saved' : 'Save Seminar'}</button>
-          <button className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</button>
+          <a href={`/detail/${item._id}`} className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</a>
         </div>
       </div>
     </article>

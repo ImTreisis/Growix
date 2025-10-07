@@ -7,16 +7,16 @@ export default function Saved() {
 
   useEffect(() => {
     api.get('/users/me').then((r)=> setUser(r.data.user))
-  }, [])
+  }, [api])
 
   if (!user) return null
   return (
     <div className="grid gap-4">
       {user.savedSeminars?.map((s) => (
-        <article key={s._id} className="cozy-card p-4">
+        <a key={s._id} href={`/detail/${s._id}`} className="cozy-card p-4 block">
           <h3 className="text-lg font-semibold text-dusk">{s.title}</h3>
           <p className="text-sm text-cocoa/80">{new Date(s.date).toLocaleString()} • {s.style} • {s.level}</p>
-        </article>
+        </a>
       ))}
       {user.savedSeminars?.length === 0 && <p className="text-cocoa">No saved seminars yet.</p>}
     </div>

@@ -20,9 +20,9 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
+    const { title, description = '', date, style, level, venue = '', link = '', imageUrl = '' } = req.body;
     if (!title || !date || !style || !level) return res.status(400).json({ message: 'Missing fields' });
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, link, imageUrl, createdBy: req.userId });
     res.status(201).json({ seminar });
   } catch (err) {
     console.error(err);
@@ -33,11 +33,16 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '' } = req.body;
+    const { title, description = '', date, style, level, venue = '', link = '' } = req.body;
     if (!title || !date || !style || !level) return res.status(400).json({ message: 'Missing fields' });
     let imageUrl = '';
     if (req.file) {
-      if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      const hasCloudinary = Boolean(
+        process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET
+      );
+      if (!hasCloudinary) {
         const filename = `${req.userId}-${Date.now()}${path.extname(req.file.originalname)}`;
         fs.writeFileSync(path.join(uploadsDir, filename), req.file.buffer);
         imageUrl = `/uploads/${filename}`;
@@ -46,7 +51,7 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
         imageUrl = result.secure_url;
       }
     }
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, link, imageUrl, createdBy: req.userId });
     res.status(201).json({ seminar });
   } catch (err) {
     console.error(err);
@@ -77,7 +82,9 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const seminar = await Seminar.findById(req.params.id).populate('createdBy', 'username photoUrl');
   if (!seminar) return res.status(404).json({ message: 'Not found' });
-  res.json({ seminar });
+  // count how many users saved this seminar
+  const savedCount = await User.countDocuments({ savedSeminars: req.params.id });
+  res.json({ seminar, savedCount });
 });
 
 // Update
@@ -85,13 +92,14 @@ router.put('/:id', requireAuth, async (req, res) => {
   const seminar = await Seminar.findById(req.params.id);
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
-  const { title, description, date, style, level, venue, imageUrl } = req.body;
+  const { title, description, date, style, level, venue, link, imageUrl } = req.body;
   if (title !== undefined) seminar.title = title;
   if (description !== undefined) seminar.description = description;
   if (date !== undefined) seminar.date = date;
   if (style !== undefined) seminar.style = style;
   if (level !== undefined) seminar.level = level;
   if (venue !== undefined) seminar.venue = venue;
+  if (link !== undefined) seminar.link = link;
   if (imageUrl !== undefined) seminar.imageUrl = imageUrl;
   await seminar.save();
   res.json({ seminar });
