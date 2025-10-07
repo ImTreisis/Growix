@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
@@ -7,9 +7,9 @@ export default function Detail(){
   const { id } = useParams()
   const { api, user } = useAuth()
   const { show } = useToast()
+  const navigate = useNavigate()
   const [item, setItem] = useState(null)
   const [savedCount, setSavedCount] = useState(0)
-  const [saving, setSaving] = useState(false)
 
   useEffect(()=>{ api.get(`/seminars/${id}`).then(r=>{ setItem(r.data.seminar); setSavedCount(r.data.savedCount||0)}) }, [api, id])
 
@@ -29,7 +29,16 @@ export default function Detail(){
         <div className="mt-5 flex items-center gap-3">
           <span className="px-4 py-2 rounded-xl bg-warm2 text-dusk">Saved ({savedCount})</span>
           {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
-            <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>
+            <>
+              <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>
+              <button
+                onClick={async()=>{
+                  if(!confirm('Delete this workshop? This cannot be undone.')) return
+                  try { await api.delete(`/seminars/${item._id}`); show('Workshop deleted'); navigate('/workshops') } catch { show('Delete failed', 'error') }
+                }}
+                className="px-4 py-2 rounded-xl border border-red-600 text-red-700"
+              >Delete</button>
+            </>
           )}
         </div>
       </div>
