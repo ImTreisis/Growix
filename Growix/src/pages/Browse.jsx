@@ -7,6 +7,7 @@ export default function Browse() {
   const { api, user } = useAuth()
   const [params, setParams] = useSearchParams()
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const query = useMemo(() => ({
@@ -17,30 +18,58 @@ export default function Browse() {
   }), [params])
 
   const tab = useMemo(() => params.get('tab') || '', [params])
-  const userId = user?._id ? String(user._id) : ''
 
   useEffect(() => {
     if ((tab === 'liked' || tab === 'organized') && !user) {
       navigate('/auth', { replace: true })
       return
     }
-    if (tab === 'liked' && user) {
-      api.get('/seminars').then((r)=>{
-        // show saved seminars as "Liked"
-        const savedIds = new Set((user.savedSeminars||[]).map(s=> String(s?._id||s)))
-        const likedList = r.data.seminars.filter(s=> savedIds.has(String(s._id)))
-        setItems(likedList)
-      })
-    } else if (tab === 'organized' && user) {
-      api.get('/seminars').then((r)=>{
-        const all = r.data.seminars
-        const mine = all.filter(s=> String(s.createdBy?._id ?? s.createdBy) === String(user._id))
-        setItems(mine)
-      })
-    } else {
-      api.get('/seminars', { params: query }).then((r)=> setItems(r.data.seminars))
+    
+    const loadSeminars = async () => {
+      setLoading(true)
+      try {
+        if (tab === 'liked' && user) {
+          // For now, fetch all and filter client-side since we don't have a server endpoint for saved seminars
+          const r = await api.get('/seminars', { params: { limit: 100, offset: 0 } })
+          const savedIds = new Set((user.savedSeminars||[]).map(s=> String(s?._id||s)))
+          const likedList = r.data.seminars.filter(s=> savedIds.has(String(s._id)))
+          setItems(likedList)
+        } else if (tab === 'organized' && user) {
+          // For now, fetch all and filter client-side since we don't have a server endpoint for user's seminars
+          const r = await api.get('/seminars', { params: { limit: 100, offset: 0 } })
+          const all = r.data.seminars
+          const mine = all.filter(s=> String(s.createdBy?._id ?? s.createdBy) === String(user._id))
+          setItems(mine)
+        } else {
+          const r = await api.get('/seminars', { params: { ...query, limit: 20, offset: 0 } })
+          setItems(r.data.seminars)
+        }
+      } catch (err) {
+        console.error('Failed to load seminars:', err)
+        setItems([])
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [api, query, tab, userId, user, navigate])
+
+    loadSeminars()
+  }, [api, query, tab, user, navigate])
+
+  const EmptyState = ({ message, action }) => (
+    <div className="text-center py-12">
+      <div className="text-6xl mb-4">🎭</div>
+      <h3 className="text-xl font-semibold text-dusk mb-2">No workshops found</h3>
+      <p className="text-cocoa/80 mb-4">{message}</p>
+      {action}
+    </div>
+  )
+
+  const LoadingSkeleton = () => (
+    <div className="text-center py-8">
+      <div className="text-2xl mb-2">⏳</div>
+      <p className="text-cocoa/80">Loading workshops...</p>
+    </div>
+  )
 
   return (
     <div>
@@ -72,13 +101,33 @@ export default function Browse() {
           </select>
         </div>
       </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        {items.map((s)=> (
-          <a key={s._id} href={`/detail/${s._id}`}><SeminarCard item={s} /></a>
-        ))}
-      </div>
+
+      {loading && items.length === 0 ? (
+        <LoadingSkeleton />
+      ) : items.length === 0 ? (
+        <EmptyState 
+          message={
+            tab === 'liked' ? "You haven't saved any workshops yet. Start exploring!" :
+            tab === 'organized' ? "You haven't created any workshops yet. Share your passion!" :
+            "No workshops match your current filters. Try adjusting your search."
+          }
+          action={
+            tab === 'organized' ? (
+              <a href="/create" className="px-4 py-2 bg-dusk text-white rounded-xl">Create Workshop</a>
+            ) : (
+              <button onClick={() => { params.delete('q'); params.delete('style'); params.delete('level'); setParams(params) }} className="px-4 py-2 bg-warm3 rounded-xl">Clear Filters</button>
+            )
+          }
+        />
+      ) : (
+        <>
+          <div className="grid gap-6 md:grid-cols-3">
+            {items.map((s)=> (
+              <a key={s._id} href={`/detail/${s._id}`}><SeminarCard item={s} /></a>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
-
-

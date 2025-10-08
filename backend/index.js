@@ -16,8 +16,20 @@ dotenv.config();
 
 const app = express();
 
-const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || '*').split(',');
-app.use(cors({ origin: (origin, cb)=> cb(null, ALLOW_ORIGINS.includes('*') || !origin || ALLOW_ORIGINS.includes(origin)), credentials: true }));
+const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
+app.use(cors({ 
+  origin: (origin, cb) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return cb(null, true);
+    // Check if origin is in allowed list
+    if (ALLOW_ORIGINS.includes(origin)) return cb(null, true);
+    // In production, be strict about origins
+    if (process.env.NODE_ENV === 'production') return cb(new Error('Not allowed by CORS'), false);
+    // In development, allow localhost
+    return cb(null, true);
+  }, 
+  credentials: true 
+}));
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());

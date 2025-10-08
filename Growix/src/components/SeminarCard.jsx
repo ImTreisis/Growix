@@ -33,13 +33,15 @@ export default function SeminarCard({ item }){
 
   const saveToggle = async ()=>{
     if(!user){ window.location.href = '/auth'; return }
-    const r = await api.post(`/seminars/${item._id}/save`)
-    setSaved(r.data.saved)
-    // sync saved list in user context for consistency across views
     try {
+      const r = await api.post(`/seminars/${item._id}/save`)
+      setSaved(r.data.saved)
+      // sync saved list in user context for consistency across views
       const me = await api.get('/users/me')
       setUser(me.data.user)
-    } catch (_) {}
+    } catch (err) {
+      console.error('Failed to save seminar:', err)
+    }
   }
 
   return (

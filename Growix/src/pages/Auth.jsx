@@ -1,24 +1,33 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
+import { useToast } from '../components/Toast.jsx'
 
 export default function Auth() {
   const { api, setToken, setUser } = useAuth()
+  const { show } = useToast()
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ emailOrUsername:'', email:'', username:'', password:'', firstName:'', lastName:'' })
   const navigate = useNavigate()
 
   const submit = async (e) => {
     e.preventDefault()
-    let r
-    if (mode === 'login') {
-      r = await api.post('/auth/login', { emailOrUsername: form.emailOrUsername, password: form.password })
-    } else {
-      r = await api.post('/auth/register', { email: form.email, username: form.username, password: form.password, firstName: form.firstName, lastName: form.lastName })
+    try {
+      let r
+      if (mode === 'login') {
+        r = await api.post('/auth/login', { emailOrUsername: form.emailOrUsername, password: form.password })
+        show('Welcome back!')
+      } else {
+        r = await api.post('/auth/register', { email: form.email, username: form.username, password: form.password, firstName: form.firstName, lastName: form.lastName })
+        show('Account created successfully!')
+      }
+      setToken(r.data.token)
+      setUser(r.data.user)
+      navigate('/')
+    } catch (err) {
+      const message = err.response?.data?.message || (mode === 'login' ? 'Invalid credentials' : 'Registration failed')
+      show(message, 'error')
     }
-    setToken(r.data.token)
-    setUser(r.data.user)
-    navigate('/')
   }
 
   return (
