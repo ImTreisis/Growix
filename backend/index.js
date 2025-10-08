@@ -24,7 +24,6 @@ app.use(cors({
     // Check if origin is in allowed list
     if (ALLOW_ORIGINS.includes(origin)) return cb(null, true);
     // In production, be strict about origins
-    if (process.env.NODE_ENV === 'production') return cb(new Error('Not allowed by CORS'), false);
     // In development, allow localhost
     return cb(null, true);
   }, 
