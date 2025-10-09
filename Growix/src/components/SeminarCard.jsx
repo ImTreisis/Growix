@@ -65,6 +65,9 @@ export default function SeminarCard({ item }){
           <span>{item.venue || item.createdBy?.username || 'Studio'}</span>
         </div>
         <h3 className="mt-2 text-xl font-semibold text-dusk">{item.title}</h3>
+        {item.description && (
+          <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
+        )}
         <div className="mt-2 flex items-center gap-3">
           <span className="px-3 py-1 rounded-full bg-warm2 text-cocoa text-sm">{styleLabel}</span>
           <span className="px-3 py-1 rounded-full bg-warm3 text-dusk text-sm">{levelLabel}</span>

@@ -75,20 +75,43 @@ export default function Browse() {
     <div>
       <div className="mb-6 grid md:grid-cols-3 gap-6">
         <div>
-          <p className="text-sm text-cocoa/80 mb-1">Location</p>
-          <select defaultValue={params.get('loc')||''} onChange={(e)=>{e.target.value?params.set('loc', e.target.value):params.delete('loc'); setParams(params)}} className="w-full px-3 py-2 rounded-xl border">
-            <option value="">All Locations</option>
-            <option value="studio">Downtown Dance Studio</option>
-          </select>
+          <p className="text-sm text-cocoa/80 mb-1">Search</p>
+          <input 
+            type="text" 
+            placeholder="Search workshops, locations..." 
+            defaultValue={params.get('q')||''} 
+            onChange={(e)=>{
+              const value = e.target.value.trim()
+              if(value) params.set('q', value)
+              else params.delete('q')
+              setParams(params)
+            }} 
+            className="w-full px-3 py-2 rounded-xl border" 
+          />
         </div>
         <div>
           <p className="text-sm text-cocoa/80 mb-1">Dance Style</p>
           <select defaultValue={params.get('style')||''} onChange={(e)=>{e.target.value?params.set('style', e.target.value):params.delete('style'); setParams(params)}} className="w-full px-3 py-2 rounded-xl border">
             <option value="">All Styles</option>
+            <option value="hip-hop">Hip-Hop</option>
+            <option value="breaking">Breaking</option>
+            <option value="popping">Popping</option>
+            <option value="locking">Locking</option>
+            <option value="house">House</option>
+            <option value="waacking">Waacking</option>
+            <option value="vogue">Vogue</option>
+            <option value="dancehall">Dancehall</option>
+            <option value="afro">Afro</option>
+            <option value="commercial">Commercial</option>
+            <option value="twerk">Twerk</option>
             <option value="contemporary">Contemporary</option>
+            <option value="jazz">Jazz</option>
+            <option value="modern">Modern</option>
+            <option value="ballet">Ballet</option>
             <option value="salsa">Salsa</option>
-            <option value="tango">Tango</option>
             <option value="bachata">Bachata</option>
+            <option value="high-heels">High Heels</option>
+            <option value="freestyle">Freestyle</option>
           </select>
         </div>
         <div>

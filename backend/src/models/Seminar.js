@@ -5,7 +5,7 @@ const seminarSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
     date: { type: Date, required: true },
-    style: { type: String, enum: ['salsa', 'tango', 'bachata', 'kizomba', 'other'], required: true },
+    style: { type: String, required: true },
     level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], required: true },
     venue: { type: String, default: '' },
     imageUrl: { type: String, default: '' },

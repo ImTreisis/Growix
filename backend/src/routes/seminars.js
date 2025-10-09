@@ -73,7 +73,12 @@ router.get('/', async (req, res) => {
   }
   if (style) filter.style = style;
   if (level) filter.level = level;
-  if (q) filter.title = { $regex: q, $options: 'i' };
+  if (q) {
+    filter.$or = [
+      { title: { $regex: q, $options: 'i' } },
+      { venue: { $regex: q, $options: 'i' } }
+    ];
+  }
   const seminars = await Seminar.find(filter).sort({ date: 1 }).populate('createdBy', 'username photoUrl').limit(parseInt(limit)).skip(parseInt(offset));
   const total = await Seminar.countDocuments(filter);
   res.json({ seminars, total, hasMore: seminars.length === parseInt(limit) });
