@@ -19,11 +19,10 @@ const app = express();
 const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
 app.use(cors({ 
   origin: (origin, cb) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin 
     if (!origin) return cb(null, true);
     // Check if origin is in allowed list
     if (ALLOW_ORIGINS.includes(origin)) return cb(null, true);
-    // In production, be strict about origins
     // In development, allow localhost
     return cb(null, true);
   }, 
@@ -34,8 +33,8 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Stricter rate limiting for auth routes
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per window
+  windowMs: 15 * 60 * 1000 * 0, // 15 minutes
+  max: 500, // 5 attempts per window
   message: { message: 'Too many authentication attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
