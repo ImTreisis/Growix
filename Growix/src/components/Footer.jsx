@@ -1,14 +1,85 @@
-import Logo from './Logo.jsx'
+import { NavLink } from 'react-router-dom'
+import { useAuth } from '../state/AuthContext.jsx'
 
 export default function Footer() {
+  const { user } = useAuth()
+  
   return (
-    <footer className="mt-12 border-t border-warm3/40">
-      <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Logo size={28} withText={true} />
-          <span className="text-cocoa text-sm">Every step is progress</span>
+    <footer className="mt-12 border-t border-warm3/40 bg-warm1/30">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Main footer content */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
+          {/* Footer Logo - Top Left */}
+          <div className="flex items-center gap-2">
+            <img src="/footer-logo.png" alt="Growix footer logo" width={250} height={250} className="rounded-md" />
+          </div>
+
+          {/* Navigation Menu & Contact - Top Right */}
+          <div className="flex flex-col md:flex-row items-start md:items-end gap-8">
+            {/* Navigation Menu */}
+            <div className="flex flex-col items-start">
+              <h3 className="text-dusk font-semibold mb-4 font-poppins">Menu</h3>
+              <nav className="flex flex-col gap-2 text-sm">
+                <NavLink to="/workshops" className="text-cocoa hover:text-dusk transition-colors">Workshops</NavLink>
+                <NavLink to="/create" className="text-cocoa hover:text-dusk transition-colors">Create</NavLink>
+                {user ? (
+                  <>
+                    <NavLink to="/profile" className="text-cocoa hover:text-dusk transition-colors">Profile</NavLink>
+                    <NavLink to="/about" className="text-cocoa hover:text-dusk transition-colors">About Us</NavLink>
+                  </>
+                ) : (
+                  <>
+                    <NavLink to="/about" className="text-cocoa hover:text-dusk transition-colors">About Us</NavLink>
+                    <NavLink to="/auth" className="text-cocoa hover:text-dusk transition-colors">Sign In</NavLink>
+                  </>
+                )}
+              </nav>
+            </div>
+
+            {/* Contact Info */}
+            <div className="flex flex-col items-start">
+              <h3 className="text-dusk font-semibold mb-4 font-poppins">Contact</h3>
+              <a 
+                href="mailto:info@growix.lt" 
+                className="text-cocoa hover:text-dusk transition-colors text-sm"
+              >
+                info@growix.lt
+              </a>
+            </div>
+          </div>
         </div>
-        <p className="text-cocoa text-sm">© {new Date().getFullYear()} Growix</p>
+
+        {/* Social Media & Copyright - Bottom */}
+        <div className="border-t border-warm3/40 pt-8">
+          <div className="flex flex-col items-center gap-6">
+            {/* Social Media Icons */}
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://www.instagram.com/growix.lt/?utm_source=ig_web_button_share_sheet" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 rounded-lg hover:bg-warm2/60 transition-colors"
+                aria-label="Follow us on Instagram"
+              >
+                <img src="/instagram-logo.png" alt="Instagram" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
+              </a>
+              <a 
+                href="https://tiktok.com/@imtreisis0" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 rounded-lg hover:bg-warm2/60 transition-colors"
+                aria-label="Follow us on TikTok"
+              >
+                <img src="/tiktok-logo.png" alt="TikTok" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
+              </a>
+            </div>
+
+            {/* Copyright */}
+            <p className="text-cocoa text-sm text-center">
+              Copyright © 2025 Growix | Powered By Growix
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   )
