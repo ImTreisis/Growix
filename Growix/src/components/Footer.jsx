@@ -15,7 +15,7 @@ export default function Footer() {
           </div>
 
           {/* Navigation Menu & Contact - Top Right */}
-          <div className="flex flex-col md:flex-row items-start md:items-end gap-8">
+          <div className="flex flex-col md:flex-row items-start gap-8">
             {/* Navigation Menu */}
             <div className="flex flex-col items-start">
               <h3 className="text-dusk font-semibold mb-4 font-poppins">Menu</h3>
