@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['Inter', 'sans-serif'],
+        'poppins': ['Poppins', 'sans-serif'],
+        'horizon': ['Orbitron', 'monospace'],
+      },
       colors: {
         warm1: '#f8f9fa',
         warm2: '#e9ecef',

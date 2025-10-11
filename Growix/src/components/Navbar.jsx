@@ -12,8 +12,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Logo />
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-dusk">
-          <div className="relative group pt-2">
+        <nav className="hidden md:flex items-center gap-6 text-dusk font-inter">
+          <div className="relative group">
             <NavLink to="/workshops" className={({isActive})=>isActive? 'underline' : ''}>Workshops</NavLink>
             <div className="pointer-events-none invisible opacity-0 group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity absolute left-0 top-full bg-white rounded-xl shadow-cozy border p-2 min-w-[180px]">
               <NavLink to="/workshops" className="block px-3 py-2 rounded-lg hover:bg-warm2/60">All Workshops</NavLink>
@@ -44,7 +44,7 @@ export default function Navbar() {
       {/* Mobile menu panel */}
       {menuOpen && (
         <div className="md:hidden border-t bg-white/95 backdrop-blur shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-dusk">
+          <div className="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-dusk font-inter">
             <button className="text-left px-3 py-2 rounded-lg bg-warm2/50" onClick={()=>setWorkshopsOpen(v=>!v)}>
               Workshops
             </button>
