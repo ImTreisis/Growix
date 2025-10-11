@@ -31,7 +31,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="max-w-md mx-auto cozy-card p-6 grid gap-3">
+    <div className="max-w-md mx-auto cozy-card p-6 grid gap-3 shadow-subtle">
       <div className="flex gap-3">
         <button onClick={()=>setMode('login')} className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-warm3/70':''}`}>Login</button>
         <button onClick={()=>setMode('register')} className={`px-3 py-2 rounded-xl ${mode==='register'?'bg-warm3/70':''}`}>Register</button>

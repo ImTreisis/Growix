@@ -7,14 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        warm1: '#FDEAD7',
-        warm2: '#F9DCC4',
-        warm3: '#F9C6AA',
-        cocoa: '#7A564E',
-        dusk: '#3B2F2F',
+        warm1: '#f8f9fa',
+        warm2: '#e9ecef',
+        warm3: '#dee2e6',
+        cocoa: '#6c757d',
+        dusk: '#212529',
       },
       boxShadow: {
-        cozy: '0 10px 30px -10px rgba(122, 86, 78, 0.3)',
+        cozy: '0 4px 20px rgba(0, 0, 0, 0.12)',
+        subtle: '0 2px 12px rgba(0, 0, 0, 0.08)',
       },
       borderRadius: {
         xl: '1.25rem',

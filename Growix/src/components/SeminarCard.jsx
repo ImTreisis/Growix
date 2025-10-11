@@ -54,7 +54,7 @@ export default function SeminarCard({ item }){
           className="w-full h-full object-cover opacity-90"
         />
         {user && (
-          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'bg-red-600 text-white' : 'bg-white text-cocoa'} shadow-cozy`} aria-label="Save">
+          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'bg-red-600 text-white' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} aria-label="Save">
             <IconHeart />
           </button>
         )}

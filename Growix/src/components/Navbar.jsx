@@ -8,7 +8,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [workshopsOpen, setWorkshopsOpen] = useState(false)
   return (
-    <header className="bg-warm2/60 backdrop-blur sticky top-0 z-40">
+    <header className="bg-white/95 backdrop-blur sticky top-0 z-40 border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Logo />
         {/* Desktop nav */}
@@ -43,7 +43,7 @@ export default function Navbar() {
       </div>
       {/* Mobile menu panel */}
       {menuOpen && (
-        <div className="md:hidden border-t bg-white/90 backdrop-blur">
+        <div className="md:hidden border-t bg-white/95 backdrop-blur shadow-sm">
           <div className="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-dusk">
             <button className="text-left px-3 py-2 rounded-lg bg-warm2/50" onClick={()=>setWorkshopsOpen(v=>!v)}>
               Workshops

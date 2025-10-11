@@ -51,7 +51,7 @@ export default function Edit(){
 
   if(loading) return null
   return (
-    <form onSubmit={submit} className="cozy-card p-6 grid gap-3 max-w-xl">
+    <form onSubmit={submit} className="cozy-card p-6 grid gap-3 max-w-xl shadow-subtle">
       <h2 className="text-xl font-semibold text-dusk">Edit workshop</h2>
       <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="px-3 py-2 rounded-xl border" />
       <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="px-3 py-2 rounded-xl border" />
