@@ -11,11 +11,7 @@ function IconCalendar(props){return (
     <path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3V2Zm14 18V9H3v11h18Z"/>
   </svg>
 )}
-function IconUser(props){return (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
-    <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14Z"/>
-  </svg>
-)}
+
 
 function IconHeart(props){return (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" {...props}>
@@ -60,7 +56,7 @@ export default function SeminarCard({ item }){
           className="w-full h-full object-cover opacity-90"
         />
         {user && (
-          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'text-white' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} style={saved ? {backgroundColor: '#df1f66'} : {}} aria-label="Save">
+          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'text-white bg-pink-300 bg-opacity-75' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} aria-label="Save">
             <IconHeart />
           </button>
         )}
@@ -75,13 +71,12 @@ export default function SeminarCard({ item }){
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
         <div className="mt-2 flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-white text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
-          <span className="px-3 py-1 rounded-full text-white text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
+          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
+          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
         </div>
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
           <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
           <div className="flex items-center gap-2">
-            <IconUser className="opacity-70" />
             <div className="flex items-center gap-2">
               <img 
                 src={item.createdBy?.photoUrl || 'https://placehold.co/24x24?text=U'} 

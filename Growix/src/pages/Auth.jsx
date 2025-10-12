@@ -118,14 +118,14 @@ export default function Auth() {
         <button 
           type="button"
           onClick={()=>{setMode('login'); clearErrors()}} 
-          className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-red-300 bg-opacity-75 font-poppins':''}`}
+          className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-red-300 bg-opacity-75 font-poppins font-bold transition-all duration-200 hover:scale-105':''}`}
         >
           Login
         </button>
         <button 
           type="button"
           onClick={()=>{setMode('register'); clearErrors()}} 
-          className={`px-3 py-2 rounded-xl ${mode==='register'?'bg-red-300 bg-opacity-75 font-poppins':''}`}
+          className={`px-3 py-2 rounded-xl ${mode==='register'?'bg-red-300 bg-opacity-75 font-poppins font-poppins font-bold transition-all duration-200 hover:scale-105':''}`}
         >
           Register
         </button>

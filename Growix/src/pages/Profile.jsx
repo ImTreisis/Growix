@@ -59,7 +59,7 @@ export default function Profile() {
         />
         <button 
           onClick={()=>fileRef.current?.click()} 
-          className="px-3 py-2 font-inter rounded-xl hover:bg-red-300 transition-colors bg-orange-300 bg-opacity-75"
+          className="px-3 py-2 font-inter rounded-xl transition-all duration-200 hover:scale-105 font-poppins font-bold transition-colors bg-orange-300 bg-opacity-75"
         >
           Upload Photo
         </button>
@@ -67,7 +67,7 @@ export default function Profile() {
         
         {/* Username Display */}
         <div className="text-center">
-          <p className="text-cocoa font-medium">@{user.username}</p>
+          <p className="text-cocoa font-poppins font-bold">@{user.username}</p>
         </div>
       </aside>
 
