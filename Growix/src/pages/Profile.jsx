@@ -133,7 +133,7 @@ export default function Profile() {
               <div className="flex justify-end">
                 <button 
                   onClick={() => setIsEditing(true)}
-                  className="px-10 py-2 bg-dusk text-black font-poppins font-bold rounded-xl hover:bg-red-300 transition-colors bg-orange-300 bg-opacity-75"
+                  className="px-10 py-2 bg-dusk text-black transition-all duration-200 hover:scale-105 font-poppins font-bold rounded-xl  transition-colors bg-orange-300 bg-opacity-75"
                 >
                   Edit
                 </button>

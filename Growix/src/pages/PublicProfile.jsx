@@ -53,7 +53,7 @@ export default function PublicProfile() {
         
         {/* Username Display */}
         <div className="text-center">
-          <p className="text-cocoa font-medium">@{user.username}</p>
+          <p className="text-cocoa font-poppins font-bold">@{user.username}</p>
         </div>
       </aside>
 
