@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 
 export default function Profile() {
@@ -13,6 +13,21 @@ export default function Profile() {
     tiktok: user?.tiktok||'',
     linkedin: user?.linkedin||''
   })
+
+  // Update form when user data changes
+  useEffect(() => {
+    if (user) {
+      setForm({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        bio: user.bio || '',
+        username: user.username || '',
+        instagram: user.instagram || '',
+        tiktok: user.tiktok || '',
+        linkedin: user.linkedin || ''
+      })
+    }
+  }, [user])
   const fileRef = useRef(null)
 
   const save = async (e) => {
@@ -44,7 +59,7 @@ export default function Profile() {
         />
         <button 
           onClick={()=>fileRef.current?.click()} 
-          className="px-3 py-2 font-inter rounded-xl bg-warm3/70 hover:bg-red-300 transition-colors bg-orange-300 bg-opacity-75"
+          className="px-3 py-2 font-inter rounded-xl hover:bg-red-300 transition-colors bg-orange-300 bg-opacity-75"
         >
           Upload Photo
         </button>
