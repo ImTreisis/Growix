@@ -61,59 +61,61 @@ export default function Profile() {
         {!isEditing ? (
           /* Display Mode */
           <div className="space-y-6">
-            <div>
+            <div className="space-y-6">
+              {/* Name - Always Visible */}
               <h1 className="text-3xl font-bold text-dusk font-poppins">
                 {user.firstName} {user.lastName}
               </h1>
               
-              {/* Bio Section with Black Outline Box */}
+              {/* Bio Section with Black Outline Box - Separate Box */}
               {user.bio && (
-                <div className="mt-4 p-4 border-2 border-black rounded-xl">
+                <div className="p-4 border-2 border-black rounded-xl">
+                  <h3 className="text-lg font-semibold text-dusk font-poppins mb-2">Bio</h3>
                   <p className="text-cocoa text-lg leading-relaxed">{user.bio}</p>
                 </div>
               )}
 
-              {/* Social Media Links with Black Outline Box */}
+              {/* Social Media Links - Centered Below Bio */}
               {(user.instagram || user.tiktok || user.linkedin) && (
-                <div className="mt-6 p-4 border-2 border-black rounded-xl">
-                  <h3 className="text-lg font-semibold text-dusk font-poppins mb-3">Social Media</h3>
-                  <div className="space-y-2">
-                    {user.instagram && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-cocoa font-medium">Instagram:</span>
-                        <a href={user.instagram.startsWith('http') ? user.instagram : `https://instagram.com/${user.instagram}`} 
-                           target="_blank" rel="noopener noreferrer"
-                           className="text-[#df1f66] hover:text-dusk transition-colors">
-                          {user.instagram}
-                        </a>
-                      </div>
-                    )}
-                    {user.tiktok && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-cocoa font-medium">TikTok:</span>
-                        <a href={user.tiktok.startsWith('http') ? user.tiktok : `https://tiktok.com/@${user.tiktok}`} 
-                           target="_blank" rel="noopener noreferrer"
-                           className="text-[#df1f66] hover:text-dusk transition-colors">
-                          {user.tiktok}
-                        </a>
-                      </div>
-                    )}
-                    {user.linkedin && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-cocoa font-medium">LinkedIn:</span>
-                        <a href={user.linkedin.startsWith('http') ? user.linkedin : `https://linkedin.com/in/${user.linkedin}`} 
-                           target="_blank" rel="noopener noreferrer"
-                           className="text-[#df1f66] hover:text-dusk transition-colors">
-                          {user.linkedin}
-                        </a>
-                      </div>
-                    )}
-                  </div>
+                <div className="flex justify-center items-center gap-3">
+                  {user.instagram && (
+                    <a 
+                      href={user.instagram.startsWith('http') ? user.instagram : `https://instagram.com/${user.instagram}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-1 rounded-lg hover:bg-warm2/60 transition-colors"
+                      aria-label="Follow on Instagram"
+                    >
+                      <img src="/instagram-logo.png" alt="Instagram" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
+                    </a>
+                  )}
+                  {user.tiktok && (
+                    <a 
+                      href={user.tiktok.startsWith('http') ? user.tiktok : `https://tiktok.com/@${user.tiktok}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-1 rounded-lg hover:bg-warm2/60 transition-colors"
+                      aria-label="Follow on TikTok"
+                    >
+                      <img src="/tiktok-logo.png" alt="TikTok" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
+                    </a>
+                  )}
+                  {user.linkedin && (
+                    <a 
+                      href={user.linkedin.startsWith('http') ? user.linkedin : `https://linkedin.com/in/${user.linkedin}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-1 rounded-lg hover:bg-warm2/60 transition-colors"
+                      aria-label="Connect on LinkedIn"
+                    >
+                      <img src="/linkedin-logo.png" alt="LinkedIn" width={46} height={46} className="opacity-80 hover:opacity-100 transition-opacity" />
+                    </a>
+                  )}
                 </div>
               )}
 
               {/* Edit Button - Bottom Right */}
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end">
                 <button 
                   onClick={() => setIsEditing(true)}
                   className="px-10 py-2 bg-dusk text-black font-poppins font-bold rounded-xl hover:bg-red-300 transition-colors bg-orange-300 bg-opacity-75"
