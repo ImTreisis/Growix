@@ -22,9 +22,29 @@ router.get('/me', requireAuth, async (req, res) => {
   res.json({ user });
 });
 
+router.get('/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).select('-passwordHash -savedSeminars');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user' });
+  }
+});
+
 router.put('/me', requireAuth, async (req, res) => {
-  const { firstName = '', lastName = '', bio = '', username } = req.body;
-  const update = { firstName, lastName, bio };
+  const { 
+    firstName = '', 
+    lastName = '', 
+    bio = '', 
+    username,
+    instagram = '',
+    tiktok = '',
+    linkedin = ''
+  } = req.body;
+  const update = { firstName, lastName, bio, instagram, tiktok, linkedin };
   if (username) update.username = username;
   const user = await User.findByIdAndUpdate(req.userId, update, { new: true }).select('-passwordHash');
   res.json({ user });

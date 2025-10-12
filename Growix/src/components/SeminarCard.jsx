@@ -80,7 +80,26 @@ export default function SeminarCard({ item }){
         </div>
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
           <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
-          <div className="flex items-center gap-2"><IconUser className="opacity-70" /><span>{item.createdBy?.username || 'Organizer'}</span></div>
+          <div className="flex items-center gap-2">
+            <IconUser className="opacity-70" />
+            <div className="flex items-center gap-2">
+              <img 
+                src={item.createdBy?.photoUrl || 'https://placehold.co/24x24?text=U'} 
+                alt={item.createdBy?.firstName || 'Organizer'} 
+                className="w-6 h-6 rounded-full object-cover"
+              />
+              <a 
+                href={`/profile/${item.createdBy?._id}`} 
+                className="text-cocoa hover:text-[#df1f66] transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.createdBy?.firstName && item.createdBy?.lastName 
+                  ? `${item.createdBy.firstName} ${item.createdBy.lastName}`
+                  : item.createdBy?.username || 'Organizer'
+                }
+              </a>
+            </div>
+          </div>
         </div>
         <div className="mt-5 flex items-center gap-3">
           <a href={`/detail/${item._id}`} className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</a>

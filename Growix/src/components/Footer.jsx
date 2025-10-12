@@ -20,17 +20,47 @@ export default function Footer() {
             <div className="flex flex-col items-start">
               <h3 className="text-dusk font-semibold mb-4 font-poppins">Menu</h3>
               <nav className="flex flex-col gap-2 text-sm">
-                <NavLink to="/workshops" className="text-cocoa hover:text-dusk transition-colors">Workshops</NavLink>
-                <NavLink to="/create" className="text-cocoa hover:text-dusk transition-colors">Create</NavLink>
+                <NavLink 
+                  to="/workshops" 
+                  className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                >
+                  Workshops
+                </NavLink>
+                <NavLink 
+                  to="/create" 
+                  className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                >
+                  Create
+                </NavLink>
                 {user ? (
                   <>
-                    <NavLink to="/profile" className="text-cocoa hover:text-dusk transition-colors">Profile</NavLink>
-                    <NavLink to="/about" className="text-cocoa hover:text-dusk transition-colors">About Us</NavLink>
+                    <NavLink 
+                      to="/profile" 
+                      className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                    >
+                      Profile
+                    </NavLink>
+                    <NavLink 
+                      to="/about" 
+                      className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                    >
+                      About Us
+                    </NavLink>
                   </>
                 ) : (
                   <>
-                    <NavLink to="/about" className="text-cocoa hover:text-dusk transition-colors">About Us</NavLink>
-                    <NavLink to="/auth" className="text-cocoa hover:text-dusk transition-colors">Sign In</NavLink>
+                    <NavLink 
+                      to="/about" 
+                      className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                    >
+                      About Us
+                    </NavLink>
+                    <NavLink 
+                      to="/auth" 
+                      className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : 'text-cocoa hover:text-dusk'}`}
+                    >
+                      Sign In
+                    </NavLink>
                   </>
                 )}
               </nav>

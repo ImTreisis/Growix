@@ -118,14 +118,14 @@ export default function Auth() {
         <button 
           type="button"
           onClick={()=>{setMode('login'); clearErrors()}} 
-          className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-warm3/70':''}`}
+          className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-red-300 bg-opacity-75 font-poppins':''}`}
         >
           Login
         </button>
         <button 
           type="button"
           onClick={()=>{setMode('register'); clearErrors()}} 
-          className={`px-3 py-2 rounded-xl ${mode==='register'?'bg-warm3/70':''}`}
+          className={`px-3 py-2 rounded-xl ${mode==='register'?'bg-red-300 bg-opacity-75 font-poppins':''}`}
         >
           Register
         </button>
@@ -190,7 +190,7 @@ export default function Auth() {
             <div>
               <input 
                 required 
-                placeholder="Username (3-20 characters)" 
+                placeholder="Username (5-20 characters)" 
                 value={form.username} 
                 onChange={(e)=>setForm({...form, username:e.target.value})} 
                 className={`px-3 py-2 rounded-xl border w-full ${errors.username ? 'border-red-500' : ''}`}

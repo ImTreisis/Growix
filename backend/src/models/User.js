@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, default: '' },
     bio: { type: String, default: '' },
     photoUrl: { type: String, default: '' },
+    instagram: { type: String, default: '' },
+    tiktok: { type: String, default: '' },
+    linkedin: { type: String, default: '' },
     savedSeminars: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Seminar' }],
   },
   { timestamps: true }

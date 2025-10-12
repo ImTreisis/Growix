@@ -8,6 +8,7 @@ import Browse from './pages/Browse.jsx'
 import Organize from './pages/Organize.jsx'
 import About from './pages/About.jsx'
 import Profile from './pages/Profile.jsx'
+import PublicProfile from './pages/PublicProfile.jsx'
 import Saved from './pages/Saved.jsx'
 import Auth from './pages/Auth.jsx'
 import Detail from './pages/Detail.jsx'
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="/detail/:id/edit" element={<PrivateRoute><Edit /></PrivateRoute>} />
               <Route path="/create" element={<PrivateRoute><Organize /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+              <Route path="/profile/:userId" element={<PublicProfile />} />
               <Route path="/about" element={<About />} />
               <Route path="/auth" element={<Auth />} />
             </Routes>
