@@ -54,7 +54,7 @@ export default function SeminarCard({ item }){
           className="w-full h-full object-cover opacity-90"
         />
         {user && (
-          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'bg-red-600 text-white' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} aria-label="Save">
+          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'text-white' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} style={saved ? {backgroundColor: '#df1f66'} : {}} aria-label="Save">
             <IconHeart />
           </button>
         )}
@@ -69,8 +69,8 @@ export default function SeminarCard({ item }){
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
         <div className="mt-2 flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full bg-warm2 text-cocoa text-sm">{styleLabel}</span>
-          <span className="px-3 py-1 rounded-full bg-warm3 text-dusk text-sm">{levelLabel}</span>
+          <span className="px-3 py-1 rounded-full text-white text-sm" style={{backgroundColor: '#f9aa2c'}}>{styleLabel}</span>
+          <span className="px-3 py-1 rounded-full text-white text-sm" style={{backgroundColor: '#ff8c00'}}>{levelLabel}</span>
         </div>
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
           <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
