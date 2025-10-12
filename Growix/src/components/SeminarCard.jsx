@@ -27,7 +27,13 @@ export default function SeminarCard({ item }){
   const { api, user, setUser } = useAuth()
   const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
 
-  const dateStr = new Date(item.date).toLocaleString()
+  const dateStr = new Date(item.date).toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  })
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
@@ -69,8 +75,8 @@ export default function SeminarCard({ item }){
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
         <div className="mt-2 flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-white text-sm" style={{backgroundColor: '#f9aa2c'}}>{styleLabel}</span>
-          <span className="px-3 py-1 rounded-full text-white text-sm" style={{backgroundColor: '#ff8c00'}}>{levelLabel}</span>
+          <span className="px-3 py-1 rounded-full text-white text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
+          <span className="px-3 py-1 rounded-full text-white text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
         </div>
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
           <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
