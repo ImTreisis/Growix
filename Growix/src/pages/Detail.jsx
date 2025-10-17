@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
@@ -28,13 +28,42 @@ export default function Detail(){
   const [savedCount, setSavedCount] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
 
-  useEffect(()=>{ 
-    api.get(`/seminars/${id}`).then(r=>{ 
-      setItem(r.data.seminar); 
-      setSavedCount(r.data.savedCount||0);
-      setIsSaved(r.data.seminar?.savedBy?.includes(user?._id) || false);
-    }) 
-  }, [api, id, user?._id])
+  const fetchSeminar = useCallback(async () => {
+    try {
+      const response = await api.get(`/seminars/${id}`);
+      const seminar = response.data.seminar;
+      setItem(seminar);
+      setSavedCount(response.data.savedCount || 0);
+      setIsSaved(seminar?.savedBy?.includes(user?._id) || false);
+    } catch (error) {
+      console.error('Error fetching seminar:', error);
+    }
+  }, [api, id, user?._id]);
+
+  useEffect(() => {
+    fetchSeminar();
+  }, [fetchSeminar]);
+
+  // Refetch data when page becomes visible again (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchSeminar();
+      }
+    };
+
+    const handleFocus = () => {
+      fetchSeminar();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchSeminar]);
 
   const handleSave = async () => {
     if (!user) {
@@ -45,16 +74,14 @@ export default function Detail(){
     try {
       if (isSaved) {
         await api.delete(`/seminars/${id}/save`);
-        setIsSaved(false);
-        setSavedCount(prev => Math.max(0, prev - 1));
         show('Removed from saved workshops');
       } else {
         await api.post(`/seminars/${id}/save`);
-        setIsSaved(true);
-        setSavedCount(prev => prev + 1);
         show('Added to saved workshops');
       }
-    } catch (error) {
+      // Refetch the seminar data to get the latest state
+      await fetchSeminar();
+    } catch (err) {
       show('Failed to update saved workshops', 'error');
     }
   }
