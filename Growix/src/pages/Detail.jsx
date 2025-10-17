@@ -26,8 +26,38 @@ export default function Detail(){
   const navigate = useNavigate()
   const [item, setItem] = useState(null)
   const [savedCount, setSavedCount] = useState(0)
+  const [isSaved, setIsSaved] = useState(false)
 
-  useEffect(()=>{ api.get(`/seminars/${id}`).then(r=>{ setItem(r.data.seminar); setSavedCount(r.data.savedCount||0)}) }, [api, id])
+  useEffect(()=>{ 
+    api.get(`/seminars/${id}`).then(r=>{ 
+      setItem(r.data.seminar); 
+      setSavedCount(r.data.savedCount||0);
+      setIsSaved(r.data.seminar?.savedBy?.includes(user?._id) || false);
+    }) 
+  }, [api, id, user?._id])
+
+  const handleSave = async () => {
+    if (!user) {
+      show('Please log in to save workshops', 'error');
+      return;
+    }
+    
+    try {
+      if (isSaved) {
+        await api.delete(`/seminars/${id}/save`);
+        setIsSaved(false);
+        setSavedCount(prev => Math.max(0, prev - 1));
+        show('Removed from saved workshops');
+      } else {
+        await api.post(`/seminars/${id}/save`);
+        setIsSaved(true);
+        setSavedCount(prev => prev + 1);
+        show('Added to saved workshops');
+      }
+    } catch (error) {
+      show('Failed to update saved workshops', 'error');
+    }
+  }
 
   if(!item) return null
 
@@ -53,10 +83,16 @@ export default function Detail(){
         <div className="flex items-center gap-3 mb-4">
           <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{styleLabel}</span>
           <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
-          <div className="flex items-center gap-1 px-3 py-1 rounded-full text-[grey] bg-pink-300 bg-opacity-100">
-            <IconHeart />
-            <span className="text-sm font-bold">{savedCount}</span>
-          </div>
+           <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-white ${isSaved ? 'bg-pink-500' : 'bg-pink-300'} bg-opacity-100`}>
+             <button 
+               onClick={handleSave}
+               className="flex items-center gap-1 hover:scale-105 transition-transform cursor-pointer"
+               title={isSaved ? "Remove from saved" : "Save workshop"}
+             >
+               <IconHeart />
+               <span className="text-sm font-bold">{savedCount}</span>
+             </button>
+           </div>
         </div>
 
         {/* Location with pin icon */}
@@ -73,7 +109,7 @@ export default function Detail(){
 
         {/* Description in bold */}
         {item.description && (
-          <p className="text-cocoa font-bold text-base">{item.description}</p>
+          <p className="text-black font-bold text-base">{item.description}</p>
         )}
 
         {/* Action buttons */}
