@@ -3,6 +3,22 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+function IconPin(props){return (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/>
+  </svg>
+)}
+function IconCalendar(props){return (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3V2Zm14 18V9H3v11h18Z"/>
+  </svg>
+)}
+function IconHeart(props){return (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="white" aria-hidden="true" {...props}>
+    <path d="M12 21s-6.716-4.716-9.172-7.172A5.657 5.657 0 1 1 11.314 5.34L12 6.025l.686-.686a5.657 5.657 0 1 1 8 8C18.716 16.284 12 21 12 21Z"/>
+  </svg>
+)}
+
 export default function Detail(){
   const { id } = useParams()
   const { api, user } = useAuth()
@@ -14,20 +30,54 @@ export default function Detail(){
   useEffect(()=>{ api.get(`/seminars/${id}`).then(r=>{ setItem(r.data.seminar); setSavedCount(r.data.savedCount||0)}) }, [api, id])
 
   if(!item) return null
+
+  const dateStr = new Date(item.date).toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  })
+  const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
+  const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
+
   return (
     <div className="grid md:grid-cols-2 gap-6">
       <div className="cozy-card overflow-hidden">
         <img src={item.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'} alt={item.title} className="w-full h-[360px] object-cover"/>
       </div>
       <div className="cozy-card p-6">
-        <h1 className="text-2xl font-semibold text-dusk">{item.title}</h1>
-        <p className="text-cocoa/80">{new Date(item.date).toLocaleString()} • {item.style} • {item.level}</p>
-        <p className="mt-3 text-cocoa">{item.description}</p>
-        {item.link && (
-          <p className="mt-3"><a href={item.link} target="_blank" rel="noreferrer" className="text-dusk underline">Open link</a></p>
+        <h1 className="text-2xl font-semibold text-dusk mb-4">{item.title}</h1>
+        
+        {/* Style, Level, and Saved count in a line */}
+        <div className="flex items-center gap-3 mb-4">
+          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{styleLabel}</span>
+          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
+          <div className="flex items-center gap-1 px-3 py-1 rounded-full text-[grey] bg-pink-300 bg-opacity-100">
+            <IconHeart />
+            <span className="text-sm font-bold">{savedCount}</span>
+          </div>
+        </div>
+
+        {/* Location with pin icon */}
+        <div className="flex items-center gap-2 text-cocoa/80 text-sm mb-3">
+          <IconPin className="opacity-70" />
+          <span>{item.venue || 'Studio'}</span>
+        </div>
+
+        {/* Date and time with calendar icon */}
+        <div className="flex items-center gap-2 text-cocoa/80 text-sm mb-4">
+          <IconCalendar className="opacity-70" />
+          <span>{dateStr}</span>
+        </div>
+
+        {/* Description in bold */}
+        {item.description && (
+          <p className="text-cocoa font-bold text-base">{item.description}</p>
         )}
-        <div className="mt-5 flex items-center gap-3">
-          <span className="px-4 py-2 rounded-xl bg-warm2 text-dusk">Saved ({savedCount})</span>
+
+        {/* Action buttons */}
+        <div className="mt-6 flex items-center gap-3">
           {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
             <>
               <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>
