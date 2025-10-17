@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
@@ -21,67 +21,53 @@ function IconHeart(props){return (
 
 export default function Detail(){
   const { id } = useParams()
-  const { api, user } = useAuth()
+  const { api, user, setUser } = useAuth()
   const { show } = useToast()
   const navigate = useNavigate()
   const [item, setItem] = useState(null)
   const [savedCount, setSavedCount] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
 
-  const fetchSeminar = useCallback(async () => {
-    try {
-      const response = await api.get(`/seminars/${id}`);
-      const seminar = response.data.seminar;
-      setItem(seminar);
-      setSavedCount(response.data.savedCount || 0);
-      setIsSaved(seminar?.savedBy?.includes(user?._id) || false);
-    } catch (error) {
-      console.error('Error fetching seminar:', error);
-    }
-  }, [api, id, user?._id]);
-
   useEffect(() => {
-    fetchSeminar();
-  }, [fetchSeminar]);
-
-  // Refetch data when page becomes visible again (user navigates back)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchSeminar();
+    const fetchSeminar = async () => {
+      try {
+        const response = await api.get(`/seminars/${id}`);
+        const seminar = response.data.seminar;
+        setItem(seminar);
+        setSavedCount(response.data.savedCount || 0);
+        setIsSaved(seminar?.savedBy?.includes(user?._id) || false);
+      } catch (error) {
+        console.error('Error fetching seminar:', error);
       }
     };
 
-    const handleFocus = () => {
-      fetchSeminar();
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [fetchSeminar]);
+    fetchSeminar();
+  }, [api, id, user?._id]);
 
   const handleSave = async () => {
     if (!user) {
-      show('Please log in to save workshops', 'error');
+      window.location.href = '/auth';
       return;
     }
     
     try {
-      if (isSaved) {
-        await api.delete(`/seminars/${id}/save`);
-        show('Removed from saved workshops');
-      } else {
-        await api.post(`/seminars/${id}/save`);
+      const response = await api.post(`/seminars/${id}/save`);
+      setIsSaved(response.data.saved);
+      
+      // Update saved count based on the response
+      if (response.data.saved) {
+        setSavedCount(prev => prev + 1);
         show('Added to saved workshops');
+      } else {
+        setSavedCount(prev => Math.max(0, prev - 1));
+        show('Removed from saved workshops');
       }
-      // Refetch the seminar data to get the latest state
-      await fetchSeminar();
+      
+      // Sync saved list in user context for consistency across views
+      const me = await api.get('/users/me');
+      setUser(me.data.user);
     } catch (err) {
+      console.error('Failed to save seminar:', err);
       show('Failed to update saved workshops', 'error');
     }
   }
