@@ -10,7 +10,6 @@ export default function Edit(){
   const navigate = useNavigate()
   const [form, setForm] = useState({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', imageUrl:'' })
   const [loading, setLoading] = useState(true)
-  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(()=>{
     api.get(`/seminars/${id}`).then(r=>{
@@ -36,11 +35,6 @@ export default function Edit(){
 
   const submit = async (e)=>{
     e.preventDefault()
-    
-    // Prevent spam clicking
-    if (isUpdating) return;
-    
-    setIsUpdating(true);
     try{
       const submitData = { ...form }
       if (form.style === 'custom' && form.customStyle) {
@@ -51,13 +45,7 @@ export default function Edit(){
       await api.put(`/seminars/${id}`, { ...submitData, date: form.date })
       show('Seminar updated')
       navigate(`/detail/${id}`)
-    }catch(err){ 
-      console.error('Update failed:', err);
-      show('Update failed', 'error') 
-    } finally {
-      // Add 500ms debounce delay
-      setTimeout(() => setIsUpdating(false), 500);
-    }
+    }catch{ show('Update failed', 'error') }
   }
 
   if(loading) return null
@@ -114,12 +102,7 @@ export default function Edit(){
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />
         
-        <button 
-          disabled={isUpdating}
-          className={`w-full px-4 py-3 rounded-xl font-medium transition-colors ${isUpdating ? 'bg-gray-400 cursor-not-allowed' : 'bg-dusk text-white hover:bg-dusk/90'}`}
-        >
-          {isUpdating ? 'Saving...' : 'Save Changes'}
-        </button>
+        <button className="w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium">Save Changes</button>
       </form>
     </div>
   )

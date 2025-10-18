@@ -4,7 +4,7 @@ import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
 export default function Auth() {
-  const { api, setToken, setUser } = useAuth()
+  const { api, login } = useAuth()
   const { show } = useToast()
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ emailOrUsername:'', email:'', username:'', password:'', firstName:'', lastName:'' })
@@ -90,8 +90,7 @@ export default function Auth() {
         r = await api.post('/auth/register', { email: form.email, username: form.username, password: form.password, firstName: form.firstName, lastName: form.lastName })
         show('Account created successfully!')
       }
-      setToken(r.data.token)
-      setUser(r.data.user)
+      login(r.data.user)
       navigate('/')
     } catch (err) {
       const errorData = err.response?.data

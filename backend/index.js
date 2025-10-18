@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -29,7 +30,7 @@ app.use(cors({
     // In development, allow localhost
     return cb(null, true);
   }, 
-  credentials: true 
+  credentials: true // Allow cookies to be sent
 }));
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
@@ -52,9 +53,9 @@ const saveLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-
 app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser()); // Parse cookies
 app.use(morgan('dev'));
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,7 +69,7 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 
-// Apply rate limiters to specific seminar routes
+// Apply save limiter to seminars save routes before the main seminars routes
 app.use('/api/seminars/:id/save', saveLimiter);
 app.use('/api/seminars', seminarRoutes);
 

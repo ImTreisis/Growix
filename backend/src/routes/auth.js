@@ -85,7 +85,16 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 12); // Increased salt rounds
     const user = await User.create({ email, username, passwordHash, firstName, lastName });
     const token = signToken(user._id.toString());
-    res.status(201).json({ token, user: sanitizeUser(user) });
+    
+    // Set HttpOnly cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true, // Always secure for production
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
+    res.status(201).json({ user: sanitizeUser(user) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
@@ -111,7 +120,16 @@ router.post('/login', async (req, res) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
     const token = signToken(user._id.toString());
-    res.json({ token, user: sanitizeUser(user) });
+    
+    // Set HttpOnly cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true, // Always secure for production
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
+    res.json({ user: sanitizeUser(user) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
@@ -121,6 +139,11 @@ router.post('/login', async (req, res) => {
 router.get('/me', requireAuth, async (req, res) => {
   const user = await User.findById(req.userId).select('-passwordHash');
   res.json({ user });
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json({ message: 'Logged out successfully' });
 });
 
 function sanitizeUser(user) {
