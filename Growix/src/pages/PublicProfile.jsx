@@ -74,7 +74,7 @@ export default function PublicProfile() {
           )}
 
           {/* Social Media Links - Centered Below Bio */}
-          {(user.instagram || user.tiktok || user.linkedin) && (
+          {(user.instagram || user.tiktok || user.linkedin || user.facebook) && (
             <div className="flex justify-center items-center gap-3">
               {user.instagram && (
                 <a 
@@ -107,6 +107,17 @@ export default function PublicProfile() {
                   aria-label="Connect on LinkedIn"
                 >
                   <img src="/linkedin-logo.png" alt="LinkedIn" width={46} height={46} className="opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+              )}
+              {user.facebook && (
+                <a 
+                  href={user.facebook.startsWith('http') ? user.facebook : `https://facebook.com/${user.facebook}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1 rounded-lg hover:bg-warm2/60 transition-colors"
+                  aria-label="Follow on Facebook"
+                >
+                  <img src="/facebook-logo.png" alt="Facebook" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
               )}
             </div>

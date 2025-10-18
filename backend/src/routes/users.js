@@ -42,9 +42,10 @@ router.put('/me', requireAuth, async (req, res) => {
     username,
     instagram = '',
     tiktok = '',
-    linkedin = ''
+    linkedin = '',
+    facebook = ''
   } = req.body;
-  const update = { firstName, lastName, bio, instagram, tiktok, linkedin };
+  const update = { firstName, lastName, bio, instagram, tiktok, linkedin, facebook };
   if (username) update.username = username;
   const user = await User.findByIdAndUpdate(req.userId, update, { new: true }).select('-passwordHash');
   res.json({ user });

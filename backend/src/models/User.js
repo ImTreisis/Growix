@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
     instagram: { type: String, default: '' },
     tiktok: { type: String, default: '' },
     linkedin: { type: String, default: '' },
+    facebook: { type: String, default: '' },
     savedSeminars: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Seminar' }],
   },
   { timestamps: true }

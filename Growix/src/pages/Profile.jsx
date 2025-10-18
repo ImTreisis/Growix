@@ -13,7 +13,8 @@ export default function Profile() {
     username: user?.username||'',
     instagram: user?.instagram||'',
     tiktok: user?.tiktok||'',
-    linkedin: user?.linkedin||''
+    linkedin: user?.linkedin||'',
+    facebook: user?.facebook||''
   })
 
   // Update form when user data changes
@@ -26,7 +27,8 @@ export default function Profile() {
         username: user.username || '',
         instagram: user.instagram || '',
         tiktok: user.tiktok || '',
-        linkedin: user.linkedin || ''
+        linkedin: user.linkedin || '',
+        facebook: user.facebook || ''
       })
     }
   }, [user])
@@ -111,7 +113,7 @@ export default function Profile() {
               )}
 
               {/* Social Media Links - Centered Below Bio */}
-              {(user.instagram || user.tiktok || user.linkedin) && (
+              {(user.instagram || user.tiktok || user.linkedin || user.facebook) && (
                 <div className="flex justify-center items-center gap-3">
                   {user.instagram && (
                     <a 
@@ -144,6 +146,17 @@ export default function Profile() {
                       aria-label="Connect on LinkedIn"
                     >
                       <img src="/linkedin-logo.png" alt="LinkedIn" width={46} height={46} className="opacity-80 hover:opacity-100 transition-opacity" />
+                    </a>
+                  )}
+                  {user.facebook && (
+                    <a 
+                      href={user.facebook.startsWith('http') ? user.facebook : `https://facebook.com/${user.facebook}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-1 rounded-lg hover:bg-warm2/60 transition-colors"
+                      aria-label="Follow on Facebook"
+                    >
+                      <img src="/facebook-logo.png" alt="Facebook" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
                     </a>
                   )}
                 </div>
@@ -225,6 +238,12 @@ export default function Profile() {
                   value={form.linkedin} 
                   onChange={(e)=>setForm({...form, linkedin:e.target.value})} 
                   placeholder="LinkedIn username or URL" 
+                  className="px-3 py-2 rounded-xl border focus:ring-2 focus:ring-[#df1f66]/20 focus:border-[#df1f66]" 
+                />
+                <input 
+                  value={form.facebook} 
+                  onChange={(e)=>setForm({...form, facebook:e.target.value})} 
+                  placeholder="Facebook username or URL" 
                   className="px-3 py-2 rounded-xl border focus:ring-2 focus:ring-[#df1f66]/20 focus:border-[#df1f66]" 
                 />
               </div>
