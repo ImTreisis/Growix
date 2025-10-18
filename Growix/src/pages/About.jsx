@@ -54,7 +54,7 @@ export default function About(){
                 <span className="text-black mr-3">•</span>
                 All workshops and open classes in one place
               </li>
-              <li className="flex items-start text-black ml-6 leading-0.5">
+              <li className="flex items-start text-black ml-6">
                 <span className="text-black mr-3">•</span>
                 Designed for dance community
               </li>
