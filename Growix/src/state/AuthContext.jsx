@@ -17,10 +17,23 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Clear any old localStorage data that might interfere with cookie auth
+    const oldToken = localStorage.getItem('token');
+    if (oldToken) {
+      console.log('Clearing old token from localStorage');
+      localStorage.removeItem('token');
+    }
+    
     // Check if user is logged in by calling /users/me
     api.get('/users/me')
-      .then((r) => setUser(r.data.user))
-      .catch(() => setUser(null))
+      .then((r) => {
+        console.log('Auth check successful:', r.data.user);
+        setUser(r.data.user);
+      })
+      .catch((err) => {
+        console.log('Auth check failed:', err.response?.status, err.response?.data);
+        setUser(null);
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -35,6 +48,8 @@ export function AuthProvider({ children }) {
       console.error('Logout error:', err)
     } finally {
       setUser(null)
+      // Clear any old localStorage data that might be interfering
+      localStorage.clear()
     }
   }
 

@@ -90,8 +90,9 @@ router.post('/register', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: true, // Always secure for production
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/' // Explicitly set path
     });
     
     res.status(201).json({ user: sanitizeUser(user) });
@@ -125,8 +126,9 @@ router.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: true, // Always secure for production
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/' // Explicitly set path
     });
     
     res.json({ user: sanitizeUser(user) });

@@ -56,16 +56,20 @@ export default function Detail(){
     
     setIsSaving(true);
     try {
+      console.log('Attempting to save seminar...');
       const response = await api.post(`/seminars/${id}/save`);
+      console.log('Save response:', response.data);
       setIsSaved(response.data.saved);
       setSavedCount(response.data.savedCount);
       show(response.data.message);
       
       // Sync saved list in user context for consistency across views
+      console.log('Syncing user data...');
       const me = await api.get('/users/me');
+      console.log('User sync response:', me.data.user);
       setUser(me.data.user);
     } catch (err) {
-      console.error('Failed to save seminar:', err);
+      console.error('Failed to save seminar:', err.response?.status, err.response?.data);
       show('Failed to update saved workshops', 'error');
     } finally {
       // Add 500ms debounce delay
