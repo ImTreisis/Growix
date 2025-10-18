@@ -63,10 +63,10 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/seminars', seminarRoutes);
 
-// Apply save limiter to specific routes
-app.use('/api/seminars/*/save', saveLimiter);
+// Apply save limiter to seminars save routes before the main seminars routes
+app.use('/api/seminars/:id/save', saveLimiter);
+app.use('/api/seminars', seminarRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));
