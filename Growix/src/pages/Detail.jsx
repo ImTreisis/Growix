@@ -87,10 +87,10 @@ export default function Detail(){
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      <div className="cozy-card overflow-hidden">
+      <div className="cozy-card overflow-hidden h-fit">
         <img src={item.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'} alt={item.title} className="w-full h-[360px] object-cover"/>
       </div>
-      <div className="cozy-card p-6">
+      <div className="cozy-card p-6 h-fit">
         <h1 className="text-2xl font-semibold text-dusk mb-4">{item.title}</h1>
         
         {/* Style, Level, and Saved count in a line */}
@@ -122,9 +122,11 @@ export default function Detail(){
           <span>{dateStr}</span>
         </div>
 
-        {/* Description in bold */}
+        {/* Description */}
         {item.description && (
-          <p className="text-black font-bold text-base">{item.description}</p>
+          <div className="mt-4">
+            <p className="text-black font-poppins text-base leading-relaxed whitespace-pre-wrap">{item.description}</p>
+          </div>
         )}
 
         {/* Action buttons */}
