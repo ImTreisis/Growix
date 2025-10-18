@@ -4,6 +4,8 @@ import { useAuth } from '../state/AuthContext.jsx'
 export default function Profile() {
   const { api, user, setUser } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [form, setForm] = useState({ 
     firstName: user?.firstName||'', 
     lastName: user?.lastName||'', 
@@ -32,18 +34,35 @@ export default function Profile() {
 
   const save = async (e) => {
     e.preventDefault()
-    const r = await api.put('/users/me', form)
-    setUser(r.data.user)
-    setIsEditing(false)
+    if (isSaving) return; // Prevent spam clicking
+    
+    setIsSaving(true);
+    try {
+      const r = await api.put('/users/me', form)
+      setUser(r.data.user)
+      setIsEditing(false)
+    } catch (err) {
+      console.error('Failed to save profile:', err);
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   const upload = async (e) => {
     const file = e.target.files?.[0]
-    if (!file) return
-    const fd = new FormData()
-    fd.append('photo', file)
-    const r = await api.post('/users/me/photo', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-    setUser(r.data.user)
+    if (!file || isUploading) return; // Prevent spam uploading
+    
+    setIsUploading(true);
+    try {
+      const fd = new FormData()
+      fd.append('photo', file)
+      const r = await api.post('/users/me/photo', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      setUser(r.data.user)
+    } catch (err) {
+      console.error('Failed to upload photo:', err);
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   if (!user) return null
@@ -59,9 +78,10 @@ export default function Profile() {
         />
         <button 
           onClick={()=>fileRef.current?.click()} 
-          className="px-3 py-2 font-inter rounded-xl transition-all duration-200 hover:scale-105 font-poppins font-bold transition-colors bg-orange-300 bg-opacity-75"
+          disabled={isUploading}
+          className={`px-3 py-2 font-inter rounded-xl transition-all duration-200 font-poppins font-bold transition-colors ${isUploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-300 bg-opacity-75 hover:scale-105'}`}
         >
-          Upload Photo
+          {isUploading ? 'Uploading...' : 'Upload Photo'}
         </button>
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={upload} />
         
@@ -155,9 +175,10 @@ export default function Profile() {
                 </button>
                 <button 
                   type="submit"
-                  className="px-4 py-2 bg-dusk text-white rounded-xl hover:bg-dusk/90 transition-colors"
+                  disabled={isSaving}
+                  className={`px-4 py-2 rounded-xl transition-colors ${isSaving ? 'bg-gray-400 cursor-not-allowed' : 'bg-dusk text-white hover:bg-dusk/90'}`}
                 >
-                  Save
+                  {isSaving ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>

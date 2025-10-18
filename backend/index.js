@@ -40,6 +40,15 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Rate limiting for save/unsave operations
+const saveLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // 20 save/unsave operations per minute
+  message: { message: 'Too many save operations, please slow down' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
@@ -55,6 +64,9 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/seminars', seminarRoutes);
+
+// Apply save limiter to specific routes
+app.use('/api/seminars/*/save', saveLimiter);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));

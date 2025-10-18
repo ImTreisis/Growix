@@ -27,6 +27,7 @@ export default function Detail(){
   const [item, setItem] = useState(null)
   const [savedCount, setSavedCount] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     const fetchSeminar = async () => {
@@ -50,6 +51,10 @@ export default function Detail(){
       return;
     }
     
+    // Prevent spam clicking
+    if (isSaving) return;
+    
+    setIsSaving(true);
     try {
       const response = await api.post(`/seminars/${id}/save`);
       setIsSaved(response.data.saved);
@@ -69,6 +74,8 @@ export default function Detail(){
     } catch (err) {
       console.error('Failed to save seminar:', err);
       show('Failed to update saved workshops', 'error');
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -99,8 +106,9 @@ export default function Detail(){
            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-white ${isSaved ? 'bg-pink-500' : 'bg-pink-300'} bg-opacity-100`}>
              <button 
                onClick={handleSave}
-               className="flex items-center gap-1 hover:scale-105 transition-transform cursor-pointer"
-               title={isSaved ? "Remove from saved" : "Save workshop"}
+               disabled={isSaving}
+               className={`flex items-center gap-1 transition-transform ${isSaving ? 'cursor-not-allowed opacity-50' : 'hover:scale-105 cursor-pointer'}`}
+               title={isSaving ? "Saving..." : (isSaved ? "Remove from saved" : "Save workshop")}
              >
                <IconHeart />
                <span className="text-sm font-bold">{savedCount}</span>

@@ -22,6 +22,7 @@ function IconHeart(props){return (
 export default function SeminarCard({ item }){
   const { api, user, setUser } = useAuth()
   const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
+  const [isSaving, setIsSaving] = useState(false)
 
   const dateStr = new Date(item.date).toLocaleString(undefined, {
     year: 'numeric',
@@ -35,6 +36,9 @@ export default function SeminarCard({ item }){
 
   const saveToggle = async ()=>{
     if(!user){ window.location.href = '/auth'; return }
+    if(isSaving) return; // Prevent spam clicking
+    
+    setIsSaving(true);
     try {
       const r = await api.post(`/seminars/${item._id}/save`)
       setSaved(r.data.saved)
@@ -43,6 +47,8 @@ export default function SeminarCard({ item }){
       setUser(me.data.user)
     } catch (err) {
       console.error('Failed to save seminar:', err)
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -56,7 +62,12 @@ export default function SeminarCard({ item }){
           className="w-full h-full object-cover opacity-90"
         />
         {user && (
-          <button onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} className={`absolute top-2 right-2 z-10 p-2 rounded-full ${saved? 'text-white bg-pink-300 bg-opacity-75' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} aria-label="Save">
+          <button 
+            onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); saveToggle() }} 
+            disabled={isSaving}
+            className={`absolute top-2 right-2 z-10 p-2 rounded-full ${isSaving ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${saved? 'text-white bg-pink-300 bg-opacity-75' : 'bg-white/90 text-cocoa'} shadow-subtle border border-gray-200`} 
+            aria-label={isSaving ? "Saving..." : "Save"}
+          >
             <IconHeart />
           </button>
         )}
