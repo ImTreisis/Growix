@@ -3,10 +3,10 @@ export default function About(){
     <div className="max-w-6xl mx-auto px-4 py-12">
       {/* About Us Title Section with Background Image */}
       <div className="relative mb-16">
-        <div className="bg-white rounded-2xl p-12 text-center  relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-12 text-center relative overflow-hidden shadow-2xl">
           {/* Background Image */}
           <div 
-          className="absolute inset-0 rounded-xl bg-cover bg-center bg-no-repeat shadow-subtle border border-gray-200"
+          className="absolute inset-0 rounded-xl bg-cover bg-center bg-no-repeat shadow-4xl border border-gray-300"
           style={{backgroundImage: 'url(/about-logo.png)'}}
         ></div>
           
