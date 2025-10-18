@@ -1,5 +1,4 @@
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import Seminar from '../models/Seminar.js';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
@@ -11,15 +10,6 @@ import { uploadImage } from '../lib/cloudinary.js';
 
 const router = express.Router();
 
-// Rate limiting for create/update operations
-const createUpdateLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // max 5 create/update requests per minute
-  message: { message: 'Too many create/update attempts, please slow down' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const __filename = fileURLToPath(import.meta.url);
@@ -28,7 +18,7 @@ const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // Create seminar
-router.post('/', createUpdateLimiter, requireAuth, async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
@@ -41,7 +31,7 @@ router.post('/', createUpdateLimiter, requireAuth, async (req, res) => {
 });
 
 // Upload image for seminar and create
-router.post('/with-image', createUpdateLimiter, requireAuth, upload.single('image'), async (req, res) => {
+router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
     const { title, description = '', date, style, level, venue = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
@@ -104,7 +94,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update
-router.put('/:id', createUpdateLimiter, requireAuth, async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   const seminar = await Seminar.findById(req.params.id);
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });

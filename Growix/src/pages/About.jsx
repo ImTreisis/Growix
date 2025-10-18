@@ -6,7 +6,7 @@ export default function About(){
         <div className="bg-white rounded-2xl p-12 text-center  relative overflow-hidden">
           {/* Background Image */}
           <div 
-          className="absolute inset-0 rounded-xl bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 rounded-xl bg-cover bg-center bg-no-repeat shadow-subtle border border-gray-200"
           style={{backgroundImage: 'url(/about-logo.png)'}}
         ></div>
           
@@ -31,7 +31,7 @@ export default function About(){
         <div className="grid md:grid-cols-[1fr_auto] items-center">
           <div className="bg-white rounded-2xl p-4 mr-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Mission</h2>
-            <p className="text-lg text-black font-inter leading-relaxed text-center">
+            <p className="text-lg text-black font-poppins leading-relaxed text-center">
               Our mission is to unite dancers and workshop organizers of all styles in one place, making it easy to discover, join, and share open classes and workshops, so they can learn from each other, grow together, and find their path in dance.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function About(){
           </div>
           <div className="bg-white rounded-2xl p-4 order-1 md:order-2 ml-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Benefits</h2>
-            <ul className="text-lg text-black font-inter leading-relaxed space-y-3 text-center">
+            <ul className="text-lg text-black font-poppins leading-relaxed space-y-3 text-center">
               <li className="flex items-start text-black ml-6">
                 <span className="text-black mr-3">•</span>
                 All workshops and open classes in one place
@@ -72,7 +72,7 @@ export default function About(){
         <div className="grid md:grid-cols-[1fr_auto] items-center">
           <div className="bg-white rounded-2xl p-4 mr-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Our Values</h2>
-            <p className="text-lg text-black font-inter leading-relaxed text-center">
+            <p className="text-lg text-black font-poppins leading-relaxed text-center">
               <span className="text-pink-600 font-bold">Growth.</span> We value the desire to improve and step out of your comfort zone, supporting every step toward your goals.
             </p>
           </div>

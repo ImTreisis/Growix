@@ -52,7 +52,6 @@ const saveLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-
 app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
@@ -68,7 +67,7 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 
-// Apply rate limiters to specific seminar routes
+// Apply save limiter to seminars save routes before the main seminars routes
 app.use('/api/seminars/:id/save', saveLimiter);
 app.use('/api/seminars', seminarRoutes);
 
