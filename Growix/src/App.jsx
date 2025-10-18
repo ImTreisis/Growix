@@ -13,6 +13,8 @@ import Saved from './pages/Saved.jsx'
 import Auth from './pages/Auth.jsx'
 import Detail from './pages/Detail.jsx'
 import Edit from './pages/Edit.jsx'
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
+import TermsOfService from './pages/TermsOfService.jsx'
 import { AuthProvider, useAuth } from './state/AuthContext.jsx'
 import ToastProvider from './components/Toast.jsx'
 
@@ -39,6 +41,8 @@ export default function App() {
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="/profile/:userId" element={<PublicProfile />} />
               <Route path="/about" element={<About />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/auth" element={<Auth />} />
             </Routes>
           </main>

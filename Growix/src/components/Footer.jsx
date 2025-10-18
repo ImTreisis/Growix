@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 
 export default function Footer() {
@@ -105,9 +105,26 @@ export default function Footer() {
             </div>
 
             {/* Copyright */}
-            <p className="text-cocoa text-sm text-center">
+            <p className="text-cocoa text-sm text-center mb-4">
               Copyright © 2025 Growix | Powered By Growix
             </p>
+            
+            {/* Privacy Policy & Terms of Service */}
+            <div className="flex items-center justify-center gap-6">
+              <Link 
+                to="/privacy-policy" 
+                className="text-cocoa/60 hover:text-[#df1f66] hover:scale-105 transition-all duration-200 text-sm"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-cocoa/40">|</span>
+              <Link 
+                to="/terms-of-service" 
+                className="text-cocoa/60 hover:text-[#df1f66] hover:scale-105 transition-all duration-200 text-sm"
+              >
+                Terms of Service
+              </Link>
+            </div>
           </div>
         </div>
       </div>
