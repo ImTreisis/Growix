@@ -19,7 +19,7 @@ export default function About(){
 
       {/* Introductory Statement */}
       <div className="mb-16">
-        <div className="bg-gray-100 rounded-2xl p-8 text-center max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl p-8 text-center shadow-subtle border border-gray-200">
           <p className="text-xl md:text-2xl text-black font-poppins font-bold">
             One platform for dancers and organizers to <br /><span className="text-orange-400 font-bold">learn</span> and <span className="text-pink-600 font-bold">share.</span>
           </p>
@@ -29,7 +29,7 @@ export default function About(){
       {/* Mission Section */}
       <div className="mb-8">
         <div className="grid md:grid-cols-[1fr_auto] items-center">
-          <div className="bg-gray-100 rounded-2xl p-4 mr-16">
+          <div className="bg-white rounded-2xl p-4 mr-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Mission</h2>
             <p className="text-lg text-black font-inter leading-relaxed text-center">
               Our mission is to unite dancers and workshop organizers of all styles in one place, making it easy to discover, join, and share open classes and workshops, so they can learn from each other, grow together, and find their path in dance.
@@ -47,7 +47,7 @@ export default function About(){
           <div className="flex justify-center md:justify-start order-2 md:order-1">
             <span className="text-9xl md:text-[12rem] font-bold text-orange-400 font-poppins">02</span>
           </div>
-          <div className="bg-gray-100 rounded-2xl p-4 order-1 md:order-2 ml-16">
+          <div className="bg-white rounded-2xl p-4 order-1 md:order-2 ml-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Benefits</h2>
             <ul className="text-lg text-black font-inter leading-relaxed space-y-3 text-center">
               <li className="flex items-start text-black ml-6">
@@ -70,7 +70,7 @@ export default function About(){
       {/* Values Section */}
       <div className="mb-8">
         <div className="grid md:grid-cols-[1fr_auto] items-center">
-          <div className="bg-gray-100 rounded-2xl p-4 mr-16">
+          <div className="bg-white rounded-2xl p-4 mr-16 shadow-subtle border border-gray-200">
             <h2 className="text-3xl md:text-4xl font-bold text-black font-poppins mb-6 text-center">Our Values</h2>
             <p className="text-lg text-black font-inter leading-relaxed text-center">
               <span className="text-pink-600 font-bold">Growth.</span> We value the desire to improve and step out of your comfort zone, supporting every step toward your goals.

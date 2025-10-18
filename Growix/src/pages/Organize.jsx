@@ -7,9 +7,15 @@ export default function Organize() {
   const { show } = useToast()
   const [form, setForm] = useState({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image: null })
   const [message, setMessage] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault()
+    
+    // Prevent spam clicking
+    if (isCreating) return;
+    
+    setIsCreating(true);
     try {
       const submitData = { ...form }
       if (form.style === 'custom' && form.customStyle) {
@@ -28,8 +34,12 @@ export default function Organize() {
       }
       setForm({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image:null })
       show('Seminar created')
-    } catch {
+    } catch (err) {
+      console.error('Failed to create seminar:', err);
       show('Failed to create seminar', 'error')
+    } finally {
+      // Add 500ms debounce delay
+      setTimeout(() => setIsCreating(false), 500);
     }
   }
 
@@ -88,7 +98,12 @@ export default function Organize() {
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />
         
-        <button className="w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium">Create Workshop</button>
+        <button 
+          disabled={isCreating}
+          className={`w-full px-4 py-3 rounded-xl font-medium transition-colors ${isCreating ? 'bg-gray-400 cursor-not-allowed' : 'bg-dusk text-white hover:bg-dusk/90'}`}
+        >
+          {isCreating ? 'Creating...' : 'Create Workshop'}
+        </button>
         {message && <p className="text-cocoa text-center">{message}</p>}
       </form>
     </div>
