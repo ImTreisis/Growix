@@ -16,6 +16,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust proxy for rate limiting to work correctly behind reverse proxies (like Render)
+app.set('trust proxy', 1);
+
 const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
 app.use(cors({ 
   origin: (origin, cb) => {
@@ -49,14 +52,6 @@ const saveLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Rate limiting for create/update operations
-const createUpdateLimiter = rateLimit({
-  windowMs: 2000, // 2 seconds
-  max: 2, // max 2 create/update requests per minute
-  message: { message: 'Too many create/update attempts, please slow down' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -71,11 +66,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/users', createUpdateLimiter, userRoutes);
+app.use('/api/users', userRoutes);
 
 // Apply rate limiters to specific seminar routes
 app.use('/api/seminars/:id/save', saveLimiter);
-app.use('/api/seminars', createUpdateLimiter, seminarRoutes);
+app.use('/api/seminars', seminarRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));
