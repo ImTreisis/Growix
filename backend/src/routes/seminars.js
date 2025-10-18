@@ -132,13 +132,44 @@ router.post('/:id/like', requireAuth, async (req, res) => {
 
 // Save / Unsave to user
 router.post('/:id/save', requireAuth, async (req, res) => {
-  const seminarId = req.params.id;
-  const user = await User.findById(req.userId);
-  const has = user.savedSeminars.some((id) => id.toString() === seminarId);
-  if (has) user.savedSeminars = user.savedSeminars.filter((id) => id.toString() !== seminarId);
-  else user.savedSeminars.push(seminarId);
-  await user.save();
-  res.json({ saved: !has, savedSeminars: user.savedSeminars });
+  try {
+    const seminarId = req.params.id;
+    const userId = req.userId;
+    
+    // Check if seminar exists
+    const seminar = await Seminar.findById(seminarId);
+    if (!seminar) {
+      return res.status(404).json({ message: 'Seminar not found' });
+    }
+    
+    // Check if user has already saved this seminar
+    const user = await User.findById(userId);
+    const hasSaved = user.savedSeminars.some((id) => id.toString() === seminarId);
+    
+    // Use atomic operations to update both collections
+    if (hasSaved) {
+      // Remove from saved seminars
+      await User.findByIdAndUpdate(userId, { $pull: { savedSeminars: seminarId } });
+      await Seminar.findByIdAndUpdate(seminarId, { $pull: { savedBy: userId } });
+    } else {
+      // Add to saved seminars
+      await User.findByIdAndUpdate(userId, { $addToSet: { savedSeminars: seminarId } });
+      await Seminar.findByIdAndUpdate(seminarId, { $addToSet: { savedBy: userId } });
+    }
+    
+    // Get updated saved count
+    const updatedSeminar = await Seminar.findById(seminarId);
+    const savedCount = updatedSeminar.savedBy ? updatedSeminar.savedBy.length : 0;
+    
+    res.json({ 
+      saved: !hasSaved, 
+      savedCount,
+      message: hasSaved ? 'Removed from saved workshops' : 'Added to saved workshops'
+    });
+  } catch (err) {
+    console.error('Save seminar error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 export default router;

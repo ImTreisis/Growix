@@ -42,9 +42,9 @@ const authLimiter = rateLimit({
 
 // Rate limiting for save/unsave operations
 const saveLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 20 save/unsave operations per minute
-  message: { message: 'Too many save operations, please slow down' },
+  windowMs: 2000, // 2 seconds
+  max: 2, // max 2 save requests per 2 seconds
+  message: { message: 'Too many save attempts' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -77,11 +77,28 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Server error' });
 });
 
+// Global error handlers
+process.on('unhandledRejection', err => {
+  console.error('Unhandled promise rejection:', err);
+});
+
+process.on('uncaughtException', err => {
+  console.error('Uncaught exception:', err);
+  process.exit(1);
+});
+
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/growix';
 const PORT = process.env.PORT || 4000;
 
+// MongoDB connection with pool size limits
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, {
+    maxPoolSize: 10, // Maximum number of connections in the connection pool
+    serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+    socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    bufferMaxEntries: 0, // Disable mongoose buffering
+    bufferCommands: false, // Disable mongoose buffering
+  })
   .then(() => {
     app.listen(PORT, () => {
       console.log(`API listening on http://localhost:${PORT}`);

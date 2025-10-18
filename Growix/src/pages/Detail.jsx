@@ -58,15 +58,8 @@ export default function Detail(){
     try {
       const response = await api.post(`/seminars/${id}/save`);
       setIsSaved(response.data.saved);
-      
-      // Update saved count based on the response
-      if (response.data.saved) {
-        setSavedCount(prev => prev + 1);
-        show('Added to saved workshops');
-      } else {
-        setSavedCount(prev => Math.max(0, prev - 1));
-        show('Removed from saved workshops');
-      }
+      setSavedCount(response.data.savedCount);
+      show(response.data.message);
       
       // Sync saved list in user context for consistency across views
       const me = await api.get('/users/me');
@@ -75,7 +68,8 @@ export default function Detail(){
       console.error('Failed to save seminar:', err);
       show('Failed to update saved workshops', 'error');
     } finally {
-      setIsSaving(false);
+      // Add 500ms debounce delay
+      setTimeout(() => setIsSaving(false), 500);
     }
   }
 

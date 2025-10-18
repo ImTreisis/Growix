@@ -48,7 +48,8 @@ export default function SeminarCard({ item }){
     } catch (err) {
       console.error('Failed to save seminar:', err)
     } finally {
-      setIsSaving(false);
+      // Add 500ms debounce delay
+      setTimeout(() => setIsSaving(false), 500);
     }
   }
 
