@@ -35,14 +35,14 @@ app.use(morgan('dev'));
 // Session configuration (after body parsers)
 // Using memory store for simplicity and speed
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'devsecret-change-in-production',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   name: 'sessionId', // Custom cookie name
   cookie: {
     httpOnly: true, // Prevents XSS attacks (can't access via JavaScript)
     secure: true, // HTTPS only (always true for production)
-    sameSite: 'strict', // CSRF protection (strict for production)
+    sameSite: 'none', // Required for cross-domain cookies (Vercel → Render)
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   },
   proxy: true // Trust the reverse proxy (Render/Vercel)

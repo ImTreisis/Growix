@@ -1,5 +1,5 @@
 export function requireAuth(req, res, next) {
-  console.log('🔐 Auth check - Session ID:', req.sessionID, 'User ID:', req.session?.userId);
+  console.log('🔐 Auth check - Session ID:', req.sessionID, 'User ID:', req.session?.userId, 'Cookie:', req.headers.cookie);
   
   // Check if user is logged in via session
   if (!req.session || !req.session.userId) {
