@@ -23,14 +23,7 @@ app.set('trust proxy', 1);
 
 const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app').split(',');
 app.use(cors({ 
-  origin: (origin, cb) => {
-    // Allow requests with no origin (for mobile apps, etc.)
-    if (!origin) return cb(null, true);
-    // Check if origin is in allowed list
-    if (ALLOW_ORIGINS.includes(origin)) return cb(null, true);
-    // Reject all other origins
-    return cb(new Error('Not allowed by CORS'));
-  }, 
+  origin: true, // Allow all origins (simple for now)
   credentials: true 
 }));
 app.use(helmet());
