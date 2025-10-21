@@ -20,9 +20,31 @@ const app = express();
 // Trust proxy for rate limiting to work correctly behind reverse proxies (like Render)
 app.set('trust proxy', 1);
 
-const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app').split(',');
+// Parse and normalize allowed origins (remove trailing slashes)
+const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app')
+  .split(',')
+  .map(origin => origin.trim().replace(/\/$/, '')); // Remove trailing slashes
+
+console.log('✅ Allowed CORS origins:', ALLOW_ORIGINS);
+
 app.use(cors({ 
-  origin: true, // Allow all origins (simple for now)
+  origin: (origin, cb) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return cb(null, true);
+    
+    // Normalize incoming origin (remove trailing slash)
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    
+    // Check if origin is allowed
+    if (ALLOW_ORIGINS.includes(normalizedOrigin)) {
+      console.log('✅ CORS allowed:', origin);
+      return cb(null, true);
+    }
+    
+    // Reject and log
+    console.log('❌ CORS blocked:', origin);
+    return cb(null, false); // Reject silently (don't throw error)
+  }, 
   credentials: true 
 }));
 app.use(helmet());
