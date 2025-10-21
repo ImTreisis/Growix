@@ -58,11 +58,11 @@ app.use((req, res, next) => {
   const sanitize = (obj) => {
     if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
       Object.keys(obj).forEach(key => {
-        // Remove keys that start with $ or contain . (MongoDB operators)
+        // Remove keys that start with $ (MongoDB operators)
         if (key.startsWith('$')) {
           console.warn('⚠️ Blocked NoSQL injection attempt:', key);
           delete obj[key];
-        } else if (typeof obj[key] === 'object') {
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
           sanitize(obj[key]);
         }
       });
@@ -70,9 +70,10 @@ app.use((req, res, next) => {
     return obj;
   };
   
-  if (req.body) req.body = sanitize(req.body);
-  if (req.query) req.query = sanitize(req.query);
-  if (req.params) req.params = sanitize(req.params);
+  // Only sanitize req.body (query and params are read-only)
+  if (req.body && typeof req.body === 'object') {
+    sanitize(req.body);
+  }
   next();
 });
 
