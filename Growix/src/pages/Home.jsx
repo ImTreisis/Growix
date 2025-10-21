@@ -26,7 +26,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3">
             <input 
               onKeyDown={(e)=>{if(e.key==='Enter') navigate(`/workshops?q=${encodeURIComponent(e.currentTarget.value)}`)}} 
-              placeholder="Search seminars..." 
+              placeholder="Search workshops..." 
               className="flex-1 px-4 py-3 rounded-xl bg-white/90 border border-gray-200 shadow-subtle" 
             />
             <button onClick={()=>navigate('/workshops')} className="px-6 py-3 rounded-xl bg-dusk text-white shadow-cozy">Browse</button>

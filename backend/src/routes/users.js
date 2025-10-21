@@ -15,7 +15,25 @@ const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+
+// File upload protection for profile photos
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB max for profile photos
+    files: 1 // Only 1 file per request
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      console.warn('⚠️ Blocked profile photo upload:', file.mimetype);
+      cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.'));
+    }
+  }
+});
 
 router.get('/me', requireAuth, async (req, res) => {
   const user = await User.findById(req.userId).select('-passwordHash').populate('savedSeminars');

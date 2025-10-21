@@ -11,7 +11,25 @@ import { uploadImage } from '../lib/cloudinary.js';
 const router = express.Router();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+
+// File upload protection
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB max file size
+    files: 1 // Only 1 file per request
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      console.warn('⚠️ Blocked file upload:', file.mimetype);
+      cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.'));
+    }
+  }
+});
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, '../../uploads');

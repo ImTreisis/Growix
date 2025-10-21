@@ -52,6 +52,30 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// NoSQL Injection Protection - Sanitize user input
+app.use((req, res, next) => {
+  const sanitize = (obj) => {
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      Object.keys(obj).forEach(key => {
+        // Remove keys that start with $ or contain . (MongoDB operators)
+        if (key.startsWith('$')) {
+          console.warn('⚠️ Blocked NoSQL injection attempt:', key);
+          delete obj[key];
+        } else if (typeof obj[key] === 'object') {
+          sanitize(obj[key]);
+        }
+      });
+    }
+    return obj;
+  };
+  
+  if (req.body) req.body = sanitize(req.body);
+  if (req.query) req.query = sanitize(req.query);
+  if (req.params) req.params = sanitize(req.params);
+  next();
+});
+
 app.use(morgan('dev'));
 
 // Session configuration (after body parsers)
@@ -115,17 +139,33 @@ app.use((err, req, res, next) => {
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/growix';
 const PORT = process.env.PORT || 4000;
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`API listening on http://localhost:${PORT}`);
+// Start server immediately (don't wait for MongoDB)
+// Bind to 0.0.0.0 for Render (required for cloud deployment)
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ API listening on port ${PORT}`);
+});
+
+// Connect to MongoDB with timeout
+const connectWithTimeout = async () => {
+  const timeout = setTimeout(() => {
+    console.error('⏱️ MongoDB connection timeout after 10 seconds');
+    console.log('⚠️ Server running without MongoDB - some features may not work');
+  }, 10000);
+
+  try {
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 10000, // 10 second timeout
     });
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
-    process.exit(1);
-  });
+    clearTimeout(timeout);
+    console.log('✅ Connected to MongoDB');
+  } catch (err) {
+    clearTimeout(timeout);
+    console.error('❌ Failed to connect to MongoDB:', err.message);
+    console.log('⚠️ Server running without MongoDB - some features may not work');
+  }
+};
+
+connectWithTimeout();
 
 // Global error handlers
 process.on('unhandledRejection', err => {
