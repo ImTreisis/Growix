@@ -21,7 +21,7 @@ const app = express();
 // Trust proxy for rate limiting to work correctly behind reverse proxies (like Render)
 app.set('trust proxy', 1);
 
-const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app/').split(',');
+const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app').split(',');
 app.use(cors({ 
   origin: (origin, cb) => {
     // Allow requests with no origin (for mobile apps, etc.)
