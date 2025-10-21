@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
-import MongoStore from 'connect-mongo';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -33,22 +32,13 @@ app.use(express.json({ limit: '10mb' })); // Limit request size
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
-// MongoDB URI for both database and sessions
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/growix';
-
 // Session configuration (after body parsers)
+// Using memory store for simplicity and speed
 app.use(session({
   secret: process.env.SESSION_SECRET || 'devsecret-change-in-production',
   resave: false,
   saveUninitialized: false,
   name: 'sessionId', // Custom cookie name
-  store: MongoStore.create({
-    mongoUrl: MONGO_URI,
-    touchAfter: 24 * 3600, // Lazy session update (once per 24 hours)
-    crypto: {
-      secret: process.env.SESSION_SECRET || 'devsecret-change-in-production'
-    }
-  }),
   cookie: {
     httpOnly: true, // Prevents XSS attacks (can't access via JavaScript)
     secure: true, // HTTPS only (always true for production)
@@ -100,6 +90,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Server error' });
 });
 
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/growix';
 const PORT = process.env.PORT || 4000;
 
 mongoose
