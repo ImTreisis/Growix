@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
-import { signToken, requireAuth } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -84,8 +84,19 @@ router.post('/register', async (req, res) => {
     
     const passwordHash = await bcrypt.hash(password, 12); // Increased salt rounds
     const user = await User.create({ email, username, passwordHash, firstName, lastName });
-    const token = signToken(user._id.toString());
-    res.status(201).json({ token, user: sanitizeUser(user) });
+    
+    // Create session and save it explicitly
+    req.session.userId = user._id.toString();
+    
+    // Save session before sending response
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Session error' });
+      }
+      console.log('✅ Session created for user:', user._id.toString(), 'Session ID:', req.sessionID);
+      res.status(201).json({ user: sanitizeUser(user) });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
@@ -110,8 +121,27 @@ router.post('/login', async (req, res) => {
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
-    const token = signToken(user._id.toString());
-    res.json({ token, user: sanitizeUser(user) });
+    
+    // Regenerate session to prevent session fixation attacks
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error('Session regeneration error:', err);
+        return res.status(500).json({ message: 'Session error' });
+      }
+      
+      // Create session
+      req.session.userId = user._id.toString();
+      
+      // Save session before sending response
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Session save error:', saveErr);
+          return res.status(500).json({ message: 'Session error' });
+        }
+        console.log('✅ Session created for login:', user._id.toString(), 'Session ID:', req.sessionID);
+        res.json({ user: sanitizeUser(user) });
+      });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
@@ -121,6 +151,16 @@ router.post('/login', async (req, res) => {
 router.get('/me', requireAuth, async (req, res) => {
   const user = await User.findById(req.userId).select('-passwordHash');
   res.json({ user });
+});
+
+router.post('/logout', requireAuth, (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Logout failed' });
+    }
+    res.clearCookie('sessionId'); // Clear session cookie (matches session name)
+    res.json({ message: 'Logged out successfully' });
+  });
 });
 
 function sanitizeUser(user) {

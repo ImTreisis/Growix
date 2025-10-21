@@ -1,20 +1,14 @@
-import jwt from 'jsonwebtoken';
-
 export function requireAuth(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ message: 'Missing token' });
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || 'devsecret');
-    req.userId = payload.userId;
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' });
+  console.log('🔐 Auth check - Session ID:', req.sessionID, 'User ID:', req.session?.userId);
+  
+  // Check if user is logged in via session
+  if (!req.session || !req.session.userId) {
+    console.log('❌ No session or userId found');
+    return res.status(401).json({ message: 'Not authenticated' });
   }
+  
+  // Set userId from session
+  req.userId = req.session.userId;
+  console.log('✅ Auth successful for user:', req.userId);
+  next();
 }
-
-export function signToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'devsecret', { expiresIn: '7d' });
-}
-
-

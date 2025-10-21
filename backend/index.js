@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import session from 'express-session';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -19,20 +20,39 @@ const app = express();
 // Trust proxy for rate limiting to work correctly behind reverse proxies (like Render)
 app.set('trust proxy', 1);
 
-const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
+const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app/').split(',');
 app.use(cors({ 
   origin: (origin, cb) => {
-    // Allow requests with no origin 
+    // Allow requests with no origin (for mobile apps, etc.)
     if (!origin) return cb(null, true);
     // Check if origin is in allowed list
     if (ALLOW_ORIGINS.includes(origin)) return cb(null, true);
-    // In development, allow localhost
-    return cb(null, true);
+    // Reject all other origins
+    return cb(new Error('Not allowed by CORS'));
   }, 
   credentials: true 
 }));
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+app.use(express.json({ limit: '10mb' })); // Limit request size
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(morgan('dev'));
+
+// Session configuration (after body parsers)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'devsecret-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  name: 'sessionId', // Custom cookie name
+  cookie: {
+    httpOnly: true, // Prevents XSS attacks (can't access via JavaScript)
+    secure: true, // HTTPS only (always true for production)
+    sameSite: 'strict', // CSRF protection (strict for production)
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  },
+  proxy: true // Trust the reverse proxy (Render/Vercel)
+}));
 
 // Stricter rate limiting for auth routes
 const authLimiter = rateLimit({
@@ -51,10 +71,6 @@ const saveLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-app.use(express.json({ limit: '10mb' })); // Limit request size
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(morgan('dev'));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

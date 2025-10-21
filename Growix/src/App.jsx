@@ -19,8 +19,19 @@ import { AuthProvider, useAuth } from './state/AuthContext.jsx'
 import ToastProvider from './components/Toast.jsx'
 
 function PrivateRoute({ children }) {
-  const { token } = useAuth()
-  return token ? children : <Navigate to="/auth" replace />
+  const { user, isLoading } = useAuth()
+  
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="text-cocoa">Loading...</div>
+      </div>
+    )
+  }
+  
+  // Redirect to auth if not logged in
+  return user ? children : <Navigate to="/auth" replace />
 }
 
 export default function App() {
