@@ -4,7 +4,7 @@ import axios from 'axios'
 const AuthContext = createContext(null)
 
 const api = axios.create({ 
-  baseURL: import.meta.env.VITE_API_URL || 'https://growix.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api', // Same domain - no CORS needed!
   withCredentials: true // Include cookies in all requests
 })
 
