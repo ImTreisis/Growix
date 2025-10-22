@@ -90,6 +90,7 @@ app.use(session({
     httpOnly: true, // Prevents XSS attacks (can't access via JavaScript)
     secure: true, // HTTPS only (always true for production)
     sameSite: 'none', // Required for cross-domain cookies (Vercel → Render)
+    path: '/', // Ensure cookie is sent with all paths
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   },
   proxy: true // Trust the reverse proxy (Render/Vercel)
