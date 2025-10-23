@@ -36,7 +36,9 @@ export default function Organize() {
       show('Seminar created')
     } catch (err) {
       console.error('Failed to create seminar:', err)
-      show('Failed to create seminar', 'error')
+      // Show specific error message from backend
+      const errorMessage = err.response?.data?.message || 'Failed to create seminar'
+      show(errorMessage, 'error')
     } finally {
       // Add 500ms delay before allowing another submission
       setTimeout(() => setIsSubmitting(false), 500)

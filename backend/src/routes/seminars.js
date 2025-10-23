@@ -41,6 +41,13 @@ router.post('/', requireAuth, async (req, res) => {
     const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
     
+    // Validate date is not in the past
+    const seminarDate = new Date(date);
+    const now = new Date();
+    if (seminarDate < now) {
+      return res.status(400).json({ message: 'Cannot create a seminar in the past. Please select a future date and time.' });
+    }
+    
     const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
     
     // Populate createdBy field for consistent response
@@ -62,6 +69,13 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
   try {
     const { title, description = '', date, style, level, venue = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
+    
+    // Validate date is not in the past
+    const seminarDate = new Date(date);
+    const now = new Date();
+    if (seminarDate < now) {
+      return res.status(400).json({ message: 'Cannot create a seminar in the past. Please select a future date and time.' });
+    }
     
     // Upload image FIRST (before creating seminar in DB)
     let imageUrl = '';
@@ -103,6 +117,10 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
 router.get('/', async (req, res) => {
   const { date, style, level, q, limit = 20, offset = 0 } = req.query;
   const filter = {};
+  
+  // Always filter out past seminars (only show future seminars)
+  filter.date = { $gte: new Date() };
+  
   if (date) {
     const d = new Date(date);
     if (!isNaN(d.getTime())) {
@@ -138,10 +156,21 @@ router.put('/:id', requireAuth, async (req, res) => {
   const seminar = await Seminar.findById(req.params.id);
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
+  
   const { title, description, date, style, level, venue, imageUrl } = req.body;
+  
+  // Validate date is not in the past if updating date
+  if (date !== undefined) {
+    const seminarDate = new Date(date);
+    const now = new Date();
+    if (seminarDate < now) {
+      return res.status(400).json({ message: 'Cannot update seminar to a past date. Please select a future date and time.' });
+    }
+    seminar.date = date;
+  }
+  
   if (title !== undefined) seminar.title = title;
   if (description !== undefined) seminar.description = description;
-  if (date !== undefined) seminar.date = date;
   if (style !== undefined) seminar.style = style;
   if (level !== undefined) seminar.level = level;
   if (venue !== undefined) seminar.venue = venue;

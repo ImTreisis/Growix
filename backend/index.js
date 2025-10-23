@@ -169,6 +169,22 @@ const connectWithTimeout = async () => {
 
 connectWithTimeout();
 
+// Automatic cleanup of past seminars
+const cleanupPastSeminars = async () => {
+  try {
+    const now = new Date();
+    const result = await mongoose.model('Seminar').deleteMany({ date: { $lt: now } });
+    if (result.deletedCount > 0) {
+      console.log(`🗑️ Cleaned up ${result.deletedCount} past seminar(s)`);
+    }
+  } catch (err) {
+    console.error('❌ Error cleaning up past seminars:', err.message);
+  }
+};
+
+// Run cleanup every 24 hours (daily)
+setInterval(cleanupPastSeminars, 24 * 60 * 60 * 1000);
+
 // Global error handlers
 process.on('unhandledRejection', err => {
   console.error('Unhandled promise rejection:', err);
