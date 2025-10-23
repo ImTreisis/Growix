@@ -27,7 +27,7 @@ export default function PrivacyPolicy() {
               Growix is an officially operating online platform designed to connect the dance community. The platform is responsibly managed to ensure reliability, security, and accessibility for all users. Growix provides dancers and organizers the opportunity to find, share, and participate in workshops and open sessions in one place — fostering personal and professional growth as well as community collaboration.
             </p>
             <p className="text-cocoa mb-6">
-              Website address: [insert website address]<br />
+              Website address: https://www.growix.lt/<br />
               Contact email: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a>
             </p>
 

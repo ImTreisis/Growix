@@ -26,7 +26,7 @@ export default function TermsOfService() {
             <p className="text-cocoa mb-2">Growix is an officially operating online platform created to connect dancers and organizers.</p>
             <p className="text-cocoa mb-2">Growix does not generate revenue or operate for commercial profit. Its purpose is to support and promote dance culture.</p>
             <p className="text-cocoa mb-6">
-              Website address: [insert website address]<br />
+              Website address: https://www.growix.lt/<br />
               Contact email: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a>
             </p>
 
