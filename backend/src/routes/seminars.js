@@ -40,11 +40,20 @@ router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
+    
     const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    
+    // Populate createdBy field for consistent response
+    await seminar.populate('createdBy', 'username photoUrl');
+    
     res.status(201).json({ seminar });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Error creating seminar:', err);
+    // Better error message for debugging
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error', details: err.message });
+    }
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
@@ -53,6 +62,8 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
   try {
     const { title, description = '', date, style, level, venue = '' } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
+    
+    // Upload image FIRST (before creating seminar in DB)
     let imageUrl = '';
     if (req.file) {
       const hasCloudinary = Boolean(
@@ -65,15 +76,26 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
         fs.writeFileSync(path.join(uploadsDir, filename), req.file.buffer);
         imageUrl = `/uploads/${filename}`;
       } else {
+        // Upload to Cloudinary - if this fails, the seminar won't be created
         const result = await uploadImage(req.file.buffer, 'growix/seminars');
         imageUrl = result.secure_url;
       }
     }
+    
+    // Only create seminar AFTER image upload succeeds
     const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    
+    // Populate createdBy field for consistent response
+    await seminar.populate('createdBy', 'username photoUrl');
+    
     res.status(201).json({ seminar });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Error creating seminar:', err);
+    // Better error message for debugging
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error', details: err.message });
+    }
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 

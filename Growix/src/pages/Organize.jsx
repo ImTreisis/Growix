@@ -7,9 +7,15 @@ export default function Organize() {
   const { show } = useToast()
   const [form, setForm] = useState({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image: null })
   const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault()
+    
+    // Prevent duplicate submissions
+    if (isSubmitting) return
+    
+    setIsSubmitting(true)
     try {
       const submitData = { ...form }
       if (form.style === 'custom' && form.customStyle) {
@@ -28,8 +34,12 @@ export default function Organize() {
       }
       setForm({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image:null })
       show('Seminar created')
-    } catch {
+    } catch (err) {
+      console.error('Failed to create seminar:', err)
       show('Failed to create seminar', 'error')
+    } finally {
+      // Add 500ms delay before allowing another submission
+      setTimeout(() => setIsSubmitting(false), 500)
     }
   }
 
@@ -88,7 +98,12 @@ export default function Organize() {
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />
         
-        <button className="w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium">Create Workshop</button>
+        <button 
+          disabled={isSubmitting} 
+          className={`w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isSubmitting ? 'Creating...' : 'Create Workshop'}
+        </button>
         {message && <p className="text-cocoa text-center">{message}</p>}
       </form>
     </div>
