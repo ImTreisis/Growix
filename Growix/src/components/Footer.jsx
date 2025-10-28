@@ -93,15 +93,7 @@ export default function Footer() {
               >
                 <img src="/instagram-logo.png" alt="Instagram" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
               </a>
-              <a 
-                href="https://tiktok.com/@imtreisis0" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 rounded-lg hover:bg-warm2/60 transition-colors"
-                aria-label="Follow us on TikTok"
-              >
-                <img src="/tiktok-logo.png" alt="TikTok" width={64} height={64} className="opacity-80 hover:opacity-100 transition-opacity" />
-              </a>
+              
             </div>
 
             {/* Copyright */}
