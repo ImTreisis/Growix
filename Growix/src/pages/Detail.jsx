@@ -13,8 +13,7 @@ const formatSeminarDate = (date, timeZone) => {
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      timeZone: tz,
-      timeZoneName: 'short'
+      timeZone: tz
     }).format(new Date(date))
   } catch (err) {
     console.warn('Failed to format detail date', err)
