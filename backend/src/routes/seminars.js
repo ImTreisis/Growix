@@ -38,7 +38,7 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '', imageUrl = '' } = req.body;
+    const { title, description = '', date, style, level, venue = '', imageUrl = '', timeZone } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
     
     // Validate date is not in the past
@@ -47,8 +47,9 @@ router.post('/', requireAuth, async (req, res) => {
     if (seminarDate < now) {
       return res.status(400).json({ message: 'Cannot create a seminar in the past. Please select a future date and time.' });
     }
+    const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -67,7 +68,7 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '' } = req.body;
+    const { title, description = '', date, style, level, venue = '', timeZone } = req.body;
     if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
     
     // Validate date is not in the past
@@ -95,9 +96,10 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
         imageUrl = result.secure_url;
       }
     }
+    const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
     // Only create seminar AFTER image upload succeeds
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -157,7 +159,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
   
-  const { title, description, date, style, level, venue, imageUrl } = req.body;
+  const { title, description, date, style, level, venue, imageUrl, timeZone } = req.body;
   
   // Validate date is not in the past if updating date
   if (date !== undefined) {
@@ -175,6 +177,9 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (level !== undefined) seminar.level = level;
   if (venue !== undefined) seminar.venue = venue;
   if (imageUrl !== undefined) seminar.imageUrl = imageUrl;
+  if (timeZone !== undefined) {
+    seminar.timeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : seminar.timeZone;
+  }
   await seminar.save();
   res.json({ seminar });
 });

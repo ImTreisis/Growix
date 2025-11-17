@@ -3,6 +3,25 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+const formatSeminarDate = (date, timeZone) => {
+  if(!date) return ''
+  const tz = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC'
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: tz,
+      timeZoneName: 'short'
+    }).format(new Date(date))
+  } catch (err) {
+    console.warn('Failed to format detail date', err)
+    return new Date(date).toLocaleString()
+  }
+}
+
 function IconPin(props){return (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
     <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/>
@@ -75,13 +94,7 @@ export default function Detail(){
 
   if(!item) return null
 
-  const dateStr = new Date(item.date).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  })
+  const dateStr = formatSeminarDate(item.date, item.timeZone)
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 

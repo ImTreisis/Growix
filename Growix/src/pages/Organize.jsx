@@ -2,10 +2,28 @@ import { useState } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+const getDefaultTimeZone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
+  }
+}
+
 export default function Organize() {
   const { api } = useAuth()
   const { show } = useToast()
-  const [form, setForm] = useState({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image: null })
+  const [form, setForm] = useState(() => ({
+    title:'', 
+    description:'', 
+    date:'', 
+    style:'hip-hop', 
+    level:'beginner', 
+    venue:'', 
+    customStyle:'', 
+    image: null,
+    timeZone: getDefaultTimeZone()
+  }))
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -32,7 +50,17 @@ export default function Organize() {
         const r = await api.post('/seminars', submitData)
         setMessage(`Created: ${r.data.seminar.title}`)
       }
-      setForm({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', customStyle:'', image:null })
+      setForm({ 
+        title:'', 
+        description:'', 
+        date:'', 
+        style:'hip-hop', 
+        level:'beginner', 
+        venue:'', 
+        customStyle:'', 
+        image:null,
+        timeZone: getDefaultTimeZone()
+      })
       show('Seminar created')
     } catch (err) {
       console.error('Failed to create seminar:', err)
