@@ -38,8 +38,9 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '', imageUrl = '', timeZone } = req.body;
-    if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
+    const { title, description = '', date, localDateTime, style, level, venue = '', imageUrl = '', timeZone } = req.body;
+    const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
+    if (!title || !date || !style || !level || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing fields' });
     
     // Validate date is not in the past
     const seminarDate = new Date(date);
@@ -49,7 +50,7 @@ router.post('/', requireAuth, async (req, res) => {
     }
     const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, localDateTime: trimmedLocalDateTime, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -68,8 +69,9 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { title, description = '', date, style, level, venue = '', timeZone } = req.body;
-    if (!title || !date || !style || !level || !venue) return res.status(400).json({ message: 'Missing fields' });
+    const { title, description = '', date, localDateTime, style, level, venue = '', timeZone } = req.body;
+    const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
+    if (!title || !date || !style || !level || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing fields' });
     
     // Validate date is not in the past
     const seminarDate = new Date(date);
@@ -99,7 +101,7 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
     const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
     // Only create seminar AFTER image upload succeeds
-    const seminar = await Seminar.create({ title, description, date, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
+    const seminar = await Seminar.create({ title, description, date, localDateTime: trimmedLocalDateTime, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -159,7 +161,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
   
-  const { title, description, date, style, level, venue, imageUrl, timeZone } = req.body;
+  const { title, description, date, localDateTime, style, level, venue, imageUrl, timeZone } = req.body;
   
   // Validate date is not in the past if updating date
   if (date !== undefined) {
@@ -169,6 +171,12 @@ router.put('/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Cannot update seminar to a past date. Please select a future date and time.' });
     }
     seminar.date = date;
+  }
+  if (localDateTime !== undefined) {
+    const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
+    if (trimmedLocalDateTime) {
+      seminar.localDateTime = trimmedLocalDateTime;
+    }
   }
   
   if (title !== undefined) seminar.title = title;

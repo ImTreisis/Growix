@@ -5,6 +5,7 @@ const seminarSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
     date: { type: Date, required: true },
+    localDateTime: { type: String, required: true, trim: true, default: '' },
     timeZone: { type: String, default: 'UTC' },
     style: { type: String, required: true },
     level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], required: true },

@@ -1,22 +1,41 @@
 import { useState } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 
-function formatSeminarDate(date, timeZone){
-  if(!date) return ''
-  const tz = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC'
+function formatLocalDateTime(value){
+  if(!value) return ''
   try{
+    let base = typeof value === 'string' ? value.trim() : String(value)
+    if(!base) return ''
+    if(base.includes('.')) base = base.split('.')[0]
+    if(base.endsWith('Z')) base = base.slice(0, -1)
+    if(base.length > 16) base = base.slice(0, 16)
+    if(!base.includes('T')) return base
+    const [datePart, timePart = ''] = base.split('T')
+    const [year, month, day] = datePart.split('-').map(Number)
+    const [hourStr = '00', minuteStr = '00'] = timePart.split(':')
+    if([year, month, day].some((n)=>Number.isNaN(n))) return base
+    const hour = Number.parseInt(hourStr, 10)
+    const minute = Number.parseInt(minuteStr, 10)
+    const dateObj = new Date(Date.UTC(year, (month||1)-1, day || 1, Number.isNaN(hour)?0:hour, Number.isNaN(minute)?0:minute))
     return new Intl.DateTimeFormat(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-      hour: 'numeric',
+      hour: '2-digit',
       minute: '2-digit',
-      timeZone: tz
-    }).format(new Date(date))
+      hour12: false,
+      timeZone: 'UTC'
+    }).format(dateObj)
   }catch(err){
     console.warn('Failed to format seminar date', err)
-    return new Date(date).toLocaleString()
+    return value
   }
+}
+
+function formatSeminarDate(localDateTime, fallbackDate){
+  const label = formatLocalDateTime(localDateTime)
+  if(label) return label
+  return formatLocalDateTime(fallbackDate)
 }
 
 function IconPin(props){return (
@@ -42,7 +61,7 @@ export default function SeminarCard({ item }){
   const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
   const [isSaving, setIsSaving] = useState(false)
 
-  const dateStr = formatSeminarDate(item.date, item.timeZone)
+  const dateStr = formatSeminarDate(item.localDateTime, item.date)
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 

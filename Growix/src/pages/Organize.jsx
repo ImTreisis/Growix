@@ -13,7 +13,7 @@ const getDefaultTimeZone = () => {
 export default function Organize() {
   const { api } = useAuth()
   const { show } = useToast()
-  const [form, setForm] = useState(() => ({
+    const [form, setForm] = useState(() => ({
     title:'', 
     description:'', 
     date:'', 
@@ -35,7 +35,21 @@ export default function Organize() {
     
     setIsSubmitting(true)
     try {
+      const localDateTime = form.date
+      if(!localDateTime){
+        show('Please choose a date and time', 'error')
+        setIsSubmitting(false)
+        return
+      }
+      const parsedDate = new Date(localDateTime)
+      if (Number.isNaN(parsedDate.getTime())) {
+        show('Invalid date/time', 'error')
+        setIsSubmitting(false)
+        return
+      }
       const submitData = { ...form }
+      submitData.date = parsedDate.toISOString()
+      submitData.localDateTime = localDateTime
       if (form.style === 'custom' && form.customStyle) {
         submitData.style = form.customStyle
       }

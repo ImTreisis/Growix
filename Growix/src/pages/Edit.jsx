@@ -19,10 +19,11 @@ export default function Edit(){
         return
       }
       const isCustomStyle = !['hip-hop', 'breaking', 'popping', 'locking', 'house', 'waacking', 'vogue', 'dancehall', 'afro', 'commercial', 'twerk', 'contemporary', 'jazz', 'modern', 'ballet', 'salsa', 'bachata', 'high-heels', 'freestyle'].includes(s.style)
+      const dateInput = s.localDateTime || new Date(s.date).toISOString().slice(0,16)
       setForm({
         title:s.title,
         description:s.description||'',
-        date: new Date(s.date).toISOString().slice(0,16),
+        date: dateInput,
         style: isCustomStyle ? 'custom' : s.style,
         level:s.level,
         venue:s.venue||'',
@@ -36,13 +37,26 @@ export default function Edit(){
   const submit = async (e)=>{
     e.preventDefault()
     try{
+      if(!form.date){
+        show('Please choose a date and time', 'error')
+        return
+      }
+      const parsedDate = new Date(form.date)
+      if(Number.isNaN(parsedDate.getTime())){
+        show('Invalid date/time', 'error')
+        return
+      }
       const submitData = { ...form }
       if (form.style === 'custom' && form.customStyle) {
         submitData.style = form.customStyle
       }
       delete submitData.customStyle
       
-      await api.put(`/seminars/${id}`, { ...submitData, date: form.date })
+      await api.put(`/seminars/${id}`, { 
+        ...submitData, 
+        date: parsedDate.toISOString(),
+        localDateTime: form.date 
+      })
       show('Seminar updated')
       navigate(`/detail/${id}`)
     }catch{ show('Update failed', 'error') }
