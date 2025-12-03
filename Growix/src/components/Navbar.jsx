@@ -48,7 +48,7 @@ export default function Navbar() {
               Create
             </button>
             <div className="pointer-events-none invisible opacity-0 group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity absolute left-0 top-full bg-white rounded-xl shadow-cozy border p-2 min-w-[180px]">
-              <NavLink to="/create" className="block px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:font-bold" style={{color: '#ff8c00', backgroundColor: 'rgba(253, 186, 116, 0.75)'}}>Workshop</NavLink>
+              <NavLink to="/create" className="block px-3 py-2 rounded-lg hover:bg-orange-100 transition-all duration-200 hover:scale-105 hover:font-bold" style={{color: '#ff8c00'}}>Workshop</NavLink>
               <NavLink to="/create-event" className="block px-3 py-2 rounded-lg hover:bg-pink-100 transition-all duration-200 hover:scale-105 hover:font-bold" style={{color: '#ff69b4'}}>Event</NavLink>
             </div>
           </div>
@@ -173,8 +173,8 @@ export default function Navbar() {
                 <NavLink 
                   to="/create" 
                   onClick={()=>setMenuOpen(false)} 
-                  className="px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:font-bold"
-                  style={{color: '#ff8c00', backgroundColor: 'rgba(253, 186, 116, 0.75)'}}
+                  className="px-3 py-2 rounded-lg hover:bg-orange-100 transition-all duration-200 hover:scale-105 hover:font-bold"
+                  style={{color: '#ff8c00'}}
                 >
                   Workshop
                 </NavLink>
