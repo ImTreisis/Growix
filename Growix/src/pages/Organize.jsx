@@ -20,6 +20,7 @@ export default function Organize() {
     style:'hip-hop', 
     level:'beginner', 
     venue:'', 
+    price:'',
     customStyle:'', 
     image: null,
     timeZone: getDefaultTimeZone()
@@ -47,7 +48,7 @@ export default function Organize() {
         setIsSubmitting(false)
         return
       }
-      const submitData = { ...form }
+      const submitData = { ...form, type: 'workshop' }
       submitData.date = parsedDate.toISOString()
       submitData.localDateTime = localDateTime
       if (form.style === 'custom' && form.customStyle) {
@@ -71,6 +72,7 @@ export default function Organize() {
         style:'hip-hop', 
         level:'beginner', 
         venue:'', 
+        price:'',
         customStyle:'', 
         image:null,
         timeZone: getDefaultTimeZone()
@@ -88,15 +90,21 @@ export default function Organize() {
   }
 
   return (
-    <div className="flex justify-center">
-      <form onSubmit={submit} className="cozy-card p-6 grid gap-4 max-w-xl w-full shadow-subtle">
-        <h2 className="text-2xl font-semibold text-dusk text-center font-poppins">Create a workshop</h2>
-        
-        <input type="file" accept="image/*" onChange={(e)=>setForm({...form, image: e.target.files?.[0]||null})} className="w-full px-3 py-2 rounded-xl border" />
-        
-        <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-xl border" />
-        
-        <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
+    <>
+      <div className="w-full bg-orange-400 py-4 mb-6">
+        <div className="max-w-6xl mx-auto px-4">
+          <h1 className="text-3xl font-bold text-black font-poppins text-center">Workshops & Open Classes</h1>
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <form onSubmit={submit} className="cozy-card p-6 grid gap-4 max-w-xl w-full shadow-subtle">
+          <input type="file" accept="image/*" onChange={(e)=>setForm({...form, image: e.target.files?.[0]||null})} className="w-full px-3 py-2 rounded-xl border" />
+          
+          <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-xl border" />
+          
+          <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
+          
+          <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value})} placeholder="Price (optional)" className="w-full px-3 py-2 rounded-xl border" />
         
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} className="w-full px-3 py-2 rounded-xl border" />
         
@@ -149,8 +157,9 @@ export default function Organize() {
           {isSubmitting ? 'Creating...' : 'Create Workshop'}
         </button>
         {message && <p className="text-cocoa text-center">{message}</p>}
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   )
 }
 

@@ -110,6 +110,7 @@ export default function Detail(){
   if(!item) return null
 
   const dateStr = formatSeminarDate(item.localDateTime, item.date)
+  const isWorkshop = item.type === 'workshop' || (!item.type && item.style && item.level)
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
@@ -121,10 +122,17 @@ export default function Detail(){
       <div className="cozy-card p-6 h-fit">
         <h1 className="text-2xl font-semibold text-dusk mb-4">{item.title}</h1>
         
-        {/* Style, Level, and Saved count in a line */}
+        {/* Style, Level, Price, and Saved count in a line */}
         <div className="flex items-center gap-3 mb-4">
-          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{styleLabel}</span>
-          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
+          {isWorkshop && styleLabel && levelLabel && (
+            <>
+              <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{styleLabel}</span>
+              <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
+            </>
+          )}
+          {item.price && (
+            <span className="text-pink-500 font-semibold">{item.price}</span>
+          )}
            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-white ${isSaved ? 'bg-pink-500' : 'bg-pink-300'} bg-opacity-100`}>
              <button 
                onClick={handleSave}

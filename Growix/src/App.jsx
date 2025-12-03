@@ -5,7 +5,9 @@ import Footer from './components/Footer.jsx'
 import LogoutListener from './components/LogoutListener.jsx'
 import Home from './pages/Home.jsx'
 import Browse from './pages/Browse.jsx'
+import Events from './pages/Events.jsx'
 import Organize from './pages/Organize.jsx'
+import OrganizeEvent from './pages/OrganizeEvent.jsx'
 import About from './pages/About.jsx'
 import Profile from './pages/Profile.jsx'
 import PublicProfile from './pages/PublicProfile.jsx'
@@ -47,10 +49,12 @@ export default function App() {
           <main className="max-w-6xl mx-auto px-4 py-6">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/workshops" element={<Browse />} />
               <Route path="/detail/:id" element={<Detail />} />
               <Route path="/detail/:id/edit" element={<PrivateRoute><Edit /></PrivateRoute>} />
               <Route path="/create" element={<PrivateRoute><Organize /></PrivateRoute>} />
+              <Route path="/create-event" element={<PrivateRoute><OrganizeEvent /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="/profile/:userId" element={<PublicProfile />} />
               <Route path="/about" element={<About />} />

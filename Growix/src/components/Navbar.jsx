@@ -7,12 +7,27 @@ export default function Navbar() {
   const { user } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [workshopsOpen, setWorkshopsOpen] = useState(false)
+  const [eventsOpen, setEventsOpen] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
   return (
     <header className="bg-white/95 backdrop-blur sticky top-0 z-40 border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <Logo />
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-dusk font-poppins">
+          <div className="relative group">
+            <NavLink 
+              to="/events" 
+              className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : ''}`}
+            >
+              Events
+            </NavLink>
+            <div className="pointer-events-none invisible opacity-0 group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity absolute left-0 top-full bg-white rounded-xl shadow-cozy border p-2 min-w-[180px]">
+              <NavLink to="/events" className="block px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]">All Events</NavLink>
+              <NavLink to="/events?tab=liked" className="block px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]">Liked</NavLink>
+              <NavLink to="/events?tab=organized" className="block px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]">Organized</NavLink>
+            </div>
+          </div>
           <div className="relative group">
             <NavLink 
               to="/workshops" 
@@ -26,12 +41,17 @@ export default function Navbar() {
               <NavLink to="/workshops?tab=organized" className="block px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]">Organized</NavLink>
             </div>
           </div>
-          <NavLink 
-            to="/create" 
-            className={({isActive})=>`transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66] ${isActive ? 'text-[#df1f66] font-bold' : ''}`}
-          >
-            Create
-          </NavLink>
+          <div className="relative group">
+            <button 
+              className="transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]"
+            >
+              Create
+            </button>
+            <div className="pointer-events-none invisible opacity-0 group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity absolute left-0 top-full bg-white rounded-xl shadow-cozy border p-2 min-w-[180px]">
+              <NavLink to="/create" className="block px-3 py-2 rounded-lg hover:bg-orange-100 transition-all duration-200 hover:scale-105 hover:font-bold" style={{color: '#ff8c00'}}>Workshop</NavLink>
+              <NavLink to="/create-event" className="block px-3 py-2 rounded-lg hover:bg-pink-100 transition-all duration-200 hover:scale-105 hover:font-bold" style={{color: '#ff69b4'}}>Event</NavLink>
+            </div>
+          </div>
           {user ? (
             <div className="flex items-center gap-4">
               <NavLink 
@@ -82,6 +102,37 @@ export default function Navbar() {
           <div className="max-w-6xl mx-auto px-4 py-3 grid gap-2 text-dusk font-poppins">
             <button 
               className="text-left px-3 py-2 rounded-lg bg-warm2/50 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]" 
+              onClick={()=>setEventsOpen(v=>!v)}
+            >
+              Events
+            </button>
+            {eventsOpen && (
+              <div className="ml-3 grid gap-1">
+                <NavLink 
+                  to="/events" 
+                  onClick={()=>setMenuOpen(false)} 
+                  className="px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]"
+                >
+                  All Events
+                </NavLink>
+                <NavLink 
+                  to="/events?tab=liked" 
+                  onClick={()=>setMenuOpen(false)} 
+                  className="px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]"
+                >
+                  Liked
+                </NavLink>
+                <NavLink 
+                  to="/events?tab=organized" 
+                  onClick={()=>setMenuOpen(false)} 
+                  className="px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]"
+                >
+                  Organized
+                </NavLink>
+              </div>
+            )}
+            <button 
+              className="text-left px-3 py-2 rounded-lg bg-warm2/50 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]" 
               onClick={()=>setWorkshopsOpen(v=>!v)}
             >
               Workshops
@@ -111,13 +162,32 @@ export default function Navbar() {
                 </NavLink>
               </div>
             )}
-            <NavLink 
-              to="/create" 
-              onClick={()=>setMenuOpen(false)} 
-              className="px-3 py-2 rounded-lg hover:bg-warm2/60 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]"
+            <button 
+              className="text-left px-3 py-2 rounded-lg bg-warm2/50 transition-all duration-200 hover:scale-105 hover:font-bold hover:text-[#df1f66]" 
+              onClick={()=>setCreateOpen(v=>!v)}
             >
               Create
-            </NavLink>
+            </button>
+            {createOpen && (
+              <div className="ml-3 grid gap-1">
+                <NavLink 
+                  to="/create" 
+                  onClick={()=>setMenuOpen(false)} 
+                  className="px-3 py-2 rounded-lg hover:bg-orange-100 transition-all duration-200 hover:scale-105 hover:font-bold"
+                  style={{color: '#ff8c00'}}
+                >
+                  Workshop
+                </NavLink>
+                <NavLink 
+                  to="/create-event" 
+                  onClick={()=>setMenuOpen(false)} 
+                  className="px-3 py-2 rounded-lg hover:bg-pink-100 transition-all duration-200 hover:scale-105 hover:font-bold"
+                  style={{color: '#ff69b4'}}
+                >
+                  Event
+                </NavLink>
+              </div>
+            )}
             {user ? (
               <>
                 <NavLink 

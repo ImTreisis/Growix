@@ -62,6 +62,7 @@ export default function SeminarCard({ item }){
   const [isSaving, setIsSaving] = useState(false)
 
   const dateStr = formatSeminarDate(item.localDateTime, item.date)
+  const isWorkshop = item.type === 'workshop' || (!item.type && item.style && item.level)
   const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
@@ -113,10 +114,12 @@ export default function SeminarCard({ item }){
         {item.description && (
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
-        <div className="mt-2 flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
-          <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
-        </div>
+        {isWorkshop && (
+          <div className="mt-2 flex items-center gap-3">
+            <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
+            <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
+          </div>
+        )}
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
           <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
           <div className="flex items-center gap-2">
@@ -141,6 +144,9 @@ export default function SeminarCard({ item }){
         </div>
         <div className="mt-5 flex items-center gap-3">
           <a href={`/detail/${item._id}`} className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</a>
+          {item.price && (
+            <span className="text-pink-500 font-semibold">{item.price}</span>
+          )}
         </div>
       </div>
     </article>

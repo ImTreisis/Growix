@@ -30,18 +30,18 @@ export default function Browse() {
       try {
         if (tab === 'liked' && user) {
           // For now, fetch all and filter client-side since we don't have a server endpoint for saved seminars
-          const r = await api.get('/seminars', { params: { limit: 100, offset: 0 } })
+          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 } })
           const savedIds = new Set((user.savedSeminars||[]).map(s=> String(s?._id||s)))
           const likedList = r.data.seminars.filter(s=> savedIds.has(String(s._id)))
           setItems(likedList)
         } else if (tab === 'organized' && user) {
           // For now, fetch all and filter client-side since we don't have a server endpoint for user's seminars
-          const r = await api.get('/seminars', { params: { limit: 100, offset: 0 } })
+          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 } })
           const all = r.data.seminars
           const mine = all.filter(s=> String(s.createdBy?._id ?? s.createdBy) === String(user._id))
           setItems(mine)
         } else {
-          const r = await api.get('/seminars', { params: { ...query, limit: 20, offset: 0 } })
+          const r = await api.get('/seminars', { params: { ...query, type: 'workshop', limit: 20, offset: 0 } })
           setItems(r.data.seminars)
         }
       } catch (err) {

@@ -38,9 +38,18 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, localDateTime, style, level, venue = '', imageUrl = '', timeZone } = req.body;
+    const { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', imageUrl = '', timeZone, endDate, endLocalDateTime } = req.body;
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
-    if (!title || !date || !style || !level || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing fields' });
+    const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
+    
+    // Validation based on type
+    if (!title || !date || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing required fields' });
+    
+    if (type === 'workshop') {
+      if (!style || !level) return res.status(400).json({ message: 'Style and level are required for workshops' });
+    } else if (type === 'event') {
+      if (!endDate || !trimmedEndLocalDateTime) return res.status(400).json({ message: 'End date is required for events' });
+    }
     
     // Validate date is not in the past
     const seminarDate = new Date(date);
@@ -48,9 +57,38 @@ router.post('/', requireAuth, async (req, res) => {
     if (seminarDate < now) {
       return res.status(400).json({ message: 'Cannot create a seminar in the past. Please select a future date and time.' });
     }
+    
+    // Validate endDate is after start date for events
+    if (endDate) {
+      const end = new Date(endDate);
+      if (end < seminarDate) {
+        return res.status(400).json({ message: 'End date must be after start date' });
+      }
+    }
+    
     const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
-    const seminar = await Seminar.create({ title, description, date, localDateTime: trimmedLocalDateTime, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
+    const seminarData = { 
+      title, 
+      description, 
+      date, 
+      localDateTime: trimmedLocalDateTime, 
+      type,
+      venue, 
+      imageUrl, 
+      timeZone: seminarTimeZone, 
+      createdBy: req.userId 
+    };
+    
+    if (type === 'workshop') {
+      seminarData.style = style;
+      seminarData.level = level;
+    } else if (type === 'event') {
+      seminarData.endDate = endDate;
+      seminarData.endLocalDateTime = trimmedEndLocalDateTime;
+    }
+    
+    const seminar = await Seminar.create(seminarData);
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -69,15 +107,32 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { title, description = '', date, localDateTime, style, level, venue = '', timeZone } = req.body;
+    const { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', timeZone, endDate, endLocalDateTime } = req.body;
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
-    if (!title || !date || !style || !level || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing fields' });
+    const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
+    
+    // Validation based on type
+    if (!title || !date || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing required fields' });
+    
+    if (type === 'workshop') {
+      if (!style || !level) return res.status(400).json({ message: 'Style and level are required for workshops' });
+    } else if (type === 'event') {
+      if (!endDate || !trimmedEndLocalDateTime) return res.status(400).json({ message: 'End date is required for events' });
+    }
     
     // Validate date is not in the past
     const seminarDate = new Date(date);
     const now = new Date();
     if (seminarDate < now) {
       return res.status(400).json({ message: 'Cannot create a seminar in the past. Please select a future date and time.' });
+    }
+    
+    // Validate endDate is after start date for events
+    if (endDate) {
+      const end = new Date(endDate);
+      if (end < seminarDate) {
+        return res.status(400).json({ message: 'End date must be after start date' });
+      }
     }
     
     // Upload image FIRST (before creating seminar in DB)
@@ -100,8 +155,29 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
     }
     const seminarTimeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : 'UTC';
     
+    const seminarData = { 
+      title, 
+      description, 
+      date, 
+      localDateTime: trimmedLocalDateTime, 
+      type,
+      venue,
+      price: price || '',
+      imageUrl, 
+      timeZone: seminarTimeZone, 
+      createdBy: req.userId 
+    };
+    
+    if (type === 'workshop') {
+      seminarData.style = style;
+      seminarData.level = level;
+    } else if (type === 'event') {
+      seminarData.endDate = endDate;
+      seminarData.endLocalDateTime = trimmedEndLocalDateTime;
+    }
+    
     // Only create seminar AFTER image upload succeeds
-    const seminar = await Seminar.create({ title, description, date, localDateTime: trimmedLocalDateTime, style, level, venue, imageUrl, timeZone: seminarTimeZone, createdBy: req.userId });
+    const seminar = await Seminar.create(seminarData);
     
     // Populate createdBy field for consistent response
     await seminar.populate('createdBy', 'username photoUrl');
@@ -119,7 +195,7 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
 
 // List and filter seminars
 router.get('/', async (req, res) => {
-  const { date, style, level, q, limit = 20, offset = 0 } = req.query;
+  const { date, style, level, q, type, limit = 20, offset = 0 } = req.query;
   const filter = {};
   
   // Always filter out past seminars (only show future seminars)
@@ -133,6 +209,7 @@ router.get('/', async (req, res) => {
       filter.date = { $gte: d, $lt: nextDay };
     }
   }
+  if (type) filter.type = type;
   if (style) filter.style = style;
   if (level) filter.level = level;
   if (q) {
@@ -161,7 +238,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
   
-  const { title, description, date, localDateTime, style, level, venue, imageUrl, timeZone } = req.body;
+  const { title, description, date, localDateTime, type, style, level, venue, price, imageUrl, timeZone, endDate, endLocalDateTime } = req.body;
   
   // Validate date is not in the past if updating date
   if (date !== undefined) {
@@ -181,12 +258,24 @@ router.put('/:id', requireAuth, async (req, res) => {
   
   if (title !== undefined) seminar.title = title;
   if (description !== undefined) seminar.description = description;
+  if (type !== undefined) seminar.type = type;
   if (style !== undefined) seminar.style = style;
   if (level !== undefined) seminar.level = level;
   if (venue !== undefined) seminar.venue = venue;
+  if (price !== undefined) seminar.price = price || '';
   if (imageUrl !== undefined) seminar.imageUrl = imageUrl;
   if (timeZone !== undefined) {
     seminar.timeZone = typeof timeZone === 'string' && timeZone.trim() ? timeZone : seminar.timeZone;
+  }
+  if (endDate !== undefined) {
+    if (endDate && seminar.date && new Date(endDate) < new Date(seminar.date)) {
+      return res.status(400).json({ message: 'End date must be after start date' });
+    }
+    seminar.endDate = endDate || null;
+  }
+  if (endLocalDateTime !== undefined) {
+    const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
+    seminar.endLocalDateTime = trimmedEndLocalDateTime || '';
   }
   await seminar.save();
   res.json({ seminar });

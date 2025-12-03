@@ -32,7 +32,7 @@ export default function ForgotPassword() {
     <div className="max-w-md mx-auto cozy-card p-6 grid gap-3 shadow-subtle">
       <div>
         <h1 className="text-2xl font-poppins font-semibold text-black">Forgot password</h1>
-        <p className="text-sm text-neutral-600">We will email you a link to choose a new password.</p>
+        <p className="text-sm text-neutral-600">We will email you a link to choose a new password. Check Spam!</p>
       </div>
       <form onSubmit={submit} className="grid gap-3">
         <div>
