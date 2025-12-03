@@ -9,7 +9,7 @@ const seminarSchema = new mongoose.Schema(
     timeZone: { type: String, default: 'UTC' },
     type: { type: String, enum: ['workshop', 'event'], default: 'workshop' },
     style: { type: String, default: '' },
-    level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: '' },
+    level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: null },
     endDate: { type: Date, default: null },
     endLocalDateTime: { type: String, default: '' },
     venue: { type: String, required: true, trim: true },

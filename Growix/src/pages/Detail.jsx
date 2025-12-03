@@ -130,9 +130,6 @@ export default function Detail(){
               <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
             </>
           )}
-          {item.price && (
-            <span className="text-pink-500 font-semibold">{item.price}</span>
-          )}
            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-white ${isSaved ? 'bg-pink-500' : 'bg-pink-300'} bg-opacity-100`}>
              <button 
                onClick={handleSave}
@@ -144,6 +141,9 @@ export default function Detail(){
                <span className="text-sm font-bold">{savedCount}</span>
              </button>
            </div>
+          {item.price && (
+            <span className="px-3 py-1 rounded-full text-pink-500 font-semibold bg-pink-100">€{item.price}</span>
+          )}
         </div>
 
         {/* Location with pin icon */}

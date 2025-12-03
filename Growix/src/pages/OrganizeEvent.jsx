@@ -114,7 +114,7 @@ export default function OrganizeEvent() {
         <form onSubmit={submit} className="cozy-card p-6 grid gap-4 max-w-xl w-full shadow-subtle">
           <input type="file" accept="image/*" onChange={(e)=>setForm({...form, image: e.target.files?.[0]||null})} className="w-full px-3 py-2 rounded-xl border" />
         
-        <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-xl border" />
+        <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-full border-2 border-orange-300 focus:border-orange-300 focus:ring-2 focus:ring-orange-300/20" style={{backgroundColor: 'rgba(253, 186, 116, 0.75)'}} />
         
         <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
         

@@ -38,7 +38,13 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', imageUrl = '', timeZone, endDate, endLocalDateTime } = req.body;
+    let { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', imageUrl = '', timeZone, endDate, endLocalDateTime } = req.body;
+  
+  // Clean up empty strings for events - FormData might send empty strings
+  if (type === 'event') {
+    if (!style || style.trim() === '') style = undefined;
+    if (!level || level.trim() === '') level = undefined;
+  }
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
     const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
     
@@ -87,6 +93,9 @@ router.post('/', requireAuth, async (req, res) => {
     } else if (type === 'event') {
       seminarData.endDate = endDate;
       seminarData.endLocalDateTime = trimmedEndLocalDateTime;
+      // Explicitly don't set style/level for events
+      delete seminarData.style;
+      delete seminarData.level;
     }
     
     const seminar = await Seminar.create(seminarData);
@@ -108,7 +117,14 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', timeZone, endDate, endLocalDateTime } = req.body;
+    let { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', timeZone, endDate, endLocalDateTime } = req.body;
+    
+    // Clean up empty strings for events - FormData might send empty strings
+    if (type === 'event') {
+      if (!style || style.trim() === '') style = undefined;
+      if (!level || level.trim() === '') level = undefined;
+    }
+    
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
     const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
     
@@ -175,6 +191,9 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
     } else if (type === 'event') {
       seminarData.endDate = endDate;
       seminarData.endLocalDateTime = trimmedEndLocalDateTime;
+      // Explicitly don't set style/level for events
+      delete seminarData.style;
+      delete seminarData.level;
     }
     
     // Only create seminar AFTER image upload succeeds

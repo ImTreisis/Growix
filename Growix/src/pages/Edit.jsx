@@ -97,12 +97,15 @@ export default function Edit(){
       <form onSubmit={submit} className="cozy-card p-6 grid gap-4 max-w-xl w-full shadow-subtle">
         <h2 className="text-2xl font-semibold text-dusk text-center font-poppins">{isEvent ? 'Edit event' : 'Edit workshop'}</h2>
         
-        <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-xl border" />
+        <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-full border-2 border-orange-300 focus:border-orange-300 focus:ring-2 focus:ring-orange-300/20" style={{backgroundColor: 'rgba(253, 186, 116, 0.75)'}} />
         
           <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
           
           {!isEvent && (
-            <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value})} placeholder="Price (optional)" className="w-full px-3 py-2 rounded-xl border" />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>
+              <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})} placeholder="Price (optional)" className="w-full pl-8 pr-3 py-2 rounded-xl border" />
+            </div>
           )}
           
           <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} placeholder="Start Date & Time" className="w-full px-3 py-2 rounded-xl border" />

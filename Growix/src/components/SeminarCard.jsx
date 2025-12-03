@@ -145,7 +145,7 @@ export default function SeminarCard({ item }){
         <div className="mt-5 flex items-center gap-3">
           <a href={`/detail/${item._id}`} className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</a>
           {item.price && (
-            <span className="text-pink-500 font-semibold">{item.price}</span>
+            <span className="px-3 py-1 rounded-full text-pink-500 font-semibold bg-pink-100">€{item.price}</span>
           )}
         </div>
       </div>
