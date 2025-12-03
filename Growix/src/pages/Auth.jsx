@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
@@ -156,6 +156,9 @@ export default function Auth() {
                 onFocus={clearErrors}
               />
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+              <div className="text-sm mt-2">
+                <Link to="/forgot-password" className="text-dusk font-semibold">Forgot password?</Link>
+              </div>
             </div>
           </>
         ) : (

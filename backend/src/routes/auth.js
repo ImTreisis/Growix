@@ -1,7 +1,10 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import User from '../models/User.js';
+import PasswordResetToken from '../models/PasswordResetToken.js';
 import { requireAuth } from '../middleware/auth.js';
+import { sendPasswordResetEmail } from '../lib/email.js';
 
 const router = express.Router();
 
@@ -142,6 +145,91 @@ router.post('/login', async (req, res) => {
         res.json({ user: sanitizeUser(user) });
       });
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/request-password-reset', async (req, res) => {
+  try {
+    let { email } = req.body;
+    email = sanitizeInput(email?.toLowerCase());
+
+    if (!email || !validateEmail(email)) {
+      return res.status(200).json({ message: 'If your email is in our system, you will receive a reset link shortly' });
+    }
+
+    const user = await User.findOne({ email });
+    if (user) {
+      // Remove older tokens for this user
+      await PasswordResetToken.deleteMany({ user: user._id });
+
+      const token = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      await PasswordResetToken.create({ user: user._id, tokenHash, expiresAt });
+
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          name: user.firstName || user.username,
+          token
+        });
+      } catch (emailErr) {
+        console.error('❌ Failed to send password reset email:', emailErr);
+      }
+    }
+
+    res.json({ message: 'If your email is in our system, you will receive a reset link shortly' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    let { token, password } = req.body;
+    token = sanitizeInput(token);
+    password = sanitizeInput(password);
+
+    if (!token || !password) {
+      return res.status(400).json({ message: 'Token and password are required' });
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        message: 'Password does not meet requirements',
+        errors: passwordValidation.errors
+      });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const resetRecord = await PasswordResetToken.findOne({
+      tokenHash,
+      expiresAt: { $gt: new Date() },
+      usedAt: null
+    });
+
+    if (!resetRecord) {
+      return res.status(400).json({ message: 'Invalid or expired reset link' });
+    }
+
+    const user = await User.findById(resetRecord.user);
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid reset link' });
+    }
+
+    user.passwordHash = await bcrypt.hash(password, 12);
+    await user.save();
+
+    resetRecord.usedAt = new Date();
+    await resetRecord.save();
+
+    res.json({ message: 'Password updated — you can log in now' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

@@ -11,6 +11,8 @@ import Profile from './pages/Profile.jsx'
 import PublicProfile from './pages/PublicProfile.jsx'
 import Saved from './pages/Saved.jsx'
 import Auth from './pages/Auth.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
+import ResetPassword from './pages/ResetPassword.jsx'
 import Detail from './pages/Detail.jsx'
 import Edit from './pages/Edit.jsx'
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
@@ -55,6 +57,8 @@ export default function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </main>
           <Footer />
