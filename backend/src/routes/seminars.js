@@ -74,7 +74,8 @@ router.post('/', requireAuth, async (req, res) => {
       date, 
       localDateTime: trimmedLocalDateTime, 
       type,
-      venue, 
+      venue,
+      price: price || '',
       imageUrl, 
       timeZone: seminarTimeZone, 
       createdBy: req.userId 
@@ -209,15 +210,40 @@ router.get('/', async (req, res) => {
       filter.date = { $gte: d, $lt: nextDay };
     }
   }
-  if (type) filter.type = type;
+  
+  // Handle type filter (workshop or event)
+  if (type) {
+    if (type === 'workshop') {
+      // Handle both new seminars with type field and old seminars without it
+      filter.$and = filter.$and || [];
+      filter.$and.push({
+        $or: [
+          { type: 'workshop' },
+          { type: { $exists: false }, style: { $exists: true }, level: { $exists: true } }
+        ]
+      });
+    } else if (type === 'event') {
+      filter.type = 'event';
+    }
+  }
+  
   if (style) filter.style = style;
   if (level) filter.level = level;
+  
+  // Handle search query - combine with type filter if both exist
   if (q) {
-    filter.$or = [
+    const searchOr = [
       { title: { $regex: q, $options: 'i' } },
       { venue: { $regex: q, $options: 'i' } }
     ];
+    
+    if (filter.$and) {
+      filter.$and.push({ $or: searchOr });
+    } else {
+      filter.$or = searchOr;
+    }
   }
+  
   const seminars = await Seminar.find(filter).sort({ date: 1 }).populate('createdBy', 'username photoUrl').limit(parseInt(limit)).skip(parseInt(offset));
   const total = await Seminar.countDocuments(filter);
   res.json({ seminars, total, hasMore: seminars.length === parseInt(limit) });
