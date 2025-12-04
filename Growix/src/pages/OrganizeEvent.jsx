@@ -105,7 +105,7 @@ export default function OrganizeEvent() {
 
   return (
     <>
-      <div className="w-full bg-pink-100 py-4 mb-6">
+      <div className="w-full bg-pink-300 py-4 mb-6 rounded-full">
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-3xl font-bold text-black font-poppins text-center ">Event</h1>
         </div>

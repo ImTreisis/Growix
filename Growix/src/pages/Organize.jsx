@@ -91,7 +91,7 @@ export default function Organize() {
 
   return (
     <>
-      <div className="w-full bg-orange-300 bg-opacity-75 py-4 mb-6">
+      <div className="w-full bg-orange-300 bg-opacity-75 py-4 mb-6 rounded-full">
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-3xl font-bold text-black font-poppins text-center">Workshops & Open Classes</h1>
         </div>
@@ -114,25 +114,30 @@ export default function Organize() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <select value={form.style} onChange={(e)=>setForm({...form, style:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
-              <option value="hip-hop">Hip-Hop</option>
-              <option value="breaking">Breaking</option>
-              <option value="popping">Popping</option>
-              <option value="locking">Locking</option>
-              <option value="house">House</option>
-              <option value="waacking">Waacking</option>
-              <option value="vogue">Vogue</option>
-              <option value="dancehall">Dancehall</option>
               <option value="afro">Afro</option>
-              <option value="commercial">Commercial</option>
-              <option value="twerk">Twerk</option>
-              <option value="contemporary">Contemporary</option>
-              <option value="jazz">Jazz</option>
-              <option value="modern">Modern</option>
-              <option value="ballet">Ballet</option>
-              <option value="salsa">Salsa</option>
               <option value="bachata">Bachata</option>
-              <option value="high-heels">High Heels</option>
+              <option value="ballet">Ballet</option>
+              <option value="balboa">Balboa</option>
+              <option value="breaking">Breaking</option>
+              <option value="charleston">Charleston</option>
+              <option value="commercial">Commercial</option>
+              <option value="contemporary">Contemporary</option>
+              <option value="dancehall">Dancehall</option>
               <option value="freestyle">Freestyle</option>
+              <option value="high-heels">High Heels</option>
+              <option value="hip-hop">Hip-Hop</option>
+              <option value="house">House</option>
+              <option value="jazz">Jazz</option>
+              <option value="lindy-hop">Lindy Hop</option>
+              <option value="locking">Locking</option>
+              <option value="modern">Modern</option>
+              <option value="popping">Popping</option>
+              <option value="salsa">Salsa</option>
+              <option value="shag">Shag</option>
+              <option value="solo-jazz">Solo Jazz / Vintage Jazz</option>
+              <option value="twerk">Twerk</option>
+              <option value="vogue">Vogue</option>
+              <option value="waacking">Waacking</option>
               <option value="custom">Custom Style</option>
             </select>
             {form.style === 'custom' && (
@@ -148,6 +153,7 @@ export default function Organize() {
             <option value="beginner">Beginner</option>
             <option value="intermediate">Intermediate</option>
             <option value="advanced">Advanced</option>
+            <option value="open">Open</option>
           </select>
         </div>
         
