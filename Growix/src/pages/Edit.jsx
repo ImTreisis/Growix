@@ -3,12 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+const STYLE_OPTIONS = [
+  'afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'
+]
+
 export default function Edit(){
   const { id } = useParams()
   const { api, user } = useAuth()
   const { show } = useToast()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ title:'', description:'', date:'', style:'hip-hop', level:'beginner', venue:'', price:'', customStyle:'', imageUrl:'', endDate:'', type:'workshop' })
+  const [form, setForm] = useState({ title:'', description:'', date:'', styles:[], level:'beginner', venue:'', price:'', customStyle:'', imageUrl:'', endDate:'', type:'workshop' })
   const [loading, setLoading] = useState(true)
 
   useEffect(()=>{
@@ -18,18 +22,19 @@ export default function Edit(){
         navigate(s.type === 'event' ? '/events' : '/workshops', { replace:true })
         return
       }
-      const isCustomStyle = !['afro', 'bachata', 'ballet', 'balboa', 'breaking', 'charleston', 'commercial', 'contemporary', 'dancehall', 'freestyle', 'high-heels', 'hip-hop', 'house', 'jazz', 'lindy-hop', 'locking', 'modern', 'popping', 'salsa', 'shag', 'solo-jazz', 'twerk', 'vogue', 'waacking'].includes(s.style)
+      const resolvedStyles = Array.isArray(s.styles) && s.styles.length ? s.styles : (s.style ? [s.style] : [])
+      const isCustomStyle = resolvedStyles.some(val => !STYLE_OPTIONS.includes(val))
       const dateInput = s.localDateTime || new Date(s.date).toISOString().slice(0,16)
       const endDateInput = s.endLocalDateTime || (s.endDate ? new Date(s.endDate).toISOString().slice(0,16) : '')
       setForm({
         title:s.title,
         description:s.description||'',
         date: dateInput,
-        style: isCustomStyle ? 'custom' : s.style,
+        styles: resolvedStyles,
         level:s.level||'beginner',
         venue:s.venue||'',
         price:s.price||'',
-        customStyle: isCustomStyle ? s.style : '',
+        customStyle: isCustomStyle ? resolvedStyles.find(val => !STYLE_OPTIONS.includes(val)) || '' : '',
         imageUrl:s.imageUrl||'',
         endDate: endDateInput,
         type: s.type || 'workshop'
@@ -67,9 +72,19 @@ export default function Edit(){
         }
       }
       
+      if (form.type === 'workshop' && (!form.styles || form.styles.length === 0)) {
+        show('Please choose at least one style', 'error')
+        return
+      }
+
       const submitData = { ...form }
-      if (form.type === 'workshop' && form.style === 'custom' && form.customStyle) {
-        submitData.style = form.customStyle
+      if (form.type === 'workshop') {
+        let stylesToSend = Array.isArray(form.styles) ? form.styles : []
+        if (form.customStyle) {
+          const customTrim = form.customStyle.trim()
+          if (customTrim && !stylesToSend.includes(customTrim)) stylesToSend = [...stylesToSend, customTrim]
+        }
+        submitData.styles = stylesToSend.slice(0,3)
       }
       delete submitData.customStyle
       
@@ -113,50 +128,64 @@ export default function Edit(){
         {isEvent ? (
           <input required type="datetime-local" value={form.endDate} onChange={(e)=>setForm({...form, endDate:e.target.value})} placeholder="End Date & Time" className="w-full px-3 py-2 rounded-xl border" />
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <select value={form.style} onChange={(e)=>setForm({...form, style:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
-                <option value="afro">Afro</option>
-                <option value="bachata">Bachata</option>
-                <option value="ballet">Ballet</option>
-                <option value="balboa">Balboa</option>
-                <option value="breaking">Breaking</option>
-                <option value="charleston">Charleston</option>
-                <option value="commercial">Commercial</option>
-                <option value="contemporary">Contemporary</option>
-                <option value="dancehall">Dancehall</option>
-                <option value="freestyle">Freestyle</option>
-                <option value="high-heels">High Heels</option>
-                <option value="hip-hop">Hip-Hop</option>
-                <option value="house">House</option>
-                <option value="jazz">Jazz</option>
-                <option value="lindy-hop">Lindy Hop</option>
-                <option value="locking">Locking</option>
-                <option value="modern">Modern</option>
-                <option value="popping">Popping</option>
-                <option value="salsa">Salsa</option>
-                <option value="shag">Shag</option>
-                <option value="solo-jazz">Solo Jazz / Vintage Jazz</option>
-                <option value="twerk">Twerk</option>
-                <option value="vogue">Vogue</option>
-                <option value="waacking">Waacking</option>
-                <option value="custom">Custom Style</option>
-              </select>
-              {form.style === 'custom' && (
-                <input 
-                  value={form.customStyle} 
-                  onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
-                  placeholder="Enter your dance style" 
-                  className="w-full mt-2 px-3 py-2 rounded-xl border" 
-                />
-              )}
+              <p className="text-sm text-cocoa/80 mb-2">Select up to 3 styles</p>
+              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                {STYLE_OPTIONS.map((styleVal)=>{
+                  const checked = form.styles.includes(styleVal)
+                  return (
+                    <label key={styleVal} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${checked ? 'border-dusk bg-dusk/5' : 'border-gray-200'}`}>
+                      <input 
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e)=>{
+                          const isChecked = e.target.checked
+                          if (isChecked && form.styles.length >= 3) {
+                            show('You can pick up to 3 styles', 'error')
+                            return
+                          }
+                          const next = isChecked ? [...form.styles, styleVal] : form.styles.filter(s=>s!==styleVal)
+                          setForm({...form, styles: next})
+                        }}
+                      />
+                      <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                    </label>
+                  )
+                })}
+              </div>
+              <input 
+                value={form.customStyle} 
+                onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
+                placeholder="Add custom style (counts toward 3)" 
+                className="w-full mt-3 px-3 py-2 rounded-xl border" 
+              />
+              <button
+                type="button"
+                onClick={()=>{
+                  const custom = form.customStyle.trim()
+                  if(!custom) return
+                  if (form.styles.includes(custom)) return
+                  if (form.styles.length >= 3) {
+                    show('You can pick up to 3 styles', 'error')
+                    return
+                  }
+                  setForm({...form, styles: [...form.styles, custom], customStyle: ''})
+                }}
+                className="mt-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
+              >
+                Add Custom Style
+              </button>
             </div>
-            <select value={form.level} onChange={(e)=>setForm({...form, level:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="open">Open</option>
-            </select>
+            <div>
+              <p className="text-sm text-cocoa/80 mb-2">Skill Level</p>
+              <select value={form.level} onChange={(e)=>setForm({...form, level:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+                <option value="open">Open</option>
+              </select>
+            </div>
           </div>
         )}
         

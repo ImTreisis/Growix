@@ -8,14 +8,24 @@ export default function Browse() {
   const [params, setParams] = useSearchParams()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
+  const [selectedStyles, setSelectedStyles] = useState(() => {
+    const raw = params.get('styles')
+    return raw ? raw.split(',').filter(Boolean) : []
+  })
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    const raw = params.get('styles')
+    const current = raw ? raw.split(',').filter(Boolean) : []
+    setSelectedStyles(current)
+  }, [params])
 
   const query = useMemo(() => ({
     q: params.get('q') || undefined,
-    style: params.get('style') || undefined,
+    styles: selectedStyles,
     level: params.get('level') || undefined,
     date: params.get('date') || undefined,
-  }), [params])
+  }), [params, selectedStyles])
 
   const tab = useMemo(() => params.get('tab') || '', [params])
 
@@ -90,34 +100,29 @@ export default function Browse() {
           />
         </div>
         <div>
-          <p className="text-sm text-cocoa/80 mb-1">Dance Style</p>
-          <select defaultValue={params.get('style')||''} onChange={(e)=>{e.target.value?params.set('style', e.target.value):params.delete('style'); setParams(params)}} className="w-full px-3 py-2 rounded-xl border">
-            <option value="">All Styles</option>
-            <option value="afro">Afro</option>
-            <option value="bachata">Bachata</option>
-            <option value="ballet">Ballet</option>
-            <option value="balboa">Balboa</option>
-            <option value="breaking">Breaking</option>
-            <option value="charleston">Charleston</option>
-            <option value="commercial">Commercial</option>
-            <option value="contemporary">Contemporary</option>
-            <option value="dancehall">Dancehall</option>
-            <option value="freestyle">Freestyle</option>
-            <option value="high-heels">High Heels</option>
-            <option value="hip-hop">Hip-Hop</option>
-            <option value="house">House</option>
-            <option value="jazz">Jazz</option>
-            <option value="lindy-hop">Lindy Hop</option>
-            <option value="locking">Locking</option>
-            <option value="modern">Modern</option>
-            <option value="popping">Popping</option>
-            <option value="salsa">Salsa</option>
-            <option value="shag">Shag</option>
-            <option value="solo-jazz">Solo Jazz / Vintage Jazz</option>
-            <option value="twerk">Twerk</option>
-            <option value="vogue">Vogue</option>
-            <option value="waacking">Waacking</option>
-          </select>
+          <p className="text-sm text-cocoa/80 mb-1">Dance Style (choose multiple)</p>
+          <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto border rounded-xl p-3">
+            {['afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'].map((styleVal)=> {
+              const checked = selectedStyles.includes(styleVal)
+              return (
+                <label key={styleVal} className="flex items-center gap-2 text-sm">
+                  <input 
+                    type="checkbox" 
+                    checked={checked} 
+                    onChange={(e)=>{
+                      const isChecked = e.target.checked
+                      const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
+                      setSelectedStyles(next)
+                      if (next.length) params.set('styles', next.join(','))
+                      else params.delete('styles')
+                      setParams(params)
+                    }} 
+                  />
+                  <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                </label>
+              )
+            })}
+          </div>
         </div>
         <div>
           <p className="text-sm text-cocoa/80 mb-1">Skill Level</p>
@@ -144,7 +149,7 @@ export default function Browse() {
             tab === 'organized' ? (
               <a href="/create" className="px-4 py-2 bg-dusk text-white rounded-xl">Create Workshop</a>
             ) : (
-              <button onClick={() => { params.delete('q'); params.delete('style'); params.delete('level'); setParams(params) }} className="px-4 py-2 bg-warm3 rounded-xl">Clear Filters</button>
+              <button onClick={() => { params.delete('q'); params.delete('styles'); params.delete('level'); setSelectedStyles([]); setParams(params) }} className="px-4 py-2 bg-warm3 rounded-xl">Clear Filters</button>
             )
           }
         />

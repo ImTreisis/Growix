@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+const STYLE_OPTIONS = [
+  'afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'
+]
+
 const getDefaultTimeZone = () => {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
@@ -13,11 +17,11 @@ const getDefaultTimeZone = () => {
 export default function Organize() {
   const { api } = useAuth()
   const { show } = useToast()
-    const [form, setForm] = useState(() => ({
+  const [form, setForm] = useState(() => ({
     title:'', 
     description:'', 
     date:'', 
-    style:'hip-hop', 
+    styles: [], 
     level:'beginner', 
     venue:'', 
     price:'',
@@ -48,17 +52,31 @@ export default function Organize() {
         setIsSubmitting(false)
         return
       }
+      if (!form.styles.length) {
+        show('Please choose at least one style', 'error')
+        setIsSubmitting(false)
+        return
+      }
       const submitData = { ...form, type: 'workshop' }
       submitData.date = parsedDate.toISOString()
       submitData.localDateTime = localDateTime
-      if (form.style === 'custom' && form.customStyle) {
-        submitData.style = form.customStyle
+      submitData.styles = form.styles
+      if (form.customStyle && !submitData.styles.includes(form.customStyle.trim())) {
+        submitData.styles = [...submitData.styles, form.customStyle.trim()]
       }
       delete submitData.customStyle
       
       if (form.image) {
         const fd = new FormData()
-        Object.entries(submitData).forEach(([k,v])=>{ if(k==='image'){ fd.append('image', v) } else { fd.append(k, v) } })
+        Object.entries(submitData).forEach(([k,v])=>{ 
+          if(k==='image'){ 
+            fd.append('image', v) 
+          } else if (Array.isArray(v)) {
+            v.forEach(val => fd.append('styles', val))
+          } else { 
+            fd.append(k, v) 
+          } 
+        })
         const r = await api.post('/seminars/with-image', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
         setMessage(`Created: ${r.data.seminar.title}`)
       } else {
@@ -69,7 +87,7 @@ export default function Organize() {
         title:'', 
         description:'', 
         date:'', 
-        style:'hip-hop', 
+        styles:[], 
         level:'beginner', 
         venue:'', 
         price:'',
@@ -111,50 +129,66 @@ export default function Organize() {
         
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} className="w-full px-3 py-2 rounded-xl border" />
         
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <select value={form.style} onChange={(e)=>setForm({...form, style:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
-              <option value="afro">Afro</option>
-              <option value="bachata">Bachata</option>
-              <option value="ballet">Ballet</option>
-              <option value="balboa">Balboa</option>
-              <option value="breaking">Breaking</option>
-              <option value="charleston">Charleston</option>
-              <option value="commercial">Commercial</option>
-              <option value="contemporary">Contemporary</option>
-              <option value="dancehall">Dancehall</option>
-              <option value="freestyle">Freestyle</option>
-              <option value="high-heels">High Heels</option>
-              <option value="hip-hop">Hip-Hop</option>
-              <option value="house">House</option>
-              <option value="jazz">Jazz</option>
-              <option value="lindy-hop">Lindy Hop</option>
-              <option value="locking">Locking</option>
-              <option value="modern">Modern</option>
-              <option value="popping">Popping</option>
-              <option value="salsa">Salsa</option>
-              <option value="shag">Shag</option>
-              <option value="solo-jazz">Solo Jazz / Vintage Jazz</option>
-              <option value="twerk">Twerk</option>
-              <option value="vogue">Vogue</option>
-              <option value="waacking">Waacking</option>
-              <option value="custom">Custom Style</option>
-            </select>
-            {form.style === 'custom' && (
-              <input 
-                value={form.customStyle} 
-                onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
-                placeholder="Enter your dance style" 
-                className="w-full mt-2 px-3 py-2 rounded-xl border" 
-              />
-            )}
+            <p className="text-sm text-cocoa/80 mb-2">Select up to 3 styles</p>
+            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+              {STYLE_OPTIONS.map((styleVal)=> {
+                const checked = form.styles.includes(styleVal)
+                return (
+                  <label key={styleVal} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${checked ? 'border-dusk bg-dusk/5' : 'border-gray-200'}`}>
+                    <input 
+                      type="checkbox" 
+                      checked={checked} 
+                      onChange={(e)=>{
+                        const isChecked = e.target.checked
+                        if (isChecked && form.styles.length >= 3) {
+                          show('You can pick up to 3 styles', 'error')
+                          return
+                        }
+                        const next = isChecked 
+                          ? [...form.styles, styleVal] 
+                          : form.styles.filter(s=>s!==styleVal)
+                        setForm({...form, styles: next})
+                      }}
+                    />
+                    <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                  </label>
+                )
+              })}
+            </div>
+            <input 
+              value={form.customStyle} 
+              onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
+              placeholder="Add custom style (counts toward 3)" 
+              className="w-full mt-3 px-3 py-2 rounded-xl border" 
+            />
+            <button
+              type="button"
+              onClick={()=>{
+                const custom = form.customStyle.trim()
+                if(!custom) return
+                if (form.styles.includes(custom)) return
+                if (form.styles.length >= 3) {
+                  show('You can pick up to 3 styles', 'error')
+                  return
+                }
+                setForm({...form, styles: [...form.styles, custom], customStyle: ''})
+              }}
+              className="mt-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
+            >
+              Add Custom Style
+            </button>
           </div>
-          <select value={form.level} onChange={(e)=>setForm({...form, level:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="open">Open</option>
-          </select>
+          <div>
+            <p className="text-sm text-cocoa/80 mb-2">Skill Level</p>
+            <select value={form.level} onChange={(e)=>setForm({...form, level:e.target.value})} className="w-full px-3 py-2 rounded-xl border">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="open">Open</option>
+            </select>
+          </div>
         </div>
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />

@@ -110,8 +110,12 @@ export default function Detail(){
   if(!item) return null
 
   const dateStr = formatSeminarDate(item.localDateTime, item.date)
-  const isWorkshop = item.type === 'workshop' || (!item.type && item.style && item.level)
-  const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
+  const endDateStr = formatSeminarDate(item.endLocalDateTime, item.endDate)
+  const displayStyles = Array.isArray(item.styles) && item.styles.length
+    ? item.styles
+    : (item.style ? [item.style] : [])
+  const isWorkshop = item.type === 'workshop' || (!item.type && (displayStyles.length || item.level))
+  const styleLabels = displayStyles.map(s => s?.charAt(0).toUpperCase() + s?.slice(1))
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
   return (
@@ -123,12 +127,14 @@ export default function Detail(){
         <h1 className="text-2xl font-semibold text-dusk mb-4">{item.title}</h1>
         
         {/* Style, Level, Price, and Saved count in a line */}
-        <div className="flex items-center gap-3 mb-4">
-          {isWorkshop && styleLabel && levelLabel && (
-            <>
-              <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{styleLabel}</span>
-              <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
-            </>
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          {isWorkshop && styleLabels.length > 0 && (
+            styleLabels.map((label)=>(
+              <span key={label} className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400">{label}</span>
+            ))
+          )}
+          {isWorkshop && levelLabel && (
+            <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600">{levelLabel}</span>
           )}
            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-white ${isSaved ? 'bg-pink-500' : 'bg-pink-300'} bg-opacity-100`}>
              <button 
@@ -153,9 +159,17 @@ export default function Detail(){
         </div>
 
         {/* Date and time with calendar icon */}
-        <div className="flex items-center gap-2 text-cocoa/80 text-sm mb-4">
-          <IconCalendar className="opacity-70" />
-          <span>{dateStr}</span>
+        <div className="flex flex-col gap-2 text-cocoa/80 text-sm mb-4">
+          <div className="flex items-center gap-2">
+            <IconCalendar className="opacity-70" />
+            <span><strong>{item.type === 'event' ? 'Starts:' : 'Date:'}</strong> {dateStr}</span>
+          </div>
+          {item.type === 'event' && endDateStr && (
+            <div className="flex items-center gap-2">
+              <IconCalendar className="opacity-70" />
+              <span><strong>Ends:</strong> {endDateStr}</span>
+            </div>
+          )}
         </div>
 
         {/* Description */}

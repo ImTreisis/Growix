@@ -118,8 +118,10 @@ export default function OrganizeEvent() {
         
         <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
         
+        <label className="text-sm text-cocoa/80">Start Date & Time</label>
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} placeholder="Start Date & Time" className="w-full px-3 py-2 rounded-xl border" />
         
+        <label className="text-sm text-cocoa/80">End Date & Time</label>
         <input required type="datetime-local" value={form.endDate} onChange={(e)=>setForm({...form, endDate:e.target.value})} placeholder="End Date & Time" className="w-full px-3 py-2 rounded-xl border" />
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />

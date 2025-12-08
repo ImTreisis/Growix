@@ -61,9 +61,13 @@ export default function SeminarCard({ item }){
   const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
   const [isSaving, setIsSaving] = useState(false)
 
-  const dateStr = formatSeminarDate(item.localDateTime, item.date)
-  const isWorkshop = item.type === 'workshop' || (!item.type && item.style && item.level)
-  const styleLabel = item.style?.charAt(0).toUpperCase() + item.style?.slice(1)
+  const startDateStr = formatSeminarDate(item.localDateTime, item.date)
+  const endDateStr = formatSeminarDate(item.endLocalDateTime, item.endDate)
+  const displayStyles = Array.isArray(item.styles) && item.styles.length
+    ? item.styles
+    : (item.style ? [item.style] : [])
+  const isWorkshop = item.type === 'workshop' || (!item.type && (displayStyles.length || item.level))
+  const styleLabels = displayStyles.map(s => s?.charAt(0).toUpperCase() + s?.slice(1))
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
 
   const saveToggle = async ()=>{
@@ -114,14 +118,21 @@ export default function SeminarCard({ item }){
         {item.description && (
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
-        {isWorkshop && (
-          <div className="mt-2 flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{styleLabel}</span>
-            <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
+        {isWorkshop && styleLabels.length > 0 && (
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            {styleLabels.map((label)=>(
+              <span key={label} className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{label}</span>
+            ))}
+            {levelLabel && (
+              <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
+            )}
           </div>
         )}
         <div className="mt-4 grid gap-2 text-sm text-cocoa">
-          <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span>{dateStr}</span></div>
+          <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span><strong>{item.type === 'event' ? 'Starts:' : 'Date:'}</strong> {startDateStr}</span></div>
+          {item.type === 'event' && endDateStr && (
+            <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span><strong>Ends:</strong> {endDateStr}</span></div>
+          )}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <img 

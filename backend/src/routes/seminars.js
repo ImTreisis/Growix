@@ -35,10 +35,41 @@ const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
+// Normalize styles input (accept string, comma-separated, JSON string, or array)
+function normalizeStyles(raw) {
+  if (raw === undefined || raw === null) return [];
+  let values = [];
+  if (Array.isArray(raw)) {
+    values = raw;
+  } else if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed) return [];
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) values = parsed;
+      } catch {
+        values = trimmed.split(','); // fallback to comma separated
+      }
+    } else if (trimmed.includes(',')) {
+      values = trimmed.split(',');
+    } else {
+      values = [trimmed];
+    }
+  } else {
+    values = [String(raw)];
+  }
+  const cleaned = values
+    .map((s) => (typeof s === 'string' ? s.trim() : String(s || '').trim()))
+    .filter(Boolean);
+  // de-duplicate while preserving order
+  return [...new Set(cleaned)];
+}
+
 // Create seminar
 router.post('/', requireAuth, async (req, res) => {
   try {
-    let { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', imageUrl = '', timeZone, endDate, endLocalDateTime } = req.body;
+    let { title, description = '', date, localDateTime, type = 'workshop', styles, style, level, venue = '', price = '', imageUrl = '', timeZone, endDate, endLocalDateTime } = req.body;
   
   // Clean up empty strings for events - FormData might send empty strings
   if (type === 'event') {
@@ -48,11 +79,13 @@ router.post('/', requireAuth, async (req, res) => {
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
     const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
     
+    const normalizedStyles = normalizeStyles(styles ?? style);
     // Validation based on type
     if (!title || !date || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing required fields' });
     
     if (type === 'workshop') {
-      if (!style || !level) return res.status(400).json({ message: 'Style and level are required for workshops' });
+      if (!normalizedStyles.length || normalizedStyles.length > 3) return res.status(400).json({ message: 'Please choose between 1 and 3 styles' });
+      if (!level) return res.status(400).json({ message: 'Style and level are required for workshops' });
     } else if (type === 'event') {
       if (!endDate || !trimmedEndLocalDateTime) return res.status(400).json({ message: 'End date is required for events' });
     }
@@ -88,12 +121,14 @@ router.post('/', requireAuth, async (req, res) => {
     };
     
     if (type === 'workshop') {
-      seminarData.style = style;
+      seminarData.styles = normalizedStyles;
+      seminarData.style = normalizedStyles[0] || '';
       seminarData.level = level;
     } else if (type === 'event') {
       seminarData.endDate = endDate;
       seminarData.endLocalDateTime = trimmedEndLocalDateTime;
       // Explicitly don't set style/level for events
+      seminarData.styles = [];
       delete seminarData.style;
       delete seminarData.level;
     }
@@ -117,7 +152,7 @@ router.post('/', requireAuth, async (req, res) => {
 // Upload image for seminar and create
 router.post('/with-image', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    let { title, description = '', date, localDateTime, type = 'workshop', style, level, venue = '', price = '', timeZone, endDate, endLocalDateTime } = req.body;
+    let { title, description = '', date, localDateTime, type = 'workshop', styles, style, level, venue = '', price = '', timeZone, endDate, endLocalDateTime } = req.body;
     
     // Clean up empty strings for events - FormData might send empty strings
     if (type === 'event') {
@@ -128,11 +163,13 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
     const trimmedLocalDateTime = typeof localDateTime === 'string' ? localDateTime.trim() : '';
     const trimmedEndLocalDateTime = typeof endLocalDateTime === 'string' ? endLocalDateTime.trim() : '';
     
+    const normalizedStyles = normalizeStyles(styles ?? style);
     // Validation based on type
     if (!title || !date || !venue || !trimmedLocalDateTime) return res.status(400).json({ message: 'Missing required fields' });
     
     if (type === 'workshop') {
-      if (!style || !level) return res.status(400).json({ message: 'Style and level are required for workshops' });
+      if (!normalizedStyles.length || normalizedStyles.length > 3) return res.status(400).json({ message: 'Please choose between 1 and 3 styles' });
+      if (!level) return res.status(400).json({ message: 'Style and level are required for workshops' });
     } else if (type === 'event') {
       if (!endDate || !trimmedEndLocalDateTime) return res.status(400).json({ message: 'End date is required for events' });
     }
@@ -186,12 +223,14 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
     };
     
     if (type === 'workshop') {
-      seminarData.style = style;
+      seminarData.styles = normalizedStyles;
+      seminarData.style = normalizedStyles[0] || '';
       seminarData.level = level;
     } else if (type === 'event') {
       seminarData.endDate = endDate;
       seminarData.endLocalDateTime = trimmedEndLocalDateTime;
       // Explicitly don't set style/level for events
+      seminarData.styles = [];
       delete seminarData.style;
       delete seminarData.level;
     }
@@ -246,7 +285,17 @@ router.get('/', async (req, res) => {
     }
   }
   
-  if (style) filter.style = style;
+  const styleParam = req.query.styles ?? style;
+  const normalizedStyles = normalizeStyles(styleParam);
+  if (normalizedStyles.length) {
+    filter.$and = filter.$and || [];
+    filter.$and.push({
+      $or: [
+        { styles: { $in: normalizedStyles } },
+        { style: { $in: normalizedStyles } }
+      ]
+    });
+  }
   if (level) filter.level = level;
   
   // Handle search query - combine with type filter if both exist
@@ -283,7 +332,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (!seminar) return res.status(404).json({ message: 'Not found' });
   if (seminar.createdBy.toString() !== req.userId) return res.status(403).json({ message: 'Forbidden' });
   
-  const { title, description, date, localDateTime, type, style, level, venue, price, imageUrl, timeZone, endDate, endLocalDateTime } = req.body;
+  const { title, description, date, localDateTime, type, styles, style, level, venue, price, imageUrl, timeZone, endDate, endLocalDateTime } = req.body;
   
   // Validate date is not in the past if updating date
   if (date !== undefined) {
@@ -304,7 +353,14 @@ router.put('/:id', requireAuth, async (req, res) => {
   if (title !== undefined) seminar.title = title;
   if (description !== undefined) seminar.description = description;
   if (type !== undefined) seminar.type = type;
-  if (style !== undefined) seminar.style = style;
+  const normalizedStyles = styles !== undefined || style !== undefined ? normalizeStyles(styles ?? style) : undefined;
+  if (normalizedStyles !== undefined) {
+    if (seminar.type === 'workshop' && (normalizedStyles.length === 0 || normalizedStyles.length > 3)) {
+      return res.status(400).json({ message: 'Please choose between 1 and 3 styles' });
+    }
+    seminar.styles = normalizedStyles;
+    seminar.style = normalizedStyles[0] || '';
+  }
   if (level !== undefined) seminar.level = level;
   if (venue !== undefined) seminar.venue = venue;
   if (price !== undefined) seminar.price = price || '';
