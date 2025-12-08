@@ -11,12 +11,19 @@ export default function Browse() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedStyles, setSelectedStyles] = useState(() => {
+    const all = params.getAll('styles')
+    if (all && all.length) return all.filter(Boolean)
     const raw = params.get('styles')
     return raw ? raw.split(',').filter(Boolean) : []
   })
   const navigate = useNavigate()
 
   useEffect(()=>{
+    const all = params.getAll('styles')
+    if (all && all.length) {
+      setSelectedStyles(all.filter(Boolean))
+      return
+    }
     const raw = params.get('styles')
     const current = raw ? raw.split(',').filter(Boolean) : []
     setSelectedStyles(current)
@@ -42,20 +49,32 @@ export default function Browse() {
     const loadSeminars = async () => {
       setLoading(true)
       try {
+        const paramsSerializer = (baseParams) => {
+          const sp = new URLSearchParams()
+          Object.entries(baseParams || {}).forEach(([k,v])=>{
+            if (v === undefined || v === null) return
+            if (Array.isArray(v)) {
+              v.forEach(val => sp.append(k, val))
+            } else {
+              sp.append(k, v)
+            }
+          })
+          return sp.toString()
+        }
         if (tab === 'liked' && user) {
           // For now, fetch all and filter client-side since we don't have a server endpoint for saved seminars
-          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 } })
+          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 }, paramsSerializer })
           const savedIds = new Set((user.savedSeminars||[]).map(s=> String(s?._id||s)))
           const likedList = r.data.seminars.filter(s=> savedIds.has(String(s._id)))
           setItems(likedList)
         } else if (tab === 'organized' && user) {
           // For now, fetch all and filter client-side since we don't have a server endpoint for user's seminars
-          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 } })
+          const r = await api.get('/seminars', { params: { type: 'workshop', limit: 100, offset: 0 }, paramsSerializer })
           const all = r.data.seminars
           const mine = all.filter(s=> String(s.createdBy?._id ?? s.createdBy) === String(user._id))
           setItems(mine)
         } else {
-          const r = await api.get('/seminars', { params: { ...query, type: 'workshop', limit: 20, offset: 0 } })
+          const r = await api.get('/seminars', { params: { ...query, type: 'workshop', limit: 20, offset: 0 }, paramsSerializer })
           setItems(r.data.seminars)
         }
       } catch (err) {
