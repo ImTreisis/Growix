@@ -32,6 +32,8 @@ export default function Organize() {
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
+  const dynamicStyles = form.styles.filter(s=>!STYLE_OPTIONS.includes(s))
+  const renderedOptions = [...STYLE_OPTIONS, ...dynamicStyles]
 
   const submit = async (e) => {
     e.preventDefault()
@@ -141,55 +143,60 @@ export default function Organize() {
               <span>{form.styles.length ? `${form.styles.length} selected` : 'Choose styles'}</span>
               <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
             </button>
-            {styleOpen && (
-              <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3">
-                {STYLE_OPTIONS.map((styleVal)=> {
-                  const checked = form.styles.includes(styleVal)
-                  return (
-                    <label key={styleVal} className={`flex items-center gap-2 text-sm py-1`}>
+              {styleOpen && (
+                <div className="absolute z-20 mt-2 w-full max-height-64 max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3 space-y-1">
+                  {renderedOptions.map((styleVal)=> {
+                    const checked = form.styles.includes(styleVal)
+                    return (
+                      <label key={styleVal} className="flex items-center gap-2 text-sm py-1">
+                        <input 
+                          type="checkbox" 
+                          checked={checked} 
+                          onChange={(e)=>{
+                            const isChecked = e.target.checked
+                            if (isChecked && form.styles.length >= 3) {
+                              show('You can pick up to 3 styles', 'error')
+                              return
+                            }
+                            const next = isChecked 
+                              ? [...form.styles, styleVal] 
+                              : form.styles.filter(s=>s!==styleVal)
+                            setForm({...form, styles: next})
+                          }}
+                        />
+                        <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                      </label>
+                    )
+                  })}
+                  <div className="pt-2 border-t mt-2">
+                    <p className="text-sm text-cocoa/70 mb-2">Add custom style</p>
+                    <div className="flex gap-2">
                       <input 
-                        type="checkbox" 
-                        checked={checked} 
-                        onChange={(e)=>{
-                          const isChecked = e.target.checked
-                          if (isChecked && form.styles.length >= 3) {
+                        value={form.customStyle} 
+                        onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
+                        placeholder="Custom style"
+                        className="flex-1 px-3 py-2 rounded-xl border" 
+                      />
+                      <button
+                        type="button"
+                        className="px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
+                        onClick={()=>{
+                          const custom = form.customStyle.trim()
+                          if(!custom) return
+                          if (form.styles.includes(custom)) return
+                          if (form.styles.length >= 3) {
                             show('You can pick up to 3 styles', 'error')
                             return
                           }
-                          const next = isChecked 
-                            ? [...form.styles, styleVal] 
-                            : form.styles.filter(s=>s!==styleVal)
-                          setForm({...form, styles: next})
+                          setForm({...form, styles: [...form.styles, custom], customStyle: ''})
                         }}
-                      />
-                      <span className="capitalize">{styleVal.replace('-', ' ')}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            )}
-            <input 
-              value={form.customStyle} 
-              onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
-              placeholder="Add custom style (counts toward 3)" 
-              className="w-full mt-3 px-3 py-2 rounded-xl border" 
-            />
-            <button
-              type="button"
-              onClick={()=>{
-                const custom = form.customStyle.trim()
-                if(!custom) return
-                if (form.styles.includes(custom)) return
-                if (form.styles.length >= 3) {
-                  show('You can pick up to 3 styles', 'error')
-                  return
-                }
-                setForm({...form, styles: [...form.styles, custom], customStyle: ''})
-              }}
-              className="mt-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
-            >
-              Add Custom Style
-            </button>
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
           </div>
           <div>
             <p className="text-sm text-cocoa/80 mb-2">Skill Level</p>

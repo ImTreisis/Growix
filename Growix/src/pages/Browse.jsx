@@ -105,14 +105,14 @@ export default function Browse() {
         </div>
         <div className="relative">
           <p className="text-sm text-cocoa/80 mb-1">Dance Style (choose multiple)</p>
-          <button
-            type="button"
-            onClick={()=>setStyleOpen(v=>!v)}
-            className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
-          >
-            <span>{selectedStyles.length ? `${selectedStyles.length} selected` : 'All Styles'}</span>
-            <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
-          </button>
+            <button
+              type="button"
+              onClick={()=>setStyleOpen(v=>!v)}
+              className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
+            >
+              <span>{selectedStyles.length ? `${selectedStyles.length} selected` : 'All Styles'}</span>
+              <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
+            </button>
           {styleOpen && (
             <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3">
               {STYLE_OPTIONS.map((styleVal)=> {
@@ -126,9 +126,10 @@ export default function Browse() {
                         const isChecked = e.target.checked
                         const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
                         setSelectedStyles(next)
-                        if (next.length) params.set('styles', next.join(','))
-                        else params.delete('styles')
-                        setParams(params)
+                        const newParams = new URLSearchParams(params)
+                        if (next.length) newParams.set('styles', next.join(','))
+                        else newParams.delete('styles')
+                        setParams(newParams)
                       }} 
                     />
                     <span className="capitalize">{styleVal.replace('-', ' ')}</span>
