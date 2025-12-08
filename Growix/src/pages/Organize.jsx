@@ -34,6 +34,22 @@ export default function Organize() {
   const [styleOpen, setStyleOpen] = useState(false)
   const dynamicStyles = form.styles.filter(s=>!STYLE_OPTIONS.includes(s))
   const renderedOptions = [...STYLE_OPTIONS, ...dynamicStyles]
+  const normalizeInputDateTime = (value) => {
+    if (!value) return ''
+    const v = value.trim()
+    if (v.includes('T')) return v
+    const ddmmyyyy = /^(\d{2})-(\d{2})-(\d{4})$/.exec(v)
+    if (ddmmyyyy) {
+      const [, d, m, y] = ddmmyyyy
+      return `${y}-${m}-${d}T00:00`
+    }
+    const ymd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v)
+    if (ymd) {
+      const [, y, m, d] = ymd
+      return `${y}-${m}-${d}T00:00`
+    }
+    return v
+  }
 
   const submit = async (e) => {
     e.preventDefault()
@@ -130,7 +146,7 @@ export default function Organize() {
             <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})} placeholder="Price (optional)" className="w-full pl-8 pr-3 py-2 rounded-xl border" />
           </div>
         
-        <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} className="w-full px-3 py-2 rounded-xl border" />
+        <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date: normalizeInputDateTime(e.target.value)})} className="w-full px-3 py-2 rounded-xl border" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="relative">

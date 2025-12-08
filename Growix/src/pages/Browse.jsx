@@ -10,26 +10,16 @@ export default function Browse() {
   const [params, setParams] = useSearchParams()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
-  const [selectedStyles, setSelectedStyles] = useState(() => {
+  const navigate = useNavigate()
+
+  const [styleOpen, setStyleOpen] = useState(false)
+
+  const selectedStyles = useMemo(() => {
     const all = params.getAll('styles')
     if (all && all.length) return all.filter(Boolean)
     const raw = params.get('styles')
     return raw ? raw.split(',').filter(Boolean) : []
-  })
-  const navigate = useNavigate()
-
-  useEffect(()=>{
-    const all = params.getAll('styles')
-    if (all && all.length) {
-      setSelectedStyles(all.filter(Boolean))
-      return
-    }
-    const raw = params.get('styles')
-    const current = raw ? raw.split(',').filter(Boolean) : []
-    setSelectedStyles(current)
   }, [params])
-
-  const [styleOpen, setStyleOpen] = useState(false)
 
   const query = useMemo(() => ({
     q: params.get('q') || undefined,
@@ -124,14 +114,14 @@ export default function Browse() {
         </div>
         <div className="relative">
           <p className="text-sm text-cocoa/80 mb-1">Dance Style (choose multiple)</p>
-            <button
-              type="button"
-              onClick={()=>setStyleOpen(v=>!v)}
-              className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
-            >
-              <span>{selectedStyles.length ? `${selectedStyles.length} selected` : 'All Styles'}</span>
-              <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
-            </button>
+          <button
+            type="button"
+            onClick={()=>setStyleOpen(v=>!v)}
+            className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
+          >
+            <span>{selectedStyles.length ? `${selectedStyles.length} selected` : 'All Styles'}</span>
+            <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
+          </button>
           {styleOpen && (
             <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3">
               {STYLE_OPTIONS.map((styleVal)=> {
@@ -144,13 +134,10 @@ export default function Browse() {
                       onChange={(e)=>{
                         const isChecked = e.target.checked
                         const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
-                        setSelectedStyles(next)
                         const newParams = new URLSearchParams(params)
                         if (next.length) {
-                          next.forEach((val, idx)=>{
-                            if(idx===0) newParams.set('styles', val)
-                            else newParams.append('styles', val)
-                          })
+                          newParams.delete('styles')
+                          next.forEach(val => newParams.append('styles', val))
                         } else {
                           newParams.delete('styles')
                         }
@@ -189,7 +176,7 @@ export default function Browse() {
             tab === 'organized' ? (
               <a href="/create" className="px-4 py-2 bg-dusk text-white rounded-xl">Create Workshop</a>
             ) : (
-              <button onClick={() => { params.delete('q'); params.delete('styles'); params.delete('level'); setSelectedStyles([]); setParams(params) }} className="px-4 py-2 bg-warm3 rounded-xl">Clear Filters</button>
+              <button onClick={() => { params.delete('q'); params.delete('styles'); params.delete('level'); setParams(params) }} className="px-4 py-2 bg-warm3 rounded-xl">Clear Filters</button>
             )
           }
         />

@@ -13,6 +13,24 @@ const getDefaultTimeZone = () => {
 export default function OrganizeEvent() {
   const { api } = useAuth()
   const { show } = useToast()
+  const normalizeInputDateTime = (value) => {
+    if (!value) return ''
+    const v = value.trim()
+    if (v.includes('T')) return v
+    // dd-mm-yyyy -> yyyy-MM-ddT00:00
+    const ddmmyyyy = /^(\d{2})-(\d{2})-(\d{4})$/.exec(v)
+    if (ddmmyyyy) {
+      const [, d, m, y] = ddmmyyyy
+      return `${y}-${m}-${d}T00:00`
+    }
+    // yyyy-mm-dd -> yyyy-MM-ddT00:00
+    const ymd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v)
+    if (ymd) {
+      const [, y, m, d] = ymd
+      return `${y}-${m}-${d}T00:00`
+    }
+    return v
+  }
   const [form, setForm] = useState(() => ({
     title:'', 
     description:'', 
@@ -119,10 +137,24 @@ export default function OrganizeEvent() {
         <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
         
         <label className="text-sm text-cocoa/80">Start Date & Time</label>
-        <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} placeholder="Start Date & Time" className="w-full px-3 py-2 rounded-xl border" />
+        <input 
+          required 
+          type="datetime-local" 
+          value={form.date} 
+          onChange={(e)=>setForm({...form, date: normalizeInputDateTime(e.target.value)})} 
+          placeholder="Start Date & Time" 
+          className="w-full px-3 py-2 rounded-xl border" 
+        />
         
         <label className="text-sm text-cocoa/80">End Date & Time</label>
-        <input required type="datetime-local" value={form.endDate} onChange={(e)=>setForm({...form, endDate:e.target.value})} placeholder="End Date & Time" className="w-full px-3 py-2 rounded-xl border" />
+        <input 
+          required 
+          type="datetime-local" 
+          value={form.endDate} 
+          onChange={(e)=>setForm({...form, endDate: normalizeInputDateTime(e.target.value)})} 
+          placeholder="End Date & Time" 
+          className="w-full px-3 py-2 rounded-xl border" 
+        />
         
         <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} placeholder="Description (optional)" className="w-full px-3 py-2 rounded-xl border" rows="3" />
         
