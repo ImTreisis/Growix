@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import SeminarCard from '../components/SeminarCard.jsx'
 
+const STYLE_OPTIONS = ['afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking']
+
 export default function Browse() {
   const { api, user } = useAuth()
   const [params, setParams] = useSearchParams()
@@ -19,6 +21,8 @@ export default function Browse() {
     const current = raw ? raw.split(',').filter(Boolean) : []
     setSelectedStyles(current)
   }, [params])
+
+  const [styleOpen, setStyleOpen] = useState(false)
 
   const query = useMemo(() => ({
     q: params.get('q') || undefined,
@@ -99,30 +103,40 @@ export default function Browse() {
             className="w-full px-3 py-2 rounded-xl border" 
           />
         </div>
-        <div>
+        <div className="relative">
           <p className="text-sm text-cocoa/80 mb-1">Dance Style (choose multiple)</p>
-          <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto border rounded-xl p-3">
-            {['afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'].map((styleVal)=> {
-              const checked = selectedStyles.includes(styleVal)
-              return (
-                <label key={styleVal} className="flex items-center gap-2 text-sm">
-                  <input 
-                    type="checkbox" 
-                    checked={checked} 
-                    onChange={(e)=>{
-                      const isChecked = e.target.checked
-                      const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
-                      setSelectedStyles(next)
-                      if (next.length) params.set('styles', next.join(','))
-                      else params.delete('styles')
-                      setParams(params)
-                    }} 
-                  />
-                  <span className="capitalize">{styleVal.replace('-', ' ')}</span>
-                </label>
-              )
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={()=>setStyleOpen(v=>!v)}
+            className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
+          >
+            <span>{selectedStyles.length ? `${selectedStyles.length} selected` : 'All Styles'}</span>
+            <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
+          </button>
+          {styleOpen && (
+            <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3">
+              {STYLE_OPTIONS.map((styleVal)=> {
+                const checked = selectedStyles.includes(styleVal)
+                return (
+                  <label key={styleVal} className="flex items-center gap-2 text-sm py-1">
+                    <input 
+                      type="checkbox" 
+                      checked={checked} 
+                      onChange={(e)=>{
+                        const isChecked = e.target.checked
+                        const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
+                        setSelectedStyles(next)
+                        if (next.length) params.set('styles', next.join(','))
+                        else params.delete('styles')
+                        setParams(params)
+                      }} 
+                    />
+                    <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                  </label>
+                )
+              })}
+            </div>
+          )}
         </div>
         <div>
           <p className="text-sm text-cocoa/80 mb-1">Skill Level</p>

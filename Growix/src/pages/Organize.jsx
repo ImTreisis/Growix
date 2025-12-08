@@ -31,6 +31,7 @@ export default function Organize() {
   }))
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [styleOpen, setStyleOpen] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault()
@@ -72,7 +73,7 @@ export default function Organize() {
           if(k==='image'){ 
             fd.append('image', v) 
           } else if (Array.isArray(v)) {
-            v.forEach(val => fd.append('styles', val))
+            v.forEach(val => fd.append(k, val))
           } else { 
             fd.append(k, v) 
           } 
@@ -130,33 +131,43 @@ export default function Organize() {
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} className="w-full px-3 py-2 rounded-xl border" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
+          <div className="relative">
             <p className="text-sm text-cocoa/80 mb-2">Select up to 3 styles</p>
-            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-              {STYLE_OPTIONS.map((styleVal)=> {
-                const checked = form.styles.includes(styleVal)
-                return (
-                  <label key={styleVal} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${checked ? 'border-dusk bg-dusk/5' : 'border-gray-200'}`}>
-                    <input 
-                      type="checkbox" 
-                      checked={checked} 
-                      onChange={(e)=>{
-                        const isChecked = e.target.checked
-                        if (isChecked && form.styles.length >= 3) {
-                          show('You can pick up to 3 styles', 'error')
-                          return
-                        }
-                        const next = isChecked 
-                          ? [...form.styles, styleVal] 
-                          : form.styles.filter(s=>s!==styleVal)
-                        setForm({...form, styles: next})
-                      }}
-                    />
-                    <span className="capitalize">{styleVal.replace('-', ' ')}</span>
-                  </label>
-                )
-              })}
-            </div>
+            <button
+              type="button"
+              onClick={()=>setStyleOpen(v=>!v)}
+              className="w-full px-3 py-2 rounded-xl border text-left flex items-center justify-between"
+            >
+              <span>{form.styles.length ? `${form.styles.length} selected` : 'Choose styles'}</span>
+              <span className="text-cocoa/60">{styleOpen ? '▲' : '▼'}</span>
+            </button>
+            {styleOpen && (
+              <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow-subtle p-3">
+                {STYLE_OPTIONS.map((styleVal)=> {
+                  const checked = form.styles.includes(styleVal)
+                  return (
+                    <label key={styleVal} className={`flex items-center gap-2 text-sm py-1`}>
+                      <input 
+                        type="checkbox" 
+                        checked={checked} 
+                        onChange={(e)=>{
+                          const isChecked = e.target.checked
+                          if (isChecked && form.styles.length >= 3) {
+                            show('You can pick up to 3 styles', 'error')
+                            return
+                          }
+                          const next = isChecked 
+                            ? [...form.styles, styleVal] 
+                            : form.styles.filter(s=>s!==styleVal)
+                          setForm({...form, styles: next})
+                        }}
+                      />
+                      <span className="capitalize">{styleVal.replace('-', ' ')}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            )}
             <input 
               value={form.customStyle} 
               onChange={(e)=>setForm({...form, customStyle:e.target.value})} 

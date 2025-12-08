@@ -8,6 +8,8 @@ const seminarSchema = new mongoose.Schema(
     localDateTime: { type: String, required: true, trim: true, default: '' },
     timeZone: { type: String, default: 'UTC' },
     type: { type: String, enum: ['workshop', 'event'], default: 'workshop' },
+    // Support up to 3 styles per seminar. Keep legacy single `style` for backwards compatibility.
+    styles: { type: [String], default: [] },
     style: { type: String, default: '' },
     level: { type: String, enum: ['beginner', 'intermediate', 'advanced', 'open'], default: null },
     endDate: { type: Date, default: null },
