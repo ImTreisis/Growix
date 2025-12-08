@@ -127,8 +127,14 @@ export default function Browse() {
                         const next = isChecked ? [...selectedStyles, styleVal] : selectedStyles.filter(s=>s!==styleVal)
                         setSelectedStyles(next)
                         const newParams = new URLSearchParams(params)
-                        if (next.length) newParams.set('styles', next.join(','))
-                        else newParams.delete('styles')
+                        if (next.length) {
+                          next.forEach((val, idx)=>{
+                            if(idx===0) newParams.set('styles', val)
+                            else newParams.append('styles', val)
+                          })
+                        } else {
+                          newParams.delete('styles')
+                        }
                         setParams(newParams)
                       }} 
                     />

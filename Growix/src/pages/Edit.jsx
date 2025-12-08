@@ -167,16 +167,16 @@ export default function Edit(){
                   })}
                   <div className="pt-2 border-t mt-2">
                     <p className="text-sm text-cocoa/70 mb-2">Add custom style</p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-col">
                       <input 
                         value={form.customStyle} 
                         onChange={(e)=>setForm({...form, customStyle:e.target.value})} 
                         placeholder="Custom style" 
-                        className="flex-1 px-3 py-2 rounded-xl border" 
+                        className="w-full px-3 py-2 rounded-xl border" 
                       />
                       <button
                         type="button"
-                        className="px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
+                        className="w-full px-3 py-2 rounded-xl border bg-white hover:bg-gray-50"
                         onClick={()=>{
                           const custom = form.customStyle.trim()
                           if(!custom) return
