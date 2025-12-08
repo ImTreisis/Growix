@@ -53,6 +53,16 @@ function IconHeart(props){return (
   </svg>
 )}
 
+// Converts URLs inside text into clickable links
+function linkify(text) {
+  if (!text) return "";
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank" rel="noopener" class="text-blue-600 underline">${url}</a>`;
+  });
+}
+
+
 export default function Detail(){
   const { id } = useParams()
   const { api, user, setUser } = useAuth()
@@ -174,9 +184,11 @@ export default function Detail(){
 
         {/* Description */}
         {item.description && (
-          <div className="mt-4">
-            <p className="text-black font-poppins text-base leading-relaxed whitespace-pre-wrap">{item.description}</p>
-          </div>
+          <div
+          className="text-black font-poppins text-base leading-relaxed prose whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: linkify(item.description) }}
+        />
+        
         )}
 
         {/* Action buttons */}
