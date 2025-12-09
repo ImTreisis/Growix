@@ -1,12 +1,10 @@
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
 import Logo from '../components/Logo.jsx'
 import SeminarCard from '../components/SeminarCard.jsx'
-import { useAuth } from '../state/AuthContext.jsx'
-
-const MotionH1 = motion.h1
 
 export default function Home() {
+  const navigate = useNavigate()
   return (
     <div className="py-10">
       <section className="rounded-xl p-10 text-dusk shadow-cozy relative overflow-hidden">
@@ -21,11 +19,18 @@ export default function Home() {
           <div className="mb-4">
             <Logo size={48} />
           </div>
-          <MotionH1 initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{duration:0.6}}
+          <motion.h1 initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{duration:0.6}}
             className="text-4xl md:text-5xl font-poppins font-bold mb-4">
             Your next step starts here - Trust the process, every step is progress!
-          </MotionH1>
-          {/* Search and browse controls removed per request */}
+          </motion.h1>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input 
+              onKeyDown={(e)=>{if(e.key==='Enter') navigate(`/workshops?q=${encodeURIComponent(e.currentTarget.value)}`)}} 
+              placeholder="Search workshops..." 
+              className="flex-1 px-4 py-3 rounded-xl bg-white/90 border border-gray-200 shadow-subtle" 
+            />
+            <button onClick={()=>navigate('/workshops')} className="px-6 py-3 rounded-xl bg-dusk text-white shadow-cozy">Browse</button>
+          </div>
         </div>
       </section>
       <section className="mt-8">
@@ -36,6 +41,8 @@ export default function Home() {
   )
 }
 
+import { useEffect, useState } from 'react'
+import { useAuth } from '../state/AuthContext.jsx'
 function BrowseInline(){
   const { api } = useAuth()
   const [items, setItems] = useState([])
@@ -49,5 +56,4 @@ function BrowseInline(){
     </div>
   )
 }
-
 
