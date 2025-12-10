@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
+
 
 const STYLE_OPTIONS = [
   'afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'
@@ -32,6 +35,10 @@ export default function Organize() {
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
+  const [cropSrc, setCropSrc] = useState(null);
+  const [cropper, setCropper] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+
   const dynamicStyles = form.styles.filter(s=>!STYLE_OPTIONS.includes(s))
   const renderedOptions = [...STYLE_OPTIONS, ...dynamicStyles]
   const normalizeInputDateTime = (value) => {
@@ -132,6 +139,51 @@ export default function Organize() {
 
   return (
     <>
+      {showCropper && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-xl shadow-xl max-w-lg w-full">
+            <h2 className="text-xl font-semibold mb-3">Adjust Photo</h2>
+  
+            <Cropper
+              src={cropSrc}
+              style={{ height: 300, width: "100%" }}
+              aspectRatio={16 / 9}
+              viewMode={1}
+              dragMode="move"
+              autoCropArea={1}
+              zoomable={true}
+              movable={true}
+              scalable={false}
+              cropBoxMovable={false}
+              cropBoxResizable={false}
+              onInitialized={(instance) => setCropper(instance)}
+            />
+  
+            <div className="flex gap-3 mt-4">
+              <button
+                className="flex-1 bg-gray-200 py-2 rounded-xl"
+                onClick={() => setShowCropper(false)}
+              >
+                Cancel
+              </button>
+  
+              <button
+                className="flex-1 bg-dusk text-white py-2 rounded-xl"
+                onClick={() => {
+                  cropper.getCroppedCanvas().toBlob((blob) => {
+                    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+                    setForm({ ...form, image: file });
+                    setShowCropper(false);
+                  }, "image/jpeg", 0.95);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+  
       <div className="w-full bg-orange-300 bg-opacity-75 py-4 mb-6 rounded-full">
         <div className="max-w-6xl mx-auto px-4">
           <h1 className="text-3xl font-bold text-black font-poppins text-center">Workshops & Open Classes</h1>
@@ -139,7 +191,24 @@ export default function Organize() {
       </div>
       <div className="flex justify-center">
         <form onSubmit={submit} className="cozy-card p-6 grid gap-4 max-w-xl w-full shadow-subtle">
-          <input type="file" accept="image/*" required onChange={(e)=>setForm({...form, image: e.target.files?.[0]||null})} className="w-full px-3 py-2 rounded-xl border" />
+        <input
+  type="file"
+  accept="image/*"
+  required
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropSrc(reader.result);   // show in cropper
+      setShowCropper(true);        // open modal
+    };
+    reader.readAsDataURL(file);
+  }}
+  className="w-full px-3 py-2 rounded-xl border"
+/>
+
           
           <input required value={form.title} onChange={(e)=>setForm({...form, title:e.target.value})} placeholder="Title" className="w-full px-3 py-2 rounded-xl border" />
           
