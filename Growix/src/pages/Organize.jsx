@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
+import "cropperjs/dist/cropper.css?url";
 
 
 const STYLE_OPTIONS = [
