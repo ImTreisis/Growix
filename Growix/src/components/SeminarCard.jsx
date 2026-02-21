@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 
 function formatLocalDateTime(value){
@@ -57,6 +58,7 @@ function IconHeart(props){return (
 )}
 
 export default function SeminarCard({ item }){
+  const navigate = useNavigate()
   const { api, user, setUser } = useAuth()
   const [saved, setSaved] = useState(() => Boolean(user?.savedSeminars?.some(s=> String(s?._id||s)===String(item._id))))
   const [isSaving, setIsSaving] = useState(false)
@@ -90,8 +92,10 @@ export default function SeminarCard({ item }){
   }
 
   return (
-    <article className="cozy-card overflow-hidden relative">
-      <a href={`/detail/${item._id}`} className="absolute inset-0 z-[1]" aria-label={`Open ${item.title}`}></a>
+    <article
+      className="cozy-card overflow-hidden relative cursor-pointer"
+      onClick={() => navigate(`/detail/${item._id}`)}
+    >
       <div className="relative aspect-[16/9] bg-black/5">
         <img
           src={item.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'}
@@ -156,7 +160,7 @@ export default function SeminarCard({ item }){
             </div>
           </div>
         </div>
-        <div className="mt-5 relative z-10">
+        <div className="mt-5">
           <button
             type="button"
             onClick={(e) => e.stopPropagation()}
