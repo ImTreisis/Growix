@@ -166,7 +166,7 @@ export default function SeminarCard({ item }){
             onClick={(e) => e.stopPropagation()}
             className="px-4 py-2 rounded-xl border border-warm3 text-cocoa bg-white hover:bg-gray-50"
           >
-            Register To Workshop
+            Register
           </button>
         </div>
       </div>
