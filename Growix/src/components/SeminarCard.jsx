@@ -90,9 +90,9 @@ export default function SeminarCard({ item }){
   }
 
   return (
-    <article className="cozy-card overflow-hidden">
+    <article className="cozy-card overflow-hidden relative">
+      <a href={`/detail/${item._id}`} className="absolute inset-0 z-[1]" aria-label={`Open ${item.title}`}></a>
       <div className="relative aspect-[16/9] bg-black/5">
-        <a href={`/detail/${item._id}`} className="absolute inset-0 z-[1]" aria-label={`Open ${item.title}`}></a>
         <img
           src={item.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop'}
           alt={item.title}
@@ -118,13 +118,16 @@ export default function SeminarCard({ item }){
         {item.description && (
           <p className="mt-2 text-sm text-cocoa/80 line-clamp-2">{item.description}</p>
         )}
-        {isWorkshop && styleLabels.length > 0 && (
+        {((isWorkshop && (styleLabels.length > 0 || levelLabel)) || item.price) && (
           <div className="mt-2 flex items-center gap-2 flex-wrap">
-            {styleLabels.map((label)=>(
+            {isWorkshop && styleLabels.map((label)=>(
               <span key={label} className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-400" >{label}</span>
             ))}
-            {levelLabel && (
+            {isWorkshop && levelLabel && (
               <span className="px-3 py-1 rounded-full text-[#676767] text-sm bg-opacity-55 bg-orange-600" >{levelLabel}</span>
+            )}
+            {item.price && (
+              <span className="px-3 py-1 rounded-full text-pink-500 font-semibold bg-pink-100">€{item.price}</span>
             )}
           </div>
         )}
@@ -133,7 +136,7 @@ export default function SeminarCard({ item }){
           {item.type === 'event' && endDateStr && (
             <div className="flex items-center gap-2"><IconCalendar className="opacity-70" /><span><strong>Ends:</strong> {endDateStr}</span></div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative z-10">
             <div className="flex items-center gap-2">
               <img 
                 src={item.createdBy?.photoUrl || 'https://placehold.co/24x24?text=U'} 
@@ -153,11 +156,14 @@ export default function SeminarCard({ item }){
             </div>
           </div>
         </div>
-        <div className="mt-5 flex items-center gap-3">
-          <a href={`/detail/${item._id}`} className="px-4 py-2 rounded-xl border border-warm3 text-cocoa">View Details</a>
-          {item.price && (
-            <span className="px-3 py-1 rounded-full text-pink-500 font-semibold bg-pink-100">€{item.price}</span>
-          )}
+        <div className="mt-5 relative z-10">
+          <button
+            type="button"
+            onClick={(e) => e.stopPropagation()}
+            className="px-4 py-2 rounded-xl border border-warm3 text-cocoa bg-white hover:bg-gray-50"
+          >
+            Register To Workshop
+          </button>
         </div>
       </div>
     </article>
