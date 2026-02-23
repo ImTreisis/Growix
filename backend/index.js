@@ -12,6 +12,8 @@ import { fileURLToPath } from 'url';
 import authRoutes from './src/routes/auth.js';
 import userRoutes from './src/routes/users.js';
 import seminarRoutes from './src/routes/seminars.js';
+import registrationRoutes from './src/routes/registrations.js';
+import { handleStripeWebhook } from './src/lib/stripeWebhook.js';
 
 dotenv.config();
 
@@ -19,6 +21,9 @@ const app = express();
 
 // Trust proxy for rate limiting to work correctly behind reverse proxies (like Render)
 app.set('trust proxy', 1);
+
+// Stripe webhook MUST use raw body - add before json parser
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 // Parse and normalize allowed origins (remove trailing slashes)
 const ALLOW_ORIGINS = (process.env.CORS_ORIGINS || 'https://growix-ten.vercel.app')
@@ -80,7 +85,6 @@ app.use((req, res, next) => {
 app.use(morgan('dev'));
 
 // Session configuration (after body parsers)
-// Using memory store for simplicity and speed
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -128,6 +132,7 @@ app.use('/api/users', userRoutes);
 // Apply save limiter to seminars save routes before the main seminars routes
 app.use('/api/seminars/:id/save', saveLimiter);
 app.use('/api/seminars', seminarRoutes);
+app.use('/api/registrations', registrationRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));

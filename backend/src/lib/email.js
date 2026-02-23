@@ -115,3 +115,70 @@ export async function sendPasswordResetEmail({ to, name = 'there', token }) {
     throw error;
   }
 }
+
+export async function sendRegistrationConfirmationEmail({ to, firstName, lastName, seminarTitle, seminarDate, venue }) {
+  const client = getResendClient();
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'info@growix.lt';
+  const subject = `You're registered for ${seminarTitle}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="color: #1a1a1a; font-size: 24px;">You're officially registered!</h1>
+        <p style="color: #555; font-size: 16px;">Hello ${firstName} ${lastName},</p>
+        <p style="color: #555; font-size: 16px;">You have successfully registered for:</p>
+        <p style="font-size: 18px; font-weight: 600; color: #1a1a1a;">${seminarTitle}</p>
+        <p style="color: #555;">📅 ${seminarDate || 'See event details'}</p>
+        <p style="color: #555;">📍 ${venue || 'See event details'}</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="color: #888; font-size: 12px;">Best regards,<br><strong>The Growix Team</strong></p>
+      </div>
+    </body>
+    </html>
+  `;
+  if (!client) {
+    console.log('📧 Registration confirmation (mock):', { to, subject });
+    return;
+  }
+  try {
+    await client.emails.send({ from: fromEmail, to, subject, html });
+    console.log('✅ Registration confirmation sent to:', to);
+  } catch (error) {
+    console.error('❌ Failed to send registration email:', error);
+    throw error;
+  }
+}
+
+export async function sendOrganizerNotificationEmail({ to, organizerName, registrantName, seminarTitle }) {
+  const client = getResendClient();
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'info@growix.lt';
+  const subject = `New registration for ${seminarTitle}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="color: #1a1a1a; font-size: 24px;">Someone registered for your event!</h1>
+        <p style="color: #555; font-size: 16px;">Hello ${organizerName},</p>
+        <p style="color: #555; font-size: 16px;"><strong>${registrantName}</strong> has registered for your event:</p>
+        <p style="font-size: 18px; font-weight: 600; color: #1a1a1a;">${seminarTitle}</p>
+        <p style="color: #555;">Log in to Growix to see all registered attendees.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="color: #888; font-size: 12px;">Best regards,<br><strong>The Growix Team</strong></p>
+      </div>
+    </body>
+    </html>
+  `;
+  if (!client) {
+    console.log('📧 Organizer notification (mock):', { to, subject });
+    return;
+  }
+  try {
+    await client.emails.send({ from: fromEmail, to, subject, html });
+    console.log('✅ Organizer notification sent to:', to);
+  } catch (error) {
+    console.error('❌ Failed to send organizer notification:', error);
+    throw error;
+  }
+}

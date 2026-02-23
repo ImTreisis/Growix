@@ -17,6 +17,8 @@ import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import Detail from './pages/Detail.jsx'
 import Edit from './pages/Edit.jsx'
+import Register from './pages/Register.jsx'
+import RegisterSuccess from './pages/RegisterSuccess.jsx'
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
 import TermsOfService from './pages/TermsOfService.jsx'
 import { AuthProvider, useAuth } from './state/AuthContext.jsx'
@@ -53,6 +55,8 @@ export default function App() {
               <Route path="/workshops" element={<Browse />} />
               <Route path="/detail/:id" element={<Detail />} />
               <Route path="/detail/:id/edit" element={<PrivateRoute><Edit /></PrivateRoute>} />
+              <Route path="/register/:id" element={<PrivateRoute><Register /></PrivateRoute>} />
+              <Route path="/register/:id/success" element={<PrivateRoute><RegisterSuccess /></PrivateRoute>} />
               <Route path="/create" element={<PrivateRoute><Organize /></PrivateRoute>} />
               <Route path="/create-event" element={<PrivateRoute><OrganizeEvent /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

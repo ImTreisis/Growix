@@ -3,6 +3,48 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
+function RegistrationsModal({ seminarId, onClose }) {
+  const { api } = useAuth()
+  const [registrations, setRegistrations] = useState([])
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    api.get(`/registrations/seminar/${seminarId}`)
+      .then(r => setRegistrations(r.data.registrations || []))
+      .catch(() => setRegistrations([]))
+      .finally(() => setLoading(false))
+  }, [api, seminarId])
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+        <h2 className="text-xl font-semibold mb-4">Registered attendees</h2>
+        {loading ? (
+          <p className="text-cocoa/70">Loading...</p>
+        ) : registrations.length === 0 ? (
+          <p className="text-cocoa/70">No registrations yet.</p>
+        ) : (
+          <ul className="overflow-y-auto flex-1 space-y-2">
+            {registrations.map(r => (
+              <li key={r._id} className="flex flex-col gap-0.5 py-2 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{r.firstName} {r.lastName}</span>
+                  {r.user?.email && <span className="text-sm text-cocoa/70">({r.user.email})</span>}
+                </div>
+                {r.amountCents > 0 && (
+                  <span className="text-xs text-cocoa/60">
+                    Paid €{(r.amountCents / 100).toFixed(2)}
+                    {r.platformFeeCents > 0 && ` (platform fee €${(r.platformFeeCents / 100).toFixed(2)})`}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        <button onClick={onClose} className="mt-4 px-4 py-2 rounded-xl border">Close</button>
+      </div>
+    </div>
+  )
+}
+
 const formatSeminarDate = (localDateTime, fallbackDate) => {
   const formatLocal = (value) => {
     if(!value) return ''
@@ -72,6 +114,7 @@ export default function Detail(){
   const [savedCount, setSavedCount] = useState(0)
   const [isSaved, setIsSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [showRegistrations, setShowRegistrations] = useState(false)
 
   useEffect(() => {
     const fetchSeminar = async () => {
@@ -192,10 +235,21 @@ export default function Detail(){
         )}
 
         {/* Action buttons */}
-        <div className="mt-6 flex items-center gap-3">
+        <div className="mt-6 flex items-center gap-3 flex-wrap">
+          {user && isWorkshop && String(user._id)!==String(item.createdBy?._id||item.createdBy) && (
+            <Link to={`/register/${item._id}`} className="px-4 py-2 rounded-xl bg-dusk text-white">Register</Link>
+          )}
           {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
             <>
               <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>
+              {isWorkshop && (
+                <button
+                  onClick={() => setShowRegistrations(true)}
+                  className="px-4 py-2 rounded-xl border border-pink-300 text-pink-600"
+                >
+                  View registrations
+                </button>
+              )}
               <button
                 onClick={async()=>{
                   if(!confirm('Delete this workshop? This cannot be undone.')) return
@@ -207,6 +261,9 @@ export default function Detail(){
           )}
         </div>
       </div>
+      {showRegistrations && (
+        <RegistrationsModal seminarId={item._id} onClose={() => setShowRegistrations(false)} />
+      )}
     </div>
   )
 }
