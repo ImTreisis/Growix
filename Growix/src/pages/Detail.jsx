@@ -236,9 +236,6 @@ export default function Detail(){
 
         {/* Action buttons */}
         <div className="mt-6 flex items-center gap-3 flex-wrap">
-          {user && isWorkshop && String(user._id)!==String(item.createdBy?._id||item.createdBy) && (
-            <Link to={`/register/${item._id}`} className="px-4 py-2 rounded-xl bg-dusk text-white">Register</Link>
-          )}
           {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
             <>
               <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>

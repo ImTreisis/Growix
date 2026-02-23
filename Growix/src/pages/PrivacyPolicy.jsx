@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-dusk mb-4 font-poppins">Privacy Policy – Growix</h1>
-          <p className="text-cocoa">Updated: 2025-10-18</p>
+          <p className="text-cocoa">Updated: 2026-02-23</p>
         </div>
 
         {/* Content */}
@@ -40,7 +40,23 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">3. How We Use Your Data</h2>
             <p className="text-cocoa mb-4">Your data is used for the following purposes:</p>
             <p className="text-cocoa mb-2">• Account administration and content access management</p>
-            <p className="text-cocoa mb-6">• System improvement and error identification</p>
+            <p className="text-cocoa mb-2">• System improvement and error identification</p>
+            <p className="text-cocoa mb-2">• Processing registrations and payments for workshops (where applicable)</p>
+            <p className="text-cocoa mb-6">
+              For payment processing we use the third‑party provider <strong>Stripe</strong>. When you purchase a paid workshop,
+              basic billing information (such as your name, email address and payment reference) is shared with Stripe so that
+              your payment can be processed securely. Your full card details are transmitted directly to Stripe and are not stored
+              on Growix servers. You can read more about how Stripe processes personal data in their Privacy Policy:
+              {' '}
+              <a
+                href="https://stripe.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#df1f66] hover:underline"
+              >
+                https://stripe.com/privacy
+              </a>.
+            </p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">4. Legal Basis for Processing</h2>
             <p className="text-cocoa mb-4">We process your data based on:</p>
