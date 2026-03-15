@@ -102,8 +102,8 @@ app.use(session({
 
 // Stricter rate limiting for auth routes
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000 * 0, // 15 minutes
-  max: 500, // 5 attempts per window
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // max 20 auth attempts per 15 minutes per IP
   message: { message: 'Too many authentication attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -114,6 +114,15 @@ const saveLimiter = rateLimit({
   windowMs: 2000, // 2 seconds
   max: 2, // max 2 save requests per 2 seconds
   message: { message: 'Too many save attempts, please slow down' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiting for registrations / payments to avoid abuse
+const registrationLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 20, // max 20 registration/payment attempts per 5 minutes per IP
+  message: { message: 'Too many registration attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -132,7 +141,7 @@ app.use('/api/users', userRoutes);
 // Apply save limiter to seminars save routes before the main seminars routes
 app.use('/api/seminars/:id/save', saveLimiter);
 app.use('/api/seminars', seminarRoutes);
-app.use('/api/registrations', registrationRoutes);
+app.use('/api/registrations', registrationLimiter, registrationRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));

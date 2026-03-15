@@ -186,7 +186,7 @@ export async function sendOrganizerNotificationEmail({ to, organizerName, regist
 export async function sendPayoutIbanEmail({ user, iban, seminars }) {
   const client = getResendClient();
   const fromEmail = process.env.RESEND_FROM_EMAIL;
-  const to = 'info@growix.lt' && process.env.TEST_EMAIL;
+  const to = 'info@growix.lt';
   const subject = `New payout IBAN submitted by ${user.firstName || ''} ${user.lastName || ''}`.trim();
 
   const seminarList = seminars.length
