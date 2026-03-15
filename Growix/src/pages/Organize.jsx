@@ -28,6 +28,7 @@ export default function Organize() {
     level:'beginner', 
     venue:'', 
     price:'',
+    isPaid:true,
     customStyle:'', 
     image: null,
     timeZone: getDefaultTimeZone()
@@ -95,6 +96,9 @@ export default function Organize() {
         submitData.styles = [...submitData.styles, form.customStyle.trim()]
       }
       delete submitData.customStyle
+      if (!form.isPaid) {
+        submitData.price = ''
+      }
       
       if (form.image) {
         const fd = new FormData()
@@ -121,6 +125,7 @@ export default function Organize() {
         level:'beginner', 
         venue:'', 
         price:'',
+        isPaid:true,
         customStyle:'', 
         image:null,
         timeZone: getDefaultTimeZone()
@@ -214,10 +219,27 @@ export default function Organize() {
           
           <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
           
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>
-            <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})} placeholder="Price (optional)" className="w-full pl-8 pr-3 py-2 rounded-xl border" />
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-cocoa/80">Payment</p>
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, isPaid: !form.isPaid, price: !form.isPaid ? form.price : '' })}
+              className="px-3 py-1 rounded-full border text-sm"
+            >
+              {form.isPaid ? 'Paid' : 'Free'}
+            </button>
           </div>
+          {form.isPaid && (
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>
+              <input
+                value={form.price}
+                onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})}
+                placeholder="Price"
+                className="w-full pl-8 pr-3 py-2 rounded-xl border"
+              />
+            </div>
+          )}
         
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date: normalizeInputDateTime(e.target.value)})} className="w-full px-3 py-2 rounded-xl border" />
         

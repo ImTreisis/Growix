@@ -28,7 +28,7 @@ export default function Edit(){
   const { api, user } = useAuth()
   const { show } = useToast()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ title:'', description:'', date:'', styles:[], level:'beginner', venue:'', price:'', customStyle:'', imageUrl:'', endDate:'', type:'workshop' })
+  const [form, setForm] = useState({ title:'', description:'', date:'', styles:[], level:'beginner', venue:'', price:'', isPaid:true, customStyle:'', imageUrl:'', endDate:'', type:'workshop' })
   const [loading, setLoading] = useState(true)
   const [styleOpen, setStyleOpen] = useState(false)
   const dynamicStyles = form.styles.filter(s=>!STYLE_OPTIONS.includes(s))
@@ -53,6 +53,7 @@ export default function Edit(){
         level:s.level||'beginner',
         venue:s.venue||'',
         price:s.price||'',
+        isPaid: Boolean(s.price && s.price !== '0' && s.price !== '0.00'),
         customStyle: isCustomStyle ? resolvedStyles.find(val => !STYLE_OPTIONS.includes(val)) || '' : '',
         imageUrl:s.imageUrl||'',
         endDate: endDateInput,
@@ -112,6 +113,9 @@ export default function Edit(){
         date: parsedDate.toISOString(),
         localDateTime: form.date
       }
+      if (form.type === 'workshop' && !form.isPaid) {
+        updateData.price = ''
+      }
       
       if(form.type === 'event'){
         updateData.endDate = new Date(form.endDate).toISOString()
@@ -136,10 +140,29 @@ export default function Edit(){
           <input required value={form.venue} onChange={(e)=>setForm({...form, venue:e.target.value})} placeholder="Location" className="w-full px-3 py-2 rounded-xl border" />
           
           {!isEvent && (
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>
-              <input value={form.price} onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})} placeholder="Price (optional)" className="w-full pl-8 pr-3 py-2 rounded-xl border" />
-            </div>
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-cocoa/80">Payment</p>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, isPaid: !form.isPaid, price: !form.isPaid ? form.price : '' })}
+                  className="px-3 py-1 rounded-full border text-sm"
+                >
+                  {form.isPaid ? 'Paid' : 'Free'}
+                </button>
+              </div>
+              {form.isPaid && (
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>
+                  <input
+                    value={form.price}
+                    onChange={(e)=>setForm({...form, price:e.target.value.replace(/€/g, '').trim()})}
+                    placeholder="Price"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl border"
+                  />
+                </div>
+              )}
+            </>
           )}
           
           <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date: normalizeInputDateTime(e.target.value)})} placeholder="Start Date & Time" className="w-full px-3 py-2 rounded-xl border" />
