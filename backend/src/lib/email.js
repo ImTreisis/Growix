@@ -182,3 +182,64 @@ export async function sendOrganizerNotificationEmail({ to, organizerName, regist
     throw error;
   }
 }
+
+export async function sendPayoutIbanEmail({ user, iban, seminars }) {
+  const client = getResendClient();
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  const to = 'info@growix.lt' && process.env.TEST_EMAIL;
+  const subject = `New payout IBAN submitted by ${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+  const seminarList = seminars.length
+    ? seminars.map(s => `- ${s.title} (${s.type || 'workshop'})`).join('\n')
+    : 'No seminars created yet.';
+
+  const text = [
+    `User: ${user.firstName || ''} ${user.lastName || ''} (@${user.username})`,
+    `Email: ${user.email}`,
+    '',
+    `IBAN: ${iban}`,
+    '',
+    'Seminars created:',
+    seminarList,
+  ].join('\n');
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="color: #1a1a1a; font-size: 22px; margin-top: 0;">New payout IBAN submitted</h1>
+        <p style="color: #555; font-size: 15px;">
+          <strong>User:</strong> ${user.firstName || ''} ${user.lastName || ''} (@${user.username})<br/>
+          <strong>Email:</strong> ${user.email}
+        </p>
+        <p style="color: #555; font-size: 15px;">
+          <strong>IBAN:</strong><br/>
+          <code style="font-family: monospace; background:#f5f5f5; padding:4px 8px; border-radius:4px;">${iban}</code>
+        </p>
+        <h2 style="color:#1a1a1a; font-size:18px; margin-top:24px;">Seminars created</h2>
+        <ul style="color:#555; font-size:15px; padding-left:20px;">
+          ${
+            seminars.length
+              ? seminars.map(s => `<li>${s.title} (${s.type || 'workshop'})</li>`).join('')
+              : '<li>No seminars created yet.</li>'
+          }
+        </ul>
+      </div>
+    </body>
+    </html>
+  `;
+
+  if (!client) {
+    console.log('📧 Payout IBAN email (mock):', { to, subject, text });
+    return;
+  }
+
+  try {
+    await client.emails.send({ from: fromEmail, to, subject, text, html });
+    console.log('✅ Payout IBAN email sent for user:', user._id);
+  } catch (error) {
+    console.error('❌ Failed to send payout IBAN email:', error);
+    throw error;
+  }
+}

@@ -6,6 +6,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [iban, setIban] = useState('')
   const [form, setForm] = useState({ 
     firstName: user?.firstName||'', 
     lastName: user?.lastName||'', 
@@ -42,6 +43,18 @@ export default function Profile() {
     try {
       const r = await api.put('/users/me', form)
       setUser(r.data.user)
+
+      if (iban.trim()) {
+        try {
+          await api.post('/users/me/payout-iban', { iban: iban.trim() })
+          alert('Your IBAN has been sent to Growix for payouts.')
+          setIban('')
+        } catch (err) {
+          console.error('Failed to send IBAN:', err)
+          alert('Failed to send IBAN. Please check the format and try again.')
+        }
+      }
+
       setIsEditing(false)
     } catch (err) {
       console.error('Failed to save profile:', err);
@@ -247,8 +260,21 @@ export default function Profile() {
                   className="px-3 py-2 rounded-xl border focus:ring-2 focus:ring-[#df1f66]/20 focus:border-[#df1f66]" 
                 />
               </div>
-        </div>
-      </form>
+              <div className="pt-4 border-t border-gray-200 mt-2 space-y-2">
+                <h3 className="text-lg font-semibold text-dusk font-poppins">Payout details</h3>
+                <p className="text-sm text-cocoa/70">
+                  If you want to receive payouts for paid workshops, you can submit your IBAN below.
+                  It will <strong>only</strong> be sent to Growix by email and <strong>will not be stored</strong> in your profile.
+                </p>
+                <input
+                  value={iban}
+                  onChange={(e) => setIban(e.target.value)}
+                  placeholder="IBAN (e.g. LTxx xxxx xxxx xxxx xxxx)"
+                  className="px-3 py-2 rounded-xl border focus:ring-2 focus:ring-[#df1f66]/20 focus:border-[#df1f66]"
+                />
+              </div>
+            </div>
+          </form>
         )}
       </div>
     </div>

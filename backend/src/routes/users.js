@@ -4,8 +4,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import User from '../models/User.js';
+import Seminar from '../models/Seminar.js';
 import { requireAuth } from '../middleware/auth.js';
 import { uploadImage } from '../lib/cloudinary.js';
+import { sendPayoutIbanEmail } from '../lib/email.js';
 
 const router = express.Router();
 
@@ -80,6 +82,33 @@ router.post('/me/photo', requireAuth, upload.single('photo'), async (req, res) =
   const result = await uploadImage(req.file.buffer, 'growix/profile');
   const user = await User.findByIdAndUpdate(req.userId, { photoUrl: result.secure_url }, { new: true }).select('-passwordHash');
   res.json({ user });
+});
+
+// Send IBAN for payouts without storing it
+router.post('/me/payout-iban', requireAuth, async (req, res) => {
+  const { iban = '' } = req.body;
+  const trimmedIban = String(iban).trim();
+
+  if (!trimmedIban) {
+    return res.status(400).json({ message: 'IBAN is required' });
+  }
+
+  // Very basic IBAN validation (length and charset)
+  const ibanClean = trimmedIban.replace(/\s+/g, '');
+  if (!/^[A-Z0-9]+$/i.test(ibanClean) || ibanClean.length < 12 || ibanClean.length > 34) {
+    return res.status(400).json({ message: 'Invalid IBAN format' });
+  }
+
+  const user = await User.findById(req.userId).select('firstName lastName username email');
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const seminars = await Seminar.find({ createdBy: req.userId }).select('title type').lean();
+
+  await sendPayoutIbanEmail({ user, iban: trimmedIban, seminars });
+
+  res.json({ ok: true, message: 'IBAN sent for payout processing' });
 });
 
 export default router;
