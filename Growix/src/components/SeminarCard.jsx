@@ -162,16 +162,7 @@ export default function SeminarCard({ item }){
         </div>
         {isWorkshop && (
           <div className="mt-5">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                navigate(`/register/${item._id}`)
-              }}
-              className="px-4 py-2 rounded-xl border border-warm3 text-cocoa bg-white hover:bg-gray-50"
-            >
-              Register
-            </button>
+            
           </div>
         )}
       </div>
