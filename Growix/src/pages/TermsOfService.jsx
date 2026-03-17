@@ -12,95 +12,136 @@ export default function TermsOfService() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-dusk mb-4 font-poppins">Terms & Conditions – Growix</h1>
-          <p className="text-cocoa">Effective Date: 2025-10-18</p>
+          <p className="text-cocoa">Effective Date: 2026-03-17</p>
         </div>
 
         {/* Content */}
         <div className="bg-white rounded-xl shadow-cozy border border-gray-200 p-8 mb-8">
           <div className="prose prose-lg max-w-none">
             <p className="text-cocoa mb-6">
-              Growix is a non-profit online platform designed to connect and strengthen the dance community. By using the Growix website, you agree to these Terms & Conditions and our Privacy Policy.
+              By using Growix, you agree to these Terms & Conditions and our Privacy Policy.
             </p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">1. About Growix</h2>
-            <p className="text-cocoa mb-2">Growix is an officially operating online platform created to connect dancers and organizers.</p>
-            <p className="text-cocoa mb-2">Growix does not generate revenue or operate for commercial profit. Its purpose is to support and promote dance culture.</p>
+            <p className="text-cocoa mb-2">Growix is an online platform designed to connect dancers and workshop organizers.</p>
+            <p className="text-cocoa mb-2">Growix operates as an individual business registered in Lithuania.</p>
             <p className="text-cocoa mb-6">
               Website address: https://www.growix.lt/<br />
               Contact email: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a>
             </p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">2. User Accounts and Access Levels</h2>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">2. User Roles</h2>
             
             <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">2.1 Organizers</h3>
             <p className="text-cocoa mb-2">Organizers may:</p>
-            <p className="text-cocoa mb-2">• Browse website content;</p>
-            <p className="text-cocoa mb-2">• Create an account;</p>
-            <p className="text-cocoa mb-2">• Organize workshops or open dance classes that ensure equal accessibility for all participants (e.g., open sessions must not be restricted only to studio members);</p>
-            <p className="text-cocoa mb-2">• Create real and valid workshops that users can participate in;</p>
-            <p className="text-cocoa mb-4">• Edit and delete their own content.</p>
+            <p className="text-cocoa mb-2">• Create workshops and events</p>
+            <p className="text-cocoa mb-2">• Manage their content</p>
+            <p className="text-cocoa mb-4">• View participant lists after payments</p>
 
-            <p className="text-cocoa mb-2">Organizers are prohibited from:</p>
-            <p className="text-cocoa mb-2">• Creating or advertising non-existent workshops;</p>
-            <p className="text-cocoa mb-2">• Posting the same workshop multiple times;</p>
-            <p className="text-cocoa mb-2">• Providing false or misleading information;</p>
-            <p className="text-cocoa mb-6">• Creating workshops for which they are not responsible.</p>
+            <p className="text-cocoa mb-2">Organizers must:</p>
+            <p className="text-cocoa mb-2">• Provide accurate and truthful information</p>
+            <p className="text-cocoa mb-2">• Provide valid IBAN for payouts</p>
+            <p className="text-cocoa mb-4">• Be fully responsible for their events</p>
+
+            <p className="text-cocoa mb-2">Organizers must NOT:</p>
+            <p className="text-cocoa mb-2">• Post fake or misleading events</p>
+            <p className="text-cocoa mb-2">• Duplicate workshops</p>
+            <p className="text-cocoa mb-6">• Misrepresent ownership</p>
 
             <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">2.2 Users</h3>
             <p className="text-cocoa mb-2">Users may:</p>
-            <p className="text-cocoa mb-2">• Create an account;</p>
-            <p className="text-cocoa mb-2">• Save favorite workshops;</p>
-            <p className="text-cocoa mb-2">• Edit their profile;</p>
-            <p className="text-cocoa mb-6">• Become organizers by creating workshops (in which case, organizer rules also apply).</p>
+            <p className="text-cocoa mb-2">• Create accounts</p>
+            <p className="text-cocoa mb-2">• Register for workshops</p>
+            <p className="text-cocoa mb-2">• Save favorite events</p>
+            <p className="text-cocoa mb-6">• Become organizers</p>
 
             <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">2.3 Administrators</h3>
-            <p className="text-cocoa mb-2">Administrators have full access to all platform functionalities and are responsible for:</p>
-            <p className="text-cocoa mb-2">• Managing user access;</p>
-            <p className="text-cocoa mb-2">• Moderating content;</p>
-            <p className="text-cocoa mb-4">• Ensuring technical maintenance and platform reliability.</p>
+            <p className="text-cocoa mb-2">Administrators may:</p>
+            <p className="text-cocoa mb-2">• Manage platform content</p>
+            <p className="text-cocoa mb-2">• Remove or restrict users</p>
+            <p className="text-cocoa mb-4">• Ensure platform security</p>
 
-            <p className="text-cocoa mb-2">Administrators reserve the right to:</p>
-            <p className="text-cocoa mb-2">• Temporarily hide or remove content if there are reasonable doubts about its legality or accuracy;</p>
-            <p className="text-cocoa mb-2">• Restrict or remove user accounts that violate these Terms or legal requirements;</p>
-            <p className="text-cocoa mb-2">• Inform relevant authorities if necessary.</p>
-            <p className="text-cocoa mb-6">Upon lawful request from law enforcement or judicial authorities, administrators may provide user account information in accordance with the laws of the Republic of Lithuania.</p>
+            <p className="text-cocoa mb-6">They may take action if content violates laws or these Terms.</p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">3. Content and Liability</h2>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">3. Content Responsibility</h2>
             
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">User Responsibility for Content</h3>
-            <p className="text-cocoa mb-2">Each user is fully responsible for the content they upload or publish on Growix, including text, photos, videos, event descriptions, and any other materials. Users must ensure that their content:</p>
-            <p className="text-cocoa mb-2">• Does not violate third-party rights (e.g., copyrights, trademarks, or privacy rights);</p>
-            <p className="text-cocoa mb-2">• Is not offensive, discriminatory, or illegal;</p>
-            <p className="text-cocoa mb-4">• Complies with applicable laws and these Terms & Conditions.</p>
+            <p className="text-cocoa mb-2">Users are fully responsible for any content they publish on Growix.</p>
+            <p className="text-cocoa mb-2">Growix is not responsible for:</p>
+            <p className="text-cocoa mb-2">• User-generated content</p>
+            <p className="text-cocoa mb-4">• The quality, safety, or execution of events organized by third parties</p>
+            <p className="text-cocoa mb-6">Growix may review or moderate content, but this does not constitute a guarantee of accuracy, quality, or reliability.</p>
 
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">Growix Liability Disclaimer</h3>
-            <p className="text-cocoa mb-2">Growix is not responsible for any user-generated content. All user-submitted information reflects the views and responsibility of its authors. Growix reserves the right to remove, hide, or restrict any content that violates these Terms, legal requirements, or may harm the platform's reputation, security, or other users.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">4. Platform Availability</h2>
+            <p className="text-cocoa mb-2">We strive to ensure continuous platform availability but cannot guarantee uninterrupted service.</p>
+            <p className="text-cocoa mb-2">Growix is not liable for:</p>
+            <p className="text-cocoa mb-2">• Downtime</p>
+            <p className="text-cocoa mb-2">• Data loss</p>
+            <p className="text-cocoa mb-6">• Technical issues</p>
 
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">Platform Reliability</h3>
-            <p className="text-cocoa mb-6">Growix strives to ensure all information is accurate and up to date but cannot guarantee that content will always be error-free or uninterrupted. Growix is not liable for any losses or damages resulting from inaccurate information, temporary unavailability, or technical issues.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">5. Payments and Payouts</h2>
+            <p className="text-cocoa mb-2">• Growix collects payments on behalf of workshop organizers</p>
+            <p className="text-cocoa mb-2">• After successful payment, organizers gain access to participant lists</p>
+            <p className="text-cocoa mb-2">• Funds are transferred to organizers within 1–2 business days after the event</p>
+            <p className="text-cocoa mb-2">Organizers must provide a valid IBAN to receive payouts.</p>
+            <p className="text-cocoa mb-6">Once funds are transferred to the organizer, Growix does not issue refunds.</p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">4. Content Use and Availability</h2>
-            
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">User-Generated Content</h3>
-            <p className="text-cocoa mb-2">Users may upload or share content such as profiles, workshops, and event information. By submitting content, you grant Growix a non-exclusive, worldwide, royalty-free license to display and distribute that content on the platform solely for the purpose of operating and promoting the service.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">6. Platform Role and Responsibility</h2>
+            <p className="text-cocoa mb-2">Growix operates primarily as an intermediary platform connecting participants with independent workshop organizers.</p>
+            <p className="text-cocoa mb-2">Workshops listed on the platform may be organized either by independent organizers or, in some cases, directly by Growix.</p>
+            <p className="text-cocoa mb-2">For workshops organized by independent organizers:</p>
+            <p className="text-cocoa mb-2">• Growix acts solely as a technical and payment intermediary</p>
+            <p className="text-cocoa mb-4">• The organizer is fully responsible for the event, including its content, execution, and communication with participants</p>
+            <p className="text-cocoa mb-2">Growix may review or moderate content; however, this does not constitute a guarantee of quality or execution.</p>
+            <p className="text-cocoa mb-2">For workshops organized by Growix:</p>
+            <p className="text-cocoa mb-2">• Growix assumes responsibility for the organization and execution of the event</p>
+            <p className="text-cocoa mb-2">When a participant purchases a workshop, payment is:</p>
+            <p className="text-cocoa mb-2">• Transferred to the organizer after the event (for third-party workshops), or</p>
+            <p className="text-cocoa mb-6">• Retained by Growix (for Growix-organized workshops)</p>
+            <p className="text-cocoa mb-6">Users acknowledge and agree to this distinction when using the platform.</p>
 
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">Ownership</h3>
-            <p className="text-cocoa mb-2">Users retain full ownership of their content. Growix does not claim ownership over user-generated materials. However, Growix reserves the right to remove or restrict access to any content that violates these Terms or applicable laws.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">7. Cancellation & Refund Policy</h2>
+            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">7.1 User Cancellation</h3>
+            <p className="text-cocoa mb-6">• Refunds are issued within 1–2 business days to the original payment method</p>
 
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">Platform Content</h3>
-            <p className="text-cocoa mb-2">All website design, text, graphics, logos, and materials created by Growix are owned by or licensed to Growix. You may not copy, distribute, or use any of this content without prior written permission.</p>
+            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">7.2 Organizer Cancellation</h3>
+            <p className="text-cocoa mb-2">• The organizer must notify Growix via email: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a></p>
+            <p className="text-cocoa mb-6">• Participants receive a full refund within 1–2 business days</p>
 
-            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">Availability</h3>
-            <p className="text-cocoa mb-6">Growix strives to keep the platform available and functional at all times. However, we cannot guarantee uninterrupted access. Temporary downtime may occur due to maintenance, updates, or technical issues. Growix is not liable for any unavailability or data loss caused by such interruptions.</p>
+            <h3 className="text-xl font-semibold text-dusk mb-3 font-poppins">7.3 Deleted Workshops</h3>
+            <p className="text-cocoa mb-2">• Refunds are issued automatically</p>
+            <p className="text-cocoa mb-2">• Growix does NOT guarantee notification to participants</p>
+            <p className="text-cocoa mb-6">• The organizer is fully responsible for informing participants about cancellations</p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">5. Privacy and Data Protection</h2>
-            <p className="text-cocoa mb-6">User personal data is processed in accordance with the laws of the Republic of Lithuania and the General Data Protection Regulation (GDPR). Detailed information about data processing is provided in the Privacy Policy available on our website.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">8. Organizer Responsibility</h2>
+            <p className="text-cocoa mb-2">Organizers are fully responsible for:</p>
+            <p className="text-cocoa mb-2">• Event execution</p>
+            <p className="text-cocoa mb-2">• Communication with participants</p>
+            <p className="text-cocoa mb-2">• Accuracy of provided information</p>
+            <p className="text-cocoa mb-6">Growix acts as an intermediary platform except in cases where it explicitly organizes the event.</p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">6. Contact Information</h2>
-            <p className="text-cocoa mb-6">If you have any questions about your account, content, or these Terms & Conditions, please contact us: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a></p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">9. Workshop Types</h2>
+            <p className="text-cocoa mb-2">Organizers may create:</p>
+            <p className="text-cocoa mb-2">• Workshops</p>
+            <p className="text-cocoa mb-2">• Events</p>
+            <p className="text-cocoa mb-2">• Dance sessions</p>
+            <p className="text-cocoa mb-2">All events must:</p>
+            <p className="text-cocoa mb-2">• Be clearly defined</p>
+            <p className="text-cocoa mb-2">• Have a fixed price (if paid)</p>
+            <p className="text-cocoa mb-2">• Be standalone (one-time events)</p>
+            <p className="text-cocoa mb-6">Recurring or subscription-based activities are not supported.</p>
 
-            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">7. Changes to Terms & Conditions</h2>
-            <p className="text-cocoa mb-6">Growix administrators reserve the right to update these Terms & Conditions at any time. Revised versions take effect once published on the website.</p>
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">10. Limitation of Liability</h2>
+            <p className="text-cocoa mb-2">Growix is not responsible for:</p>
+            <p className="text-cocoa mb-2">• Actions or behavior of organizers</p>
+            <p className="text-cocoa mb-2">• Event cancellations or changes made by organizers</p>
+            <p className="text-cocoa mb-2">• Disputes arising after funds have been transferred</p>
+            <p className="text-cocoa mb-6">Any disputes must be resolved directly between the participant and the organizer.</p>
+
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">11. Privacy</h2>
+            <p className="text-cocoa mb-6">Personal data is processed in accordance with GDPR and our Privacy Policy.</p>
+
+            <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">12. Changes to Terms</h2>
+            <p className="text-cocoa mb-6">Growix reserves the right to update these Terms at any time. Changes take effect upon publication on the website.</p>
           </div>
         </div>
 

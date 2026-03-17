@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-dusk mb-4 font-poppins">Privacy Policy – Growix</h1>
-          <p className="text-cocoa">Updated: 2026-02-23</p>
+          <p className="text-cocoa">Updated: 2026-03-17</p>
         </div>
 
         {/* Content */}
@@ -24,7 +24,8 @@ export default function PrivacyPolicy() {
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">1. Who We Are</h2>
             <p className="text-cocoa mb-6">
-              Growix is an officially operating online platform designed to connect the dance community. The platform is responsibly managed to ensure reliability, security, and accessibility for all users. Growix provides dancers and organizers the opportunity to find, share, and participate in workshops and open sessions in one place — fostering personal and professional growth as well as community collaboration.
+              Growix is an officially operating online platform designed to connect the dance community. The platform is responsibly managed to ensure reliability, security, and accessibility for all users.
+              Growix provides dancers and organizers the opportunity to find, share, and participate in workshops and events in one place — fostering personal and professional growth as well as community collaboration.
             </p>
             <p className="text-cocoa mb-6">
               Website address: https://www.growix.lt/<br />
@@ -32,57 +33,56 @@ export default function PrivacyPolicy() {
             </p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">2. What Data We Collect</h2>
-            <p className="text-cocoa mb-4">We may collect and process the following types of data:</p>
-            <p className="text-cocoa mb-2"><strong>Registration data:</strong> email address, username, password</p>
-            <p className="text-cocoa mb-2"><strong>Account information:</strong> profile picture, biography, social media links, and content created on the platform (e.g., workshops)</p>
+            <p className="text-cocoa mb-4">We may collect and process the following data:</p>
+            <p className="text-cocoa mb-2"><strong>Registration data:</strong> email address, username, password, name</p>
+            <p className="text-cocoa mb-2">
+              <strong>Account information:</strong> profile picture, biography, social media links, created content (e.g., workshops, events)
+            </p>
+            <p className="text-cocoa mb-2"><strong>Organizer financial data:</strong> IBAN and payout-related information (only for organizers)</p>
             <p className="text-cocoa mb-6"><strong>Technical data:</strong> cookies (used for website functionality)</p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">3. How We Use Your Data</h2>
-            <p className="text-cocoa mb-4">Your data is used for the following purposes:</p>
-            <p className="text-cocoa mb-2">• Account administration and content access management</p>
-            <p className="text-cocoa mb-2">• System improvement and error identification</p>
-            <p className="text-cocoa mb-2">• Processing registrations and payments for workshops (where applicable)</p>
+            <p className="text-cocoa mb-4">Your data is used for:</p>
+            <p className="text-cocoa mb-2">• Account management and access control</p>
+            <p className="text-cocoa mb-2">• Platform functionality and improvement</p>
+            <p className="text-cocoa mb-2">• Workshop registration and payment processing</p>
+            <p className="text-cocoa mb-2">• Processing payouts to organizers</p>
             <p className="text-cocoa mb-6">
-              For payment processing we use the third‑party provider <strong>Stripe</strong>. When you purchase a paid workshop,
-              basic billing information (such as your name, email address and payment reference) is shared with Stripe so that
-              your payment can be processed securely. Your full card details are transmitted directly to Stripe and are not stored
-              on Growix servers. You can read more about how Stripe processes personal data in their Privacy Policy:
-              {' '}
-              <a
-                href="https://stripe.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#df1f66] hover:underline"
-              >
+              For payments, we use <strong>Stripe</strong>. When purchasing a workshop, basic billing data (name, email, payment reference) is shared with Stripe. Full card details are never stored on Growix servers.
+              <br />
+              Stripe Privacy Policy:{' '}
+              <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#df1f66] hover:underline">
                 https://stripe.com/privacy
-              </a>.
+              </a>
             </p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">4. Legal Basis for Processing</h2>
             <p className="text-cocoa mb-4">We process your data based on:</p>
-            <p className="text-cocoa mb-2">• Your consent (e.g., when registering or using the platform)</p>
-            <p className="text-cocoa mb-6">• Our legitimate interest to maintain and improve the service</p>
+            <p className="text-cocoa mb-2">• Your consent</p>
+            <p className="text-cocoa mb-2">• Legitimate interest (platform operation and improvement)</p>
+            <p className="text-cocoa mb-6">• Legal obligations (e.g., financial transactions)</p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">5. Data Storage and Security</h2>
-            <p className="text-cocoa mb-2">Your data is stored on a secure MongoDB database located on protected servers.</p>
-            <p className="text-cocoa mb-2">Passwords are encrypted and hashed using bcrypt and are not visible to administrators or any unauthorized parties.</p>
-            <p className="text-cocoa mb-2">Your data is not sold, rented, or shared with third parties, except with trusted service providers who assist in operating and maintaining the website.</p>
-            <p className="text-cocoa mb-6">We implement industry-standard security measures to protect your information from unauthorized access, alteration, disclosure, or destruction.</p>
+            <p className="text-cocoa mb-2">• Data is stored on secure MongoDB servers</p>
+            <p className="text-cocoa mb-2">• Passwords are encrypted using bcrypt</p>
+            <p className="text-cocoa mb-2">• Financial data (e.g., IBAN) is used strictly for payouts</p>
+            <p className="text-cocoa mb-2">• We do not sell or rent your data</p>
+            <p className="text-cocoa mb-6">We apply industry-standard security measures to protect your information.</p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">6. Your Rights under GDPR</h2>
-            <p className="text-cocoa mb-4">Under the GDPR, you have the right to:</p>
+            <p className="text-cocoa mb-4">You have the right to:</p>
             <p className="text-cocoa mb-2">• Access your personal data</p>
             <p className="text-cocoa mb-2">• Correct any inaccurate data</p>
-            <p className="text-cocoa mb-2">• Request deletion of your data</p>
-            <p className="text-cocoa mb-2">• Object to the use of your data</p>
-            <p className="text-cocoa mb-2">• File a complaint with the State Data Protection Inspectorate</p>
-            <p className="text-cocoa mb-6">To exercise your rights, please contact us at: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a></p>
+            <p className="text-cocoa mb-2">• Request deletion</p>
+            <p className="text-cocoa mb-2">• Object to processing</p>
+            <p className="text-cocoa mb-2">• File a complaint with authorities</p>
+            <p className="text-cocoa mb-6">Contact: <a href="mailto:info@growix.lt" className="text-[#df1f66] hover:underline">info@growix.lt</a></p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">7. Consent</h2>
-            <p className="text-cocoa mb-6">By using this website, you agree to this Privacy Policy and the processing of your personal data as described above.</p>
+            <p className="text-cocoa mb-6">By using Growix, you agree to this Privacy Policy.</p>
 
             <h2 className="text-2xl font-semibold text-dusk mb-4 font-poppins">8. Changes to the Privacy Policy</h2>
-            <p className="text-cocoa mb-6">This Privacy Policy may be updated from time to time. We will notify users of significant changes via the website.</p>
+            <p className="text-cocoa mb-6">We may update this policy. Significant changes will be announced on the website.</p>
           </div>
         </div>
 

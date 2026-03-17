@@ -38,7 +38,7 @@ export async function handleStripeWebhook(req, res) {
       }
 
       const amountTotal = session.amount_total || 0;
-      const platformFeeCents = Math.round(amountTotal * 0.10);
+      const platformFeeCents = Math.round(amountTotal * 0.06);
 
       const reg = await Registration.create({
         seminar: seminarId,

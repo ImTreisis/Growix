@@ -14,7 +14,7 @@ function getStripe() {
   return new Stripe(key);
 }
 
-const PLATFORM_FEE_PERCENT = 10;
+const PLATFORM_FEE_PERCENT = 6;
 
 // Parse price string to cents (e.g. "15" or "15.50" -> 1500 or 1550)
 function priceToCents(priceStr) {

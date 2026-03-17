@@ -100,7 +100,7 @@ export default function Register() {
   const dateStr = formatSeminarDate(seminar.localDateTime, seminar.date)
   const isFree = !seminar.price || seminar.price === '0' || seminar.price === '0.00'
   const priceNum = isFree ? 0 : parseFloat(String(seminar.price).replace(',', '.')) || 0
-  const feeNum = Math.round(priceNum * 10) / 100
+  const feeNum = Math.round(priceNum * 6) / 100
   const totalNum = priceNum + feeNum
 
   return (
@@ -113,7 +113,7 @@ export default function Register() {
         {seminar.price && !isFree && (
           <div className="mb-4 space-y-1">
             <p className="text-cocoa/80">Workshop: €{seminar.price}</p>
-            <p className="text-cocoa/80">Platform fee (10%): €{feeNum.toFixed(2)}</p>
+            <p className="text-cocoa/80">Platform fee (6%): €{feeNum.toFixed(2)}</p>
             <p className="text-pink-600 font-semibold">Total: €{totalNum.toFixed(2)}</p>
           </div>
         )}
