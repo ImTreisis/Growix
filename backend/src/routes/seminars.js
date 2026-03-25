@@ -115,6 +115,7 @@ router.post('/', requireAuth, async (req, res) => {
       type,
       venue,
       price: price || '',
+      registrationEnabled: type === 'workshop',
       imageUrl, 
       timeZone: seminarTimeZone, 
       createdBy: req.userId 
@@ -217,6 +218,7 @@ router.post('/with-image', requireAuth, upload.single('image'), async (req, res)
       type,
       venue,
       price: price || '',
+      registrationEnabled: type === 'workshop',
       imageUrl, 
       timeZone: seminarTimeZone, 
       createdBy: req.userId 

@@ -160,7 +160,7 @@ export default function SeminarCard({ item }){
             </div>
           </div>
         </div>
-        {isWorkshop && (
+        {isWorkshop && item.registrationEnabled && (
           <div className="mt-5">
             <button
               type="button"

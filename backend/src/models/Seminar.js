@@ -16,6 +16,8 @@ const seminarSchema = new mongoose.Schema(
     endLocalDateTime: { type: String, default: '' },
     venue: { type: String, required: true, trim: true },
     price: { type: String, default: '' },
+    // Gate registration/payment feature. Old workshops won't have it enabled.
+    registrationEnabled: { type: Boolean, default: false },
     imageUrl: { type: String, default: '' },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

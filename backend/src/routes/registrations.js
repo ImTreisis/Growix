@@ -35,6 +35,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
     const seminar = await Seminar.findById(seminarId).populate('createdBy', 'email firstName lastName');
     if (!seminar) return res.status(404).json({ message: 'Seminar not found' });
     if (seminar.type === 'event') return res.status(400).json({ message: 'Registration is only available for workshops' });
+    if (!seminar.registrationEnabled) return res.status(400).json({ message: 'Registration is not available for this workshop' });
 
     const priceCents = priceToCents(seminar.price);
     const isFree = priceCents === 0;

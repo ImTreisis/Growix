@@ -64,7 +64,7 @@ export default function Register() {
       }
     }
     fetchSeminar()
-  }, [api, id, user, navigate, show])
+  }, [api, id, user, isLoading, navigate, show])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -96,6 +96,7 @@ export default function Register() {
   }
 
   if (isLoading || !user || loading || !seminar) return null
+  if (!seminar.registrationEnabled) return null
 
   const dateStr = formatSeminarDate(seminar.localDateTime, seminar.date)
   const isFree = !seminar.price || seminar.price === '0' || seminar.price === '0.00'
