@@ -242,7 +242,7 @@ export default function Detail(){
             ) : (
               <button
                 type="button"
-                onClick={() => { show('You need to sign in to register', 'error'); navigate('/auth') }}
+                onClick={() => navigate('/auth', { state: { authNotice: 'You need to sign in to register' } })}
                 className="px-4 py-2 rounded-xl bg-dusk text-white"
               >
                 Register

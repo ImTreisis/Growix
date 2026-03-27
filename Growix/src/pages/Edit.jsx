@@ -141,16 +141,19 @@ export default function Edit(){
           
           {!isEvent && (
             <>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-cocoa/80">Payment</p>
-                <button
-                  type="button"
-                  onClick={() => setForm({ ...form, isPaid: !form.isPaid, price: !form.isPaid ? form.price : '' })}
-                  className="px-3 py-1 rounded-full border text-sm"
-                >
-                  {form.isPaid ? 'Paid' : 'Free'}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, isPaid: !form.isPaid, price: !form.isPaid ? form.price : '' })}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl border"
+              >
+                <span className="text-sm text-cocoa/80">Payment</span>
+                <span className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.isPaid ? 'bg-dusk' : 'bg-gray-300'}`}>
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${form.isPaid ? 'translate-x-5' : 'translate-x-1'}`} />
+                </span>
+              </button>
+              <p className="text-xs text-cocoa/70">
+                By enabling payments, transactions will be processed through the Growix platform. Dancers can book workshops directly, and organizers receive payouts after successful completion. See our Terms &amp; Conditions for more details.
+              </p>
               {form.isPaid && (
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cocoa pointer-events-none">€</span>

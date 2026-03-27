@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
 export default function Auth() {
   const { api, login, setUser } = useAuth()
   const { show } = useToast()
+  const location = useLocation()
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ emailOrUsername:'', email:'', username:'', password:'', firstName:'', lastName:'' })
   const [errors, setErrors] = useState({})
@@ -228,6 +229,11 @@ export default function Auth() {
           {isLoading ? 'Processing...' : (mode==='login' ? 'Login' : 'Create account')}
         </button>
       </form>
+      {location.state?.authNotice && (
+        <div className="mt-2 p-3 rounded-xl bg-amber-100 text-amber-900 text-sm text-center border border-amber-200">
+          {location.state.authNotice}
+        </div>
+      )}
     </div>
   )
 }
