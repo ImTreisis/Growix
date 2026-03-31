@@ -114,7 +114,7 @@ export default function Footer() {
                 to="/terms-of-service" 
                 className="text-cocoa/60 hover:text-[#df1f66] hover:scale-105 transition-all duration-200 text-sm"
               >
-                Terms of Service
+                Terms & Conditions
               </Link>
             </div>
           </div>

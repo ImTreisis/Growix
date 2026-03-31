@@ -24,14 +24,17 @@ export async function handleStripeWebhook(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const { seminarId, userId, firstName, lastName } = session.metadata || {};
-    if (!seminarId || !userId) {
+    const { seminarId, userId, guestEmail, firstName, lastName } = session.metadata || {};
+    const normalizedGuestEmail = typeof guestEmail === 'string' ? guestEmail.trim().toLowerCase() : '';
+    if (!seminarId || (!userId && !normalizedGuestEmail)) {
       console.error('❌ Webhook missing metadata');
       return res.status(400).send('Missing metadata');
     }
 
     try {
-      const existing = await Registration.findOne({ seminar: seminarId, user: userId });
+      const existing = userId
+        ? await Registration.findOne({ seminar: seminarId, user: userId })
+        : await Registration.findOne({ seminar: seminarId, guestEmail: normalizedGuestEmail });
       if (existing) {
         console.log('Registration already exists, skipping');
         return res.json({ received: true });
@@ -42,7 +45,8 @@ export async function handleStripeWebhook(req, res) {
 
       const reg = await Registration.create({
         seminar: seminarId,
-        user: userId,
+        user: userId || null,
+        guestEmail: userId ? '' : normalizedGuestEmail,
         firstName: firstName || '',
         lastName: lastName || '',
         paidAt: new Date(),
@@ -52,12 +56,13 @@ export async function handleStripeWebhook(req, res) {
       });
 
       const seminar = await Seminar.findById(seminarId).populate('createdBy', 'email firstName lastName');
-      const user = await User.findById(userId);
-      if (user?.email && seminar) {
+      const user = userId ? await User.findById(userId) : null;
+      const recipientEmail = user?.email || normalizedGuestEmail;
+      if (recipientEmail && seminar) {
         await sendRegistrationConfirmationEmail({
-          to: user.email,
-          firstName: firstName || user.firstName || '',
-          lastName: lastName || user.lastName || '',
+          to: recipientEmail,
+          firstName: firstName || user?.firstName || '',
+          lastName: lastName || user?.lastName || '',
           seminarTitle: seminar.title,
           seminarDate: seminar.localDateTime,
           venue: seminar.venue,
@@ -67,7 +72,7 @@ export async function handleStripeWebhook(req, res) {
           await sendOrganizerNotificationEmail({
             to: organizer.email,
             organizerName: organizer.firstName || organizer.lastName || 'Organizer',
-            registrantName: `${firstName || ''} ${lastName || ''}`.trim() || user.firstName || user.lastName || 'A participant',
+            registrantName: `${firstName || ''} ${lastName || ''}`.trim() || user?.firstName || user?.lastName || 'A participant',
             seminarTitle: seminar.title,
           });
         }

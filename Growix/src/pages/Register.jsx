@@ -42,16 +42,15 @@ export default function Register() {
   const [loading, setLoading] = useState(true)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      navigate('/auth', { replace: true })
-      return
+    if (user) {
+      setFirstName(user.firstName || '')
+      setLastName(user.lastName || '')
+      setEmail(user.email || '')
     }
-    if (!user) return
-    setFirstName(user.firstName || '')
-    setLastName(user.lastName || '')
     const fetchSeminar = async () => {
       try {
         const r = await api.get(`/seminars/${id}`)
@@ -72,6 +71,10 @@ export default function Register() {
       show('Please enter your first and last name', 'error')
       return
     }
+    if (!email.trim()) {
+      show('Please enter your email', 'error')
+      return
+    }
     if (isSubmitting) return
     setIsSubmitting(true)
     try {
@@ -79,6 +82,7 @@ export default function Register() {
         seminarId: id,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
+        email: email.trim(),
       })
       if (r.data.free) {
         show('You are registered! Check your email for confirmation.')
@@ -95,7 +99,7 @@ export default function Register() {
     }
   }
 
-  if (isLoading || !user || loading || !seminar) return null
+  if (loading || !seminar) return null
   if (!seminar.registrationEnabled) return null
 
   const dateStr = formatSeminarDate(seminar.localDateTime, seminar.date)
@@ -138,6 +142,17 @@ export default function Register() {
               onChange={(e) => setLastName(e.target.value)}
               className="w-full px-3 py-2 rounded-xl border"
               placeholder="Last name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-cocoa/80 mb-1">Email</label>
+            <input
+              required
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border"
+              placeholder="Email"
             />
           </div>
           <button

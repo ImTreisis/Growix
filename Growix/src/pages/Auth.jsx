@@ -126,7 +126,7 @@ export default function Auth() {
           onClick={()=>{setMode('login'); clearErrors()}} 
           className={`px-3 py-2 rounded-xl ${mode==='login'?'bg-red-300 bg-opacity-75 font-poppins font-bold transition-all duration-200 hover:scale-105':''}`}
         >
-          Login
+          Log in
         </button>
         <button 
           type="button"
@@ -224,13 +224,13 @@ export default function Auth() {
         <button 
           type="submit"
           disabled={isLoading}
-          className={`px-4 py-2 rounded-xl font-medium ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-dusk text-white hover:bg-dusk/90'}`}
+          className={`px-4 py-2 rounded-xl font-bold font-poppins ${isLoading ? 'bg-gray-400 font-bold font-poppins cursor-not-allowed' : 'bg-dusk font-bold font-poppins text-white hover:bg-dusk/90'}`}
         >
-          {isLoading ? 'Processing...' : (mode==='login' ? 'Login' : 'Create account')}
+          {isLoading ? 'Processing...' : (mode==='login' ? 'Log in' : 'Create account')}
         </button>
       </form>
       {location.state?.authNotice && (
-        <div className="mt-2 p-3 rounded-xl bg-amber-100 text-amber-900 text-sm text-center border border-amber-200">
+        <div className="mt-2 p-3 rounded-xl font-poppins font-bold bg-amber-100 text-amber-900 text-sm text-center border border-amber-200">
           {location.state.authNotice}
         </div>
       )}

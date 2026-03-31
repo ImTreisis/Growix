@@ -29,7 +29,7 @@ export default function Home() {
               placeholder="Search workshops..." 
               className="flex-1 px-4 py-3 rounded-xl bg-white/90 border border-gray-200 shadow-subtle" 
             />
-            <button onClick={()=>navigate('/workshops')} className="px-6 py-3 rounded-xl bg-dusk text-white shadow-cozy">Browse</button>
+            <button onClick={()=>navigate('/workshops')} className="px-6 py-3 font-poppins font-bold rounded-xl bg-dusk text-white shadow-cozy">Browse</button>
           </div>
         </div>
       </section>

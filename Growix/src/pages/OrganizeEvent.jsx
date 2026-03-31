@@ -226,11 +226,11 @@ export default function OrganizeEvent() {
         
         <button 
           disabled={isSubmitting} 
-          className={`w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`w-full px-4 py-3 bg-dusk text-white rounded-xl font-bold font-poppins transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isSubmitting ? 'Creating...' : 'Create Event'}
         </button>
-        {message && <p className="text-cocoa text-center">{message}</p>}
+        {message && <p className="text-cocoa text-center font-poppins font-bold">{message}</p>}
         </form>
       </div>
     </>

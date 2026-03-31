@@ -29,6 +29,8 @@ export default function Organize() {
     venue:'', 
     price:'',
     isPaid:true,
+    payoutFullName:'',
+    payoutIban:'',
     customStyle:'', 
     image: null,
     timeZone: getDefaultTimeZone()
@@ -88,6 +90,11 @@ export default function Organize() {
         show("Photo is required");
         return;
       }
+      if (form.isPaid && (!form.payoutFullName.trim() || !form.payoutIban.trim())) {
+        show('Please enter payout full name and IBAN for paid workshops', 'error')
+        setIsSubmitting(false)
+        return
+      }
       const submitData = { ...form, type: 'workshop' }
       submitData.date = parsedDate.toISOString()
       submitData.localDateTime = localDateTime
@@ -96,6 +103,8 @@ export default function Organize() {
         submitData.styles = [...submitData.styles, form.customStyle.trim()]
       }
       delete submitData.customStyle
+      delete submitData.payoutFullName
+      delete submitData.payoutIban
       if (!form.isPaid) {
         submitData.price = ''
       }
@@ -113,9 +122,21 @@ export default function Organize() {
         })
         const r = await api.post('/seminars/with-image', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
         setMessage(`Created: ${r.data.seminar.title}`)
+        if (form.isPaid) {
+          await api.post('/users/me/payout-iban', {
+            iban: form.payoutIban.trim(),
+            fullName: form.payoutFullName.trim(),
+          })
+        }
       } else {
         const r = await api.post('/seminars', submitData)
         setMessage(`Created: ${r.data.seminar.title}`)
+        if (form.isPaid) {
+          await api.post('/users/me/payout-iban', {
+            iban: form.payoutIban.trim(),
+            fullName: form.payoutFullName.trim(),
+          })
+        }
       }
       setForm({ 
         title:'', 
@@ -126,6 +147,8 @@ export default function Organize() {
         venue:'', 
         price:'',
         isPaid:true,
+        payoutFullName:'',
+        payoutIban:'',
         customStyle:'', 
         image:null,
         timeZone: getDefaultTimeZone()
@@ -243,6 +266,26 @@ export default function Organize() {
               />
             </div>
           )}
+          {form.isPaid && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-cocoa">Payout Settings</p>
+              <p className="text-xs text-cocoa/70">
+                This information is private and visible only to you. Growix requires these details to process your payouts after the workshop.
+              </p>
+              <input
+                value={form.payoutFullName}
+                onChange={(e)=>setForm({...form, payoutFullName:e.target.value})}
+                placeholder="Full name"
+                className="w-full px-3 py-2 rounded-xl border"
+              />
+              <input
+                value={form.payoutIban}
+                onChange={(e)=>setForm({...form, payoutIban:e.target.value})}
+                placeholder="IBAN"
+                className="w-full px-3 py-2 rounded-xl border"
+              />
+            </div>
+          )}
         
         <input required type="datetime-local" value={form.date} onChange={(e)=>setForm({...form, date: normalizeInputDateTime(e.target.value)})} className="w-full px-3 py-2 rounded-xl border" />
         
@@ -327,11 +370,11 @@ export default function Organize() {
         
         <button 
           disabled={isSubmitting} 
-          className={`w-full px-4 py-3 bg-dusk text-white rounded-xl font-medium transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`w-full px-4 py-3 bg-dusk text-white rounded-xl font-bold font-poppins transition-opacity ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isSubmitting ? 'Creating...' : 'Create Workshop'}
         </button>
-        {message && <p className="text-cocoa text-center">{message}</p>}
+        {message && <p className="text-cocoa text-center font-poppins font-bold">{message}</p>}
         </form>
       </div>
     </>

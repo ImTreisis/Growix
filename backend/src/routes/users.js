@@ -86,8 +86,9 @@ router.post('/me/photo', requireAuth, upload.single('photo'), async (req, res) =
 
 // Send IBAN for payouts without storing it
 router.post('/me/payout-iban', requireAuth, async (req, res) => {
-  const { iban = '' } = req.body;
+  const { iban = '', fullName = '' } = req.body;
   const trimmedIban = String(iban).trim();
+  const trimmedFullName = String(fullName).trim();
 
   if (!trimmedIban) {
     return res.status(400).json({ message: 'IBAN is required' });
@@ -106,7 +107,7 @@ router.post('/me/payout-iban', requireAuth, async (req, res) => {
 
   const seminars = await Seminar.find({ createdBy: req.userId }).select('title type').lean();
 
-  await sendPayoutIbanEmail({ user, iban: trimmedIban, seminars });
+  await sendPayoutIbanEmail({ user, iban: trimmedIban, fullName: trimmedFullName, seminars });
 
   res.json({ ok: true, message: 'IBAN sent for payout processing' });
 });

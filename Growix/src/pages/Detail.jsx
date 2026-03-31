@@ -238,12 +238,12 @@ export default function Detail(){
         <div className="mt-6 flex items-center gap-3 flex-wrap">
           {isWorkshop && item.registrationEnabled && (!user || String(user._id)!==String(item.createdBy?._id||item.createdBy)) && (
             user ? (
-              <Link to={`/register/${item._id}`} className="px-4 py-2 rounded-xl bg-dusk text-white">Register</Link>
+              <Link to={`/register/${item._id}`} className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]">Register</Link>
             ) : (
               <button
                 type="button"
                 onClick={() => navigate('/auth', { state: { authNotice: 'You need to sign in to register' } })}
-                className="px-4 py-2 rounded-xl bg-dusk text-white"
+                className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]"
               >
                 Register
               </button>
@@ -255,7 +255,7 @@ export default function Detail(){
               {isWorkshop && (
                 <button
                   onClick={() => setShowRegistrations(true)}
-                  className="px-4 py-2 rounded-xl border border-pink-300 text-pink-600"
+                  className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]"
                 >
                   View registrations
                 </button>

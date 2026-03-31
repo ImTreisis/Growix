@@ -183,7 +183,7 @@ export async function sendOrganizerNotificationEmail({ to, organizerName, regist
   }
 }
 
-export async function sendPayoutIbanEmail({ user, iban, seminars }) {
+export async function sendPayoutIbanEmail({ user, iban, fullName = '', seminars }) {
   const client = getResendClient();
   const fromEmail = process.env.RESEND_FROM_EMAIL;
   const to = 'info@growix.lt';
@@ -196,6 +196,7 @@ export async function sendPayoutIbanEmail({ user, iban, seminars }) {
   const text = [
     `User: ${user.firstName || ''} ${user.lastName || ''} (@${user.username})`,
     `Email: ${user.email}`,
+    fullName ? `Payout full name: ${fullName}` : '',
     '',
     `IBAN: ${iban}`,
     '',
@@ -213,6 +214,7 @@ export async function sendPayoutIbanEmail({ user, iban, seminars }) {
           <strong>User:</strong> ${user.firstName || ''} ${user.lastName || ''} (@${user.username})<br/>
           <strong>Email:</strong> ${user.email}
         </p>
+        ${fullName ? `<p style="color: #555; font-size: 15px;"><strong>Payout full name:</strong> ${fullName}</p>` : ''}
         <p style="color: #555; font-size: 15px;">
           <strong>IBAN:</strong><br/>
           <code style="font-family: monospace; background:#f5f5f5; padding:4px 8px; border-radius:4px;">${iban}</code>

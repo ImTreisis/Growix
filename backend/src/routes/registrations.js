@@ -24,12 +24,19 @@ function priceToCents(priceStr) {
   return Math.round(num * 100);
 }
 
+function normalizeEmail(email) {
+  return typeof email === 'string' ? email.trim().toLowerCase() : '';
+}
+
 // Create checkout session (paid) or register directly (free)
-router.post('/checkout', requireAuth, async (req, res) => {
+router.post('/checkout', async (req, res) => {
   try {
-    const { seminarId, firstName, lastName } = req.body;
-    if (!seminarId || !firstName?.trim() || !lastName?.trim()) {
-      return res.status(400).json({ message: 'Seminar, first name, and last name are required' });
+    const { seminarId, firstName, lastName, email } = req.body;
+    const guestEmail = normalizeEmail(email);
+    const userId = req.session?.userId || null;
+
+    if (!seminarId || !firstName?.trim() || !lastName?.trim() || (!userId && !guestEmail)) {
+      return res.status(400).json({ message: 'Seminar, first name, last name, and email are required' });
     }
 
     const seminar = await Seminar.findById(seminarId).populate('createdBy', 'email firstName lastName');
@@ -41,25 +48,29 @@ router.post('/checkout', requireAuth, async (req, res) => {
     const isFree = priceCents === 0;
 
     // Check if already registered
-    const existing = await Registration.findOne({ seminar: seminarId, user: req.userId });
+    const existing = userId
+      ? await Registration.findOne({ seminar: seminarId, user: userId })
+      : await Registration.findOne({ seminar: seminarId, guestEmail });
     if (existing) {
       return res.status(400).json({ message: 'You are already registered for this event' });
     }
 
-    const user = await User.findById(req.userId);
+    const user = userId ? await User.findById(userId) : null;
+    const recipientEmail = user?.email || guestEmail;
     const appUrl = process.env.APP_BASE_URL || 'https://www.growix.lt';
     const baseUrl = appUrl.replace(/\/$/, '');
 
     if (isFree) {
       const reg = await Registration.create({
         seminar: seminarId,
-        user: req.userId,
+        user: userId || null,
+        guestEmail: userId ? '' : guestEmail,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         paidAt: new Date(),
       });
       await sendRegistrationConfirmationEmail({
-        to: user.email,
+        to: recipientEmail,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         seminarTitle: seminar.title,
@@ -117,7 +128,8 @@ router.post('/checkout', requireAuth, async (req, res) => {
       cancel_url: `${baseUrl}/register/${seminarId}`,
       metadata: {
         seminarId,
-        userId: req.userId,
+        userId: userId || '',
+        guestEmail: userId ? '' : guestEmail,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       },

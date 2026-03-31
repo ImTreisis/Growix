@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAuth } from '../state/AuthContext.jsx'
 
 export default function RegisterSuccess() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [message, setMessage] = useState('Processing your registration...')
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth', { replace: true })
-      return
-    }
     const sessionId = new URLSearchParams(window.location.search).get('session_id')
     if (sessionId) {
       setMessage('You are officially registered! Check your email for confirmation.')
@@ -21,7 +15,7 @@ export default function RegisterSuccess() {
       setMessage('Registration complete! Check your email for confirmation.')
       setTimeout(() => navigate(`/detail/${id}`), 2000)
     }
-  }, [id, user, navigate])
+  }, [id, navigate])
 
   return (
     <div className="flex justify-center">

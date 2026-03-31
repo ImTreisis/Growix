@@ -55,8 +55,8 @@ export default function App() {
               <Route path="/workshops" element={<Browse />} />
               <Route path="/detail/:id" element={<Detail />} />
               <Route path="/detail/:id/edit" element={<PrivateRoute><Edit /></PrivateRoute>} />
-              <Route path="/register/:id" element={<PrivateRoute><Register /></PrivateRoute>} />
-              <Route path="/register/:id/success" element={<PrivateRoute><RegisterSuccess /></PrivateRoute>} />
+              <Route path="/register/:id" element={<Register />} />
+              <Route path="/register/:id/success" element={<RegisterSuccess />} />
               <Route path="/create" element={<PrivateRoute><Organize /></PrivateRoute>} />
               <Route path="/create-event" element={<PrivateRoute><OrganizeEvent /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
