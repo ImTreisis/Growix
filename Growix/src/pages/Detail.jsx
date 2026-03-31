@@ -237,17 +237,7 @@ export default function Detail(){
         {/* Action buttons */}
         <div className="mt-6 flex items-center gap-3 flex-wrap">
           {isWorkshop && item.registrationEnabled && (!user || String(user._id)!==String(item.createdBy?._id||item.createdBy)) && (
-            user ? (
-              <Link to={`/register/${item._id}`} className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]">Register</Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => navigate('/auth', { state: { authNotice: 'You need to sign in to register' } })}
-                className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]"
-              >
-                Register
-              </button>
-            )
+            <Link to={`/register/${item._id}`} className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]">Register</Link>
           )}
           {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
             <>
