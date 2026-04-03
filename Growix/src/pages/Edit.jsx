@@ -4,7 +4,7 @@ import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 
 const STYLE_OPTIONS = [
-  'afro','bachata','ballet','balboa','breaking','charleston','commercial','contemporary','dancehall','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking','Choreo','Feminine Movement'
+  'afro','bachata','ballet','balboa','breaking','charleston','Choreo','commercial','contemporary','dancehall','Feminine Movement','freestyle','high-heels','hip-hop','house','jazz','lindy-hop','locking','modern','popping','salsa','shag','solo-jazz','twerk','vogue','waacking'
 ]
 const normalizeInputDateTime = (value) => {
   if (!value) return ''
