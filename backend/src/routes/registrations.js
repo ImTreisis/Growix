@@ -7,6 +7,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { sendRegistrationConfirmationEmail, sendOrganizerNotificationEmail } from '../lib/email.js';
 
 const router = express.Router();
+const REGISTRATION_VIEWER_IDS = new Set(['6937f9de0e0c8ac901fe482c', '6930801597bee199faf84266']);
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -147,7 +148,9 @@ router.get('/seminar/:seminarId', requireAuth, async (req, res) => {
   try {
     const seminar = await Seminar.findById(req.params.seminarId);
     if (!seminar) return res.status(404).json({ message: 'Seminar not found' });
-    if (String(seminar.createdBy) !== req.userId) {
+    const isOrganizer = String(seminar.createdBy) === req.userId;
+    const isPrivilegedViewer = REGISTRATION_VIEWER_IDS.has(String(req.userId));
+    if (!isOrganizer && !isPrivilegedViewer) {
       return res.status(403).json({ message: 'Only the organizer can view registrations' });
     }
     const registrations = await Registration.find({ seminar: req.params.seminarId })

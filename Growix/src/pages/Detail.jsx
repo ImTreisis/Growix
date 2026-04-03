@@ -173,6 +173,9 @@ export default function Detail(){
   const isWorkshop = item.type === 'workshop' || (!item.type && (displayStyles.length || item.level))
   const styleLabels = displayStyles.map(s => s?.charAt(0).toUpperCase() + s?.slice(1))
   const levelLabel = item.level?.charAt(0).toUpperCase() + item.level?.slice(1)
+  const privilegedViewerIds = new Set(['6937f9de0e0c8ac901fe482c', '6930801597bee199faf84266'])
+  const isOwner = user && String(user._id)===String(item.createdBy?._id||item.createdBy)
+  const canViewRegistrations = Boolean(user && (isOwner || privilegedViewerIds.has(String(user._id))))
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
@@ -242,17 +245,9 @@ export default function Detail(){
           {isWorkshop && item.registrationEnabled && (!user || String(user._id)!==String(item.createdBy?._id||item.createdBy)) && (
             <Link to={`/register/${item._id}`} className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]">Register</Link>
           )}
-          {user && String(user._id)===String(item.createdBy?._id||item.createdBy) && (
+          {isOwner && (
             <>
               <Link to={`/detail/${item._id}/edit`} className="px-4 py-2 rounded-xl border">Edit</Link>
-              {isWorkshop && (
-                <button
-                  onClick={() => setShowRegistrations(true)}
-                  className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]"
-                >
-                  View registrations
-                </button>
-              )}
               <button
                 onClick={async()=>{
                   if(!confirm('Are you sure you want to delete this workshop? If you do, attendees will be refunded within 1–2 business days.')) return
@@ -261,6 +256,14 @@ export default function Detail(){
                 className="px-4 py-2 rounded-xl border border-red-600 text-red-700"
               >Delete</button>
             </>
+          )}
+          {isWorkshop && canViewRegistrations && (
+            <button
+              onClick={() => setShowRegistrations(true)}
+              className="px-3 py-2 rounded-xl text-white font-bold transition-all duration-200 hover:scale-105 bg-[#df1f66]"
+            >
+              View registrations
+            </button>
           )}
         </div>
       </div>
