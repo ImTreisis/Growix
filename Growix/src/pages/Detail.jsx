@@ -252,7 +252,7 @@ export default function Detail(){
               )}
               <button
                 onClick={async()=>{
-                  if(!confirm('Delete this workshop? This cannot be undone.')) return
+                  if(!confirm('Are you sure you want to delete this workshop? If you do, attendees will be refunded within 1–2 business days.')) return
                   try { await api.delete(`/seminars/${item._id}`); show('Workshop deleted'); navigate('/workshops') } catch { show('Delete failed', 'error') }
                 }}
                 className="px-4 py-2 rounded-xl border border-red-600 text-red-700"
