@@ -123,14 +123,17 @@ export default function Detail(){
         const seminar = response.data.seminar;
         setItem(seminar);
         setSavedCount(response.data.savedCount || 0);
-        setIsSaved(seminar?.savedBy?.includes(user?._id) || false);
+        const savedByUser = (user?.savedSeminars || []).some(
+          (s) => String(s?._id || s) === String(id)
+        );
+        setIsSaved(savedByUser);
       } catch (error) {
         console.error('Error fetching seminar:', error);
       }
     };
 
     fetchSeminar();
-  }, [api, id, user?._id]);
+  }, [api, id, user?._id, user?.savedSeminars]);
 
   const handleSave = async () => {
     if (!user) {
