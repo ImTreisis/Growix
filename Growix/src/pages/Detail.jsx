@@ -27,7 +27,9 @@ function RegistrationsModal({ seminarId, onClose }) {
               <li key={r._id} className="flex flex-col gap-0.5 py-2 border-b border-gray-100 last:border-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{r.firstName} {r.lastName}</span>
-                  {r.user?.email && <span className="text-sm text-cocoa/70">({r.user.email})</span>}
+                  {(r.user?.email || r.guestEmail) && (
+                    <span className="text-sm text-cocoa/70">({r.user?.email || r.guestEmail})</span>
+                  )}
                 </div>
                 {r.amountCents > 0 && (
                   <span className="text-xs text-cocoa/60">
