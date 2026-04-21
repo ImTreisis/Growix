@@ -79,6 +79,11 @@ export async function handleStripeWebhook(req, res) {
       }
       console.log('✅ Registration created from webhook:', reg._id);
     } catch (err) {
+      // Stripe may retry the same webhook; treat duplicate registration inserts as success.
+      if (err?.code === 11000) {
+        console.warn('⚠️ Duplicate registration insert ignored:', err?.keyValue);
+        return res.json({ received: true });
+      }
       console.error('❌ Webhook handler error:', err);
       return res.status(500).send('Webhook handler failed');
     }

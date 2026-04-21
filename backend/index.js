@@ -14,6 +14,7 @@ import userRoutes from './src/routes/users.js';
 import seminarRoutes from './src/routes/seminars.js';
 import registrationRoutes from './src/routes/registrations.js';
 import { handleStripeWebhook } from './src/lib/stripeWebhook.js';
+import Registration from './src/models/Registration.js';
 
 dotenv.config();
 
@@ -172,6 +173,19 @@ const connectWithTimeout = async () => {
     await mongoose.connect(MONGO_URI, {
       serverSelectionTimeoutMS: 10000, // 10 second timeout
     });
+    // Fix old registrations index and ensure current index definitions exist
+    try {
+      const indexes = await Registration.collection.indexes();
+      const hasLegacyIndex = indexes.some((idx) => idx.name === 'seminar_1_user_1' && !idx.partialFilterExpression);
+      if (hasLegacyIndex) {
+        await Registration.collection.dropIndex('seminar_1_user_1');
+        console.log('✅ Dropped legacy registrations index seminar_1_user_1');
+      }
+      await Registration.syncIndexes();
+      console.log('✅ Registration indexes synced');
+    } catch (idxErr) {
+      console.error('❌ Failed to update registration indexes:', idxErr.message);
+    }
     clearTimeout(timeout);
     console.log('✅ Connected to MongoDB');
   } catch (err) {
